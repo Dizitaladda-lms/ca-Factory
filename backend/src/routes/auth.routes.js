@@ -8,12 +8,16 @@ const {
   verifyEmail,
   checkVerification,
   migrateSchema,
+  refreshToken,
+  logoutUser,
 } = require("../controllers/auth.controller");
 const { verifyToken } = require("../middleware/auth.middleware");
 
 // Public Auth Endpoints
 router.post("/login", loginUser);
 router.post("/register", registerUser);
+router.post("/refresh-token", refreshToken);
+router.post("/logout", logoutUser);
 
 // Email Verification Endpoints
 router.post("/send-verification-email", sendVerificationEmail);

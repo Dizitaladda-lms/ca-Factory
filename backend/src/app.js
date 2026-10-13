@@ -17,6 +17,7 @@ for (const p of envPaths) {
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 
 // Database initialization
 require("./config/db");
@@ -97,6 +98,7 @@ app.use(
 // Body Parsers
 app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
+app.use(cookieParser());
 
 // Rate Limiting
 const globalLimiter = rateLimit({

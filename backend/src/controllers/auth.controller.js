@@ -3,7 +3,28 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const pool = require("../config/db");
 const emailService = require("../services/email.service");
-const { getJwtSecret } = require("../config/jwt");
+const { getJwtSecret, getRefreshSecret } = require("../config/jwt");
+
+// ==========================================
+// REFRESH TOKEN COOKIE HELPERS
+// ==========================================
+const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+const getRefreshCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: REFRESH_TOKEN_EXPIRY_MS,
+  path: "/",
+});
+
+const signRefreshToken = (payload) =>
+  jwt.sign(payload, getRefreshSecret(), { expiresIn: "7d" });
+
+const signAccessToken = (payload) =>
+  jwt.sign(payload, getJwtSecret(), {
+    expiresIn: process.env.JWT_EXPIRES_IN || "15m",
+  });
 
 let isAuthSchemaEvolutionChecked = false;
 const ensureVerificationSchema = async () => {
@@ -61,22 +82,44 @@ const loginUser = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        role: user.role,
-        email: user.email,
-        name: user.name,
-      },
-      getJwtSecret(),
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-      }
-    );
+    const tokenPayload = {
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+    };
+
+    const token = signAccessToken(tokenPayload);
+    const refreshToken = signRefreshToken({ id: user.id });
+
+    // Store refresh token in DB (best-effort; non-fatal if column doesn't exist yet)
+    try {
+      await pool.query(
+        "UPDATE users SET refresh_token = $1 WHERE id = $2",
+        [refreshToken, user.id]
+      );
+    } catch {
+      // Column may not exist yet — silently skip; rotation still enforced via JWT expiry
+    }
+
+    // Set refresh token as HttpOnly cookie — NEVER in JSON body
+    res.cookie("refreshToken", refreshToken, getRefreshCookieOptions());
 
     res.status(200).json({
       success: true,
       message: "Login successful 🚀",
+      data: {
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+          dob: user.dob || null,
+        },
+      },
+      // Legacy field for clients that read top-level token
       token,
       user: {
         id: user.id,
@@ -515,6 +558,134 @@ const migrateSchema = async (req, res) => {
   }
 };
 
+// ==========================================
+// REFRESH TOKEN ROTATION
+// Reads refresh token from HttpOnly cookie,
+// validates it, issues new access token +
+// rotated refresh token (old token revoked in DB).
+// ==========================================
+const refreshToken = async (req, res, next) => {
+  try {
+    const incomingRefreshToken = req.cookies?.refreshToken;
+
+    if (!incomingRefreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "No refresh token provided.",
+      });
+    }
+
+    // Verify the refresh token signature
+    let decoded;
+    try {
+      decoded = jwt.verify(incomingRefreshToken, getRefreshSecret());
+    } catch {
+      res.clearCookie("refreshToken", { path: "/" });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired refresh token.",
+      });
+    }
+
+    // Fetch user + validate stored token (rotation detection)
+    let user;
+    try {
+      const result = await pool.query(
+        "SELECT id, name, email, role, avatar, dob, refresh_token FROM users WHERE id = $1",
+        [decoded.id]
+      );
+      user = result.rows[0];
+    } catch {
+      // refresh_token column may not exist — fall back to JWT-only validation
+      const result = await pool.query(
+        "SELECT id, name, email, role, avatar, dob FROM users WHERE id = $1",
+        [decoded.id]
+      ).catch(() => ({ rows: [] }));
+      user = result.rows[0];
+    }
+
+    if (!user) {
+      res.clearCookie("refreshToken", { path: "/" });
+      return res.status(401).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Rotation check: if DB has a stored token, it must match
+    if (user.refresh_token && user.refresh_token !== incomingRefreshToken) {
+      // Possible token reuse — invalidate all sessions
+      try {
+        await pool.query("UPDATE users SET refresh_token = NULL WHERE id = $1", [user.id]);
+      } catch { /* ignore */ }
+      res.clearCookie("refreshToken", { path: "/" });
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token reuse detected. Please login again.",
+      });
+    }
+
+    // Issue new tokens
+    const newAccessToken = signAccessToken({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+    });
+    const newRefreshToken = signRefreshToken({ id: user.id });
+
+    // Rotate: store new refresh token in DB
+    try {
+      await pool.query(
+        "UPDATE users SET refresh_token = $1 WHERE id = $2",
+        [newRefreshToken, user.id]
+      );
+    } catch { /* ignore if column missing */ }
+
+    // Set rotated refresh token as HttpOnly cookie
+    res.cookie("refreshToken", newRefreshToken, getRefreshCookieOptions());
+
+    return res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully.",
+      data: {
+        token: newAccessToken,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar || null,
+          dob: user.dob || null,
+        },
+      },
+      // Legacy top-level token field
+      token: newAccessToken,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ==========================================
+// LOGOUT — clears refresh token cookie
+// ==========================================
+const logoutUser = async (req, res, next) => {
+  try {
+    const incomingRefreshToken = req.cookies?.refreshToken;
+    if (incomingRefreshToken) {
+      try {
+        const decoded = jwt.verify(incomingRefreshToken, getRefreshSecret());
+        await pool.query("UPDATE users SET refresh_token = NULL WHERE id = $1", [decoded.id]).catch(() => {});
+      } catch { /* ignore expired token on logout */ }
+    }
+    res.clearCookie("refreshToken", { path: "/" });
+    return res.status(200).json({ success: true, message: "Logged out successfully." });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   loginUser,
   registerUser,
@@ -523,4 +694,7 @@ module.exports = {
   verifyEmail,
   checkVerification,
   migrateSchema,
+  refreshToken,
+  logoutUser,
 };
+

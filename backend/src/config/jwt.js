@@ -14,6 +14,15 @@ const getJwtSecret = () => {
   return secret;
 };
 
+const getRefreshSecret = () => {
+  const secret = (process.env.JWT_REFRESH_SECRET || "").trim();
+  if (!secret) {
+    return "6f4666a428f6438c52ba5220abf8_dizital_adda_refresh_jwt_key_2026";
+  }
+  return secret;
+};
+
 module.exports = {
   getJwtSecret,
+  getRefreshSecret,
 };
