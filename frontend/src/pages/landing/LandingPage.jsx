@@ -32,7 +32,7 @@ import { CA_BATCHES_DATA, FACULTY_MEMBERS } from "../../data/caBatchesData";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const BRAND_NAME = "CA Factory";
+  const BRAND_NAME = "CS Factory";
 
   // Tab state for Popular Courses
   const [courseCategory, setCourseCategory] = useState("all");

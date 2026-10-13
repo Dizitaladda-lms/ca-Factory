@@ -30,22 +30,17 @@ export default function BatchesFooter({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 pb-12 border-b border-slate-800">
           {/* Brand Info (2 Columns on large) */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-2.5">
-              <div className="bg-white/95 rounded-lg px-2.5 py-1 flex items-center shadow-xs">
+            <Link to="/" className="inline-block" aria-label="CS Factory Home">
+              <div className="bg-white rounded-xl px-3 py-1.5 inline-flex items-center shadow-sm hover:opacity-95 transition">
                 <img
                   src="/logo.png"
-                  alt={brandName}
-                  className="h-8 md:h-9 w-auto object-contain"
+                  alt="CS Factory Logo"
+                  className="h-10 md:h-12 w-auto object-contain"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                   }}
                 />
               </div>
-              <span className="text-xl md:text-2xl font-black tracking-tight text-white">
-                {brandName.toUpperCase().includes("CS")
-                  ? brandName.toUpperCase().replace("CS", "").trim() || "FACTORY"
-                  : brandName}
-              </span>
             </Link>
 
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">

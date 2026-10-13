@@ -125,22 +125,17 @@ export default function BatchesHeader({ brandName = "CS Factory" }) {
 
       <div className="edtech-container">
         <div className="flex items-center justify-between h-[60px] md:h-[80px]">
-          {/* LEFT: LOGO + BRAND */}
+          {/* LEFT: LOGO */}
           <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-2.5 group">
+            <Link to="/" className="flex items-center group py-1" aria-label="CS Factory Home">
               <img
                 src="/logo.png"
-                alt={brandName}
-                className="h-9 md:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+                alt="CS Factory Logo"
+                className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform duration-200 group-hover:scale-102 drop-shadow-xs"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}
               />
-              <span className="text-xl md:text-2xl font-black tracking-tight text-[#1B2124]">
-                {brandName.toUpperCase().includes("CS")
-                  ? brandName.toUpperCase().replace("CS", "").trim() || "FACTORY"
-                  : brandName}
-              </span>
             </Link>
 
             {/* "All Courses" Mega Menu Outlined Primary Button */}
