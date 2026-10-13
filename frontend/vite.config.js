@@ -3,11 +3,21 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import fs from 'fs'
+import { createRequire } from 'module'
 
-const getAxiosPlatformBrowserPath = () => {
-  const local = path.resolve('./node_modules/axios/lib/platform/browser/index.js')
+const require = createRequire(import.meta.url)
+
+const getAxiosEsmPath = () => {
+  try {
+    const pkg = require.resolve('axios/package.json')
+    const esmPath = path.join(path.dirname(pkg), 'dist/esm/axios.js')
+    if (fs.existsSync(esmPath)) return esmPath
+  } catch {
+    // fallback
+  }
+  const local = path.resolve('./node_modules/axios/dist/esm/axios.js')
   if (fs.existsSync(local)) return local
-  const hoisted = path.resolve('../node_modules/axios/lib/platform/browser/index.js')
+  const hoisted = path.resolve('../node_modules/axios/dist/esm/axios.js')
   if (fs.existsSync(hoisted)) return hoisted
   return local
 }
@@ -16,8 +26,8 @@ export default defineConfig({
   plugins: [tailwindcss(), react()],
   resolve: {
     alias: {
-      // Force axios to use browser build on Vercel Linux
-      'axios/lib/platform/index.js': getAxiosPlatformBrowserPath(),
+      // Force axios to use its bundled ESM browser build via absolute path
+      axios: getAxiosEsmPath(),
     },
   },
   build: {
