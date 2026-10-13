@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../lib/api";
 import { Link } from "react-router-dom";
 import CourseCard from "../components/course/CourseCard";
-import Footer from "../components/Footer";
+import BatchesHeader from "../components/batches/BatchesHeader";
+import BatchesFooter from "../components/batches/BatchesFooter";
 
 function Courses() {
 
@@ -28,8 +29,9 @@ function Courses() {
   );
 
   return (
-
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-100 flex flex-col justify-between">
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName="CS Factory" />
 
       {/* HERO */}
 
@@ -180,11 +182,9 @@ function Courses() {
       </div>
 
       {/* FOOTER */}
-      <Footer />
+      <BatchesFooter brandName="CS Factory" />
     </div>
-
   );
-
 }
 
 export default Courses;

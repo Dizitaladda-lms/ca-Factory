@@ -15,7 +15,8 @@ import {
   FaUserGraduate,
   FaExternalLinkAlt,
 } from "react-icons/fa";
-import Footer from "../components/Footer";
+import BatchesHeader from "../components/batches/BatchesHeader";
+import BatchesFooter from "../components/batches/BatchesFooter";
 
 export default function VerifyCertificate() {
   const { code: urlCode } = useParams();
@@ -61,33 +62,9 @@ export default function VerifyCertificate() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-slate-100 flex flex-col font-sans">
-      {/* TOP BRAND HEADER */}
-      <header className="border-b-4 border-[#D4A017] bg-[#0B1220] py-4 px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full border-2 border-[#D4A017] overflow-hidden bg-black shrink-0">
-              <img src={logo} alt="TGS Logo" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <span className="font-extrabold text-lg text-white tracking-wide">
-                TSG <span className="text-[#D4A017]">LMS</span>
-              </span>
-              <span className="block text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                Public Certificate Verification Registry
-              </span>
-            </div>
-          </Link>
-
-          <Link
-            to="/"
-            className="text-xs font-bold text-[#D4A017] hover:text-white flex items-center gap-1.5 transition"
-          >
-            <FaArrowLeft className="text-[10px]" />
-            <span>Back to Home</span>
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName="CS Factory" />
 
       {/* MAIN CONTAINER */}
       <main className="max-w-4xl mx-auto px-4 py-12 flex-1 w-full flex flex-col items-center">
@@ -217,7 +194,7 @@ export default function VerifyCertificate() {
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-slate-500 font-medium">Issuing Authority:</span>
                   <span className="font-semibold text-slate-700">
-                    {certificate.issued_by || "TSG & Dizital Adda Administration"}
+                    {certificate.issued_by || "TGS & CS Factory Administration"}
                   </span>
                 </div>
               </div>
@@ -229,14 +206,14 @@ export default function VerifyCertificate() {
                     href={certificate.pdf_url}
                     target="_blank"
                     rel="noreferrer"
-                    download={`TSG_Certificate_${certificate.student_name}.pdf`}
-                    className="inline-flex items-center gap-2 bg-[#0B1220] hover:bg-[#7C2D12] text-white border-2 border-[#D4A017] px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl transition cursor-pointer"
+                    download={`TGS_Certificate_${certificate.student_name}.pdf`}
+                    className="inline-flex items-center gap-2 bg-[#0B1220] hover:bg-[#5A4BFF] text-white border-2 border-amber-400 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl transition cursor-pointer"
                   >
                     <FaFilePdf className="text-red-400 text-base" />
                     <span>Download Official Certificate PDF</span>
                   </a>
                   <p className="text-[11px] text-slate-400 mt-2">
-                    Verified digital copy certified by TSG Administration.
+                    Verified digital copy certified by TGS & CS Factory Administration.
                   </p>
                 </div>
               ) : (
@@ -250,7 +227,7 @@ export default function VerifyCertificate() {
       </main>
 
       {/* FOOTER */}
-      <Footer />
+      <BatchesFooter brandName="CS Factory" />
     </div>
   );
 }

@@ -17,38 +17,41 @@ import {
 } from "react-icons/fa6";
 
 export default function BatchesFooter({
-  brandName = "CA Factory",
+  brandName = "CS Factory",
   phone = "+91 98765 43210",
   email = "support@cafactory.in",
 }) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-slate-950 text-white pt-14 pb-8 border-t-4 border-[#5A4BFF]">
+    <footer id="footer-contact" className="bg-slate-950 text-white pt-14 pb-8 border-t-4 border-[#5A4BFF]">
       <div className="edtech-container">
         {/* Top Grid: 5 Columns + Brand */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 pb-12 border-b border-slate-800">
           {/* Brand Info (2 Columns on large) */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt={brandName}
-                className="h-10 w-auto object-contain"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-              <span className="text-2xl font-bold tracking-tight text-white">
-                {brandName}
+            <Link to="/" className="flex items-center gap-2.5">
+              <div className="bg-white/95 rounded-lg px-2.5 py-1 flex items-center shadow-xs">
+                <img
+                  src="/logo.png"
+                  alt={brandName}
+                  className="h-8 md:h-9 w-auto object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </div>
+              <span className="text-xl md:text-2xl font-black tracking-tight text-white">
+                {brandName.toUpperCase().includes("CS")
+                  ? brandName.toUpperCase().replace("CS", "").trim() || "FACTORY"
+                  : brandName}
               </span>
             </Link>
 
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              India's premier digital learning platform dedicated to Chartered Accountancy (CA)
-              aspirants. Engineered with top-rank faculty, rigorous ICAI curriculum coverage, daily
-              DPPs, and comprehensive mock test series to guide you through Foundation,
-              Intermediate, and Final.
+              India's premier digital learning platform dedicated to Company Secretary (CS) and
+              Chartered Accountancy (CA) aspirants. Engineered with top-rank faculty, rigorous ICSI & ICAI curriculum coverage, daily
+              DPPs, and comprehensive mock test series to guide you through all levels.
             </p>
 
             {/* Social Icons (Facebook, Instagram, YouTube, LinkedIn, X, Telegram) */}
@@ -108,7 +111,10 @@ export default function BatchesFooter({
                 <Link to="/about" className="hover:text-white transition">About Us</Link>
               </li>
               <li>
-                <a href="#contact" className="hover:text-white transition">Contact Us</a>
+                <Link to="/faculty" className="hover:text-white transition">Our Faculty</Link>
+              </li>
+              <li>
+                <a href="#footer-contact" className="hover:text-white transition">Contact Us</a>
               </li>
               <li>
                 <a href="#careers" className="hover:text-white transition">Careers</a>

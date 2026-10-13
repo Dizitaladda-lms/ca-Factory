@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { CheckCircle2, XCircle, Clock, ArrowRight, ShieldCheck, Mail, RefreshCw, LogIn } from "lucide-react";
 import api from "../lib/api";
+import BatchesHeader from "../components/batches/BatchesHeader";
+import BatchesFooter from "../components/batches/BatchesFooter";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -86,20 +88,20 @@ export default function VerifyEmail() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1220] flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#D4A017]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between">
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName="CS Factory" />
 
-      {/* Main Container Card */}
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 z-10">
-        {/* Header Ribbon */}
-        <div className="bg-gradient-to-r from-[#0B1220] via-[#16243D] to-[#0B1220] p-6 text-center border-b-4 border-[#D4A017]">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#D4A017] inline-flex items-center gap-1 mb-1">
-            <ShieldCheck size={14} /> Official Dizital Adda Verification
-          </span>
-          <h2 className="text-2xl font-black text-white">Student Email Verification</h2>
-        </div>
+      <div className="flex-1 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Main Container Card */}
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 z-10">
+          {/* Header Ribbon */}
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 text-center border-b-4 border-[#5A4BFF]">
+            <span className="text-xs font-bold uppercase tracking-widest text-amber-400 inline-flex items-center gap-1 mb-1">
+              <ShieldCheck size={14} /> Official CS Factory Verification
+            </span>
+            <h2 className="text-2xl font-black text-white">Student Email Verification</h2>
+          </div>
 
         {/* Content Box */}
         <div className="p-8 sm:p-10 text-center">
@@ -221,9 +223,13 @@ export default function VerifyEmail() {
 
         {/* Footer info */}
         <div className="bg-slate-50 border-t border-slate-100 p-4 text-center text-xs text-slate-500">
-          Need help? Call Admissions at <a href="tel:+918810606010" className="font-bold text-slate-700">+91 8810606010</a>
+          Need help? Call Admissions at <a href="tel:+919876543210" className="font-bold text-slate-700">+91 98765 43210</a>
         </div>
       </div>
     </div>
+
+    {/* FOOTER */}
+    <BatchesFooter brandName="CS Factory" />
+  </div>
   );
 }

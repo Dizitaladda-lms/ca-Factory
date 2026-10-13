@@ -20,7 +20,8 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import api from "../../lib/api";
-import Footer from "../../components/Footer";
+import BatchesHeader from "../../components/batches/BatchesHeader";
+import BatchesFooter from "../../components/batches/BatchesFooter";
 
 export default function BlogDetail() {
   const { slug } = useParams();
@@ -168,10 +169,13 @@ export default function BlogDetail() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800">
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName="CS Factory" />
+
       {/* ========================================================= */}
       {/* 1. TOP BREADCRUMB STRIP */}
       {/* ========================================================= */}
-      <nav aria-label="Breadcrumb" className="bg-[#0B1220] text-slate-300 text-xs py-3.5 px-6 border-b border-slate-800 sticky top-0 z-40">
+      <nav aria-label="Breadcrumb" className="bg-[#0B1220] text-slate-300 text-xs py-3 px-6 border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none">
           <Link to="/" className="hover:text-amber-400 transition">Home</Link>
           <FaChevronRight className="text-[9px] text-slate-500" />
@@ -531,7 +535,7 @@ export default function BlogDetail() {
       </div>
 
       {/* FOOTER */}
-      <Footer />
+      <BatchesFooter brandName="CS Factory" />
 
       {/* INJECTED BLOG STYLES FOR RICH PROSE & TABLES */}
       <style>{`

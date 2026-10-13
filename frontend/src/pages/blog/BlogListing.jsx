@@ -11,7 +11,8 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import api from "../../lib/api";
-import Footer from "../../components/Footer";
+import BatchesHeader from "../../components/batches/BatchesHeader";
+import BatchesFooter from "../../components/batches/BatchesFooter";
 
 const CATEGORIES = [
   "All",
@@ -88,16 +89,19 @@ export default function BlogListing() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col justify-between">
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName="CS Factory" />
+
       {/* ========================================================= */}
       {/* 1. HERO HEADER */}
       {/* ========================================================= */}
-      <header className="bg-gradient-to-b from-[#0B1220] via-[#0F172A] to-[#1E293B] text-white pt-24 pb-20 px-6 border-b-4 border-[#D4A017] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,160,23,0.15),transparent_50%)] pointer-events-none" />
+      <header className="bg-gradient-to-b from-[#0B1220] via-[#0F172A] to-[#1E293B] text-white pt-16 pb-16 px-6 border-b-4 border-[#5A4BFF] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(90,75,255,0.15),transparent_50%)] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
             <FaBookOpen className="text-amber-400" />
-            <span>Dizital Adda Knowledge Hub</span>
+            <span>CS & CA Factory Knowledge Hub</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-tight">
@@ -368,7 +372,7 @@ export default function BlogListing() {
       </main>
 
       {/* FOOTER */}
-      <Footer />
+      <BatchesFooter brandName="CS Factory" />
     </div>
   );
 }

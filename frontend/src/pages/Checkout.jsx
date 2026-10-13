@@ -25,7 +25,8 @@ import {
   Clock,
 } from "lucide-react";
 import api from "../lib/api";
-import Footer from "../components/Footer";
+import BatchesHeader from "../components/batches/BatchesHeader";
+import BatchesFooter from "../components/batches/BatchesFooter";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -543,7 +544,7 @@ const Checkout = () => {
               </h1>
 
               <p className="text-emerald-100 text-base sm:text-lg mt-3 max-w-xl mx-auto">
-                Welcome to Dizital Adda! Your admission has been recorded in our student registry and your course access has been activated.
+                Welcome to CS Factory! Your admission has been recorded in our student registry and your course access has been activated.
               </p>
 
               <div className="mt-4 inline-flex items-center gap-2 bg-emerald-900/40 text-emerald-200 text-xs sm:text-sm px-4 py-1.5 rounded-xl border border-emerald-400/20">
@@ -750,7 +751,10 @@ const Checkout = () => {
   const discount = Math.max(0, originalPrice - currentPrice);
 
   return (
-    <div className="bg-[#F8FAFC] min-h-screen text-slate-800">
+    <div className="bg-[#F8FAFC] min-h-screen text-slate-800 flex flex-col justify-between">
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName="CS Factory" />
+
       {/* Header Banner */}
       <section className="bg-gradient-to-r from-[#0B1220] via-[#16243D] to-[#0B1220] text-white py-10">
         <div className="max-w-7xl mx-auto px-6">
@@ -1191,7 +1195,7 @@ const Checkout = () => {
         </main>
 
       {/* FOOTER */}
-      <Footer />
+      <BatchesFooter brandName="CS Factory" />
     </div>
   );
 };

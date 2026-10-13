@@ -44,6 +44,7 @@ import VerifyCertificate from "./pages/VerifyCertificate";
 import VerifyEmail from "./pages/VerifyEmail";
 import BlogListing from "./pages/blog/BlogListing";
 import BlogDetail from "./pages/blog/BlogDetail";
+import FacultyPage from "./pages/FacultyPage";
 import React, { Suspense, lazy } from "react";
 const AdminBlogs = lazy(() => import("./pages/admin/AdminBlogs"));
 
@@ -52,13 +53,17 @@ function App() {
     <Routes>
       {/* ================= PUBLIC ROUTES ================= */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/faculty" element={<FacultyPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/about" element={<About />} />
       <Route path="/courses" element={<CourseListing />} />
       <Route path="/ca/batches" element={<CourseListing />} />
       <Route path="/ca/:level/batches" element={<CourseListing />} />
-      <Route path="/courses-explore" element={<Courses />} />
       <Route path="/course/:id" element={<CourseDetails />} />
+      <Route path="/ca/:level/batches/:slug" element={<CourseDetails />} />
+      <Route path="/ca/batches/:slug" element={<CourseDetails />} />
+      <Route path="/cs/:level/batches/:slug" element={<CourseDetails />} />
+      <Route path="/cs/batches/:slug" element={<CourseDetails />} />
       <Route path="/popular" element={<PopularCourses />} />
       <Route path="/government-partners" element={<GovernmentPartners />} />
       <Route path="/academic" element={<Academic />} />

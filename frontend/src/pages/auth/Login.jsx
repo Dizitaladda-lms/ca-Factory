@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api from "../../lib/api";
+import BatchesHeader from "../../components/batches/BatchesHeader";
 const logo = "/logo.png";
 
 import {
@@ -93,38 +94,8 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between">
-      {/* ====================================================
-          TOP VIKSHIT BHARAT / TSG BRANDING STRIP
-      ==================================================== */}
-      <div>
-        <div className="h-1.5 w-full flex">
-          <div className="bg-[#FF9933] h-full flex-1"></div>
-          <div className="bg-white h-full flex-1"></div>
-          <div className="bg-[#138808] h-full flex-1"></div>
-        </div>
-
-        <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <img src={logo} alt="TSG Logo" className="h-10 w-auto object-contain" />
-            <div className="hidden sm:block">
-              <span className="font-extrabold text-xl tracking-tight text-[#0B1220]">
-                TSG <span className="text-[#D4A017]">LMS</span>
-              </span>
-              <span className="block text-[10px] text-slate-500 font-semibold tracking-wider uppercase">
-                National Skilling Gateway
-              </span>
-            </div>
-          </Link>
-
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#0B1220] hover:text-[#D4A017] px-4 py-2 rounded-lg border border-slate-300 hover:border-[#D4A017] bg-white transition duration-200 shadow-sm"
-          >
-            <FaArrowLeft className="text-xs" />
-            <span>Back to Home</span>
-          </Link>
-        </nav>
-      </div>
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName="CS Factory" />
 
       {/* ====================================================
           MAIN LOGIN CARD CONTAINER
@@ -316,7 +287,7 @@ function Login() {
           FOOTER STRIP
       ==================================================== */}
       <footer className="py-4 text-center text-xs text-slate-500 border-t border-slate-200 bg-white">
-        © 2026 TSG Learning Management System. All rights reserved.
+        © 2026 CS Factory • The Guidance Sanctuary (TGS). All rights reserved.
       </footer>
     </div>
   );

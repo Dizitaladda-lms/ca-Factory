@@ -16,7 +16,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-export default function BatchesHeader({ brandName = "CA Factory" }) {
+export default function BatchesHeader({ brandName = "CS Factory" }) {
   const navigate = useNavigate();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
@@ -127,17 +127,19 @@ export default function BatchesHeader({ brandName = "CA Factory" }) {
         <div className="flex items-center justify-between h-[60px] md:h-[80px]">
           {/* LEFT: LOGO + BRAND */}
           <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-3 group">
+            <Link to="/" className="flex items-center gap-2.5 group">
               <img
                 src="/logo.png"
                 alt={brandName}
-                className="h-9 md:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+                className="h-9 md:h-11 w-auto object-contain transition-transform group-hover:scale-105"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}
               />
-              <span className="text-xl md:text-2xl font-bold tracking-tight text-[#1B2124]">
-                {brandName}
+              <span className="text-xl md:text-2xl font-black tracking-tight text-[#1B2124]">
+                {brandName.toUpperCase().includes("CS")
+                  ? brandName.toUpperCase().replace("CS", "").trim() || "FACTORY"
+                  : brandName}
               </span>
             </Link>
 
@@ -239,14 +241,14 @@ export default function BatchesHeader({ brandName = "CA Factory" }) {
             >
               Courses
             </Link>
-            <a
-              href="#faculty"
+            <Link
+              to="/faculty"
               className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
             >
               Faculty
-            </a>
+            </Link>
             <a
-              href="#free-resources"
+              href="/#free-resources"
               className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
             >
               Free Resources
@@ -418,15 +420,15 @@ export default function BatchesHeader({ brandName = "CA Factory" }) {
                 • CS (CSEET, Executive, Final)
               </Link>
             </div>
-            <a
-              href="#faculty"
+            <Link
+              to="/faculty"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
             >
               Faculty
-            </a>
+            </Link>
             <a
-              href="#free-resources"
+              href="/#free-resources"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
             >
