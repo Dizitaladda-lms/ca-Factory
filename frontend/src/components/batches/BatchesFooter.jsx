@@ -93,7 +93,7 @@ export default function BatchesFooter({
                 aria-label="Telegram"
                 className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#5A4BFF] text-slate-300 hover:text-white flex items-center justify-center transition"
               >
-                <FaTelegramPlane className="w-3.5 h-3.5" />
+                <FaTelegram className="w-3.5 h-3.5" />
               </a>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function BatchesFooter({
           </div>
 
           {/* Column 4: Connect With Us */}
-          <div className="space-y-3">
+          <div id="footer-contact" className="space-y-3 scroll-mt-24">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
               Connect With Us
             </h4>

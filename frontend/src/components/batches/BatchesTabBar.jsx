@@ -5,6 +5,8 @@ export default function BatchesTabBar({
   tabs = [],
   activeTab = "all",
   onTabChange,
+  exam = "ca",
+  onExamChange,
   searchTerm = "",
   onSearchChange,
 }) {
@@ -28,8 +30,35 @@ export default function BatchesTabBar({
     <div className="sticky top-[60px] md:top-[80px] z-40 bg-white border-b border-[#EFEFEF] shadow-xs">
       <div className="edtech-container">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3">
-          {/* TABS: All | Foundation | Intermediate | Final */}
-          <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth">
+          {/* TABS: EXAM SWITCHER (CA vs CS) + LEVEL TABS */}
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth py-0.5">
+            {onExamChange && (
+              <div className="flex items-center gap-1 p-0.5 bg-slate-100 rounded-full border border-slate-200 shrink-0 mr-1.5">
+                <button
+                  type="button"
+                  onClick={() => onExamChange("ca")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
+                    exam === "ca"
+                      ? "bg-[#1B2124] text-white shadow-xs"
+                      : "text-[#757575] hover:text-[#1B2124]"
+                  }`}
+                >
+                  CA Batches
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onExamChange("cs")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition cursor-pointer ${
+                    exam === "cs"
+                      ? "bg-[#1B2124] text-white shadow-xs"
+                      : "text-[#757575] hover:text-[#1B2124]"
+                  }`}
+                >
+                  CS Batches
+                </button>
+              </div>
+            )}
+
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -37,9 +66,9 @@ export default function BatchesTabBar({
                   key={tab.id}
                   type="button"
                   onClick={() => onTabChange(tab.id, tab.slug)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
                     isActive
-                      ? "bg-[#5A4BFF] text-white shadow-sm"
+                      ? "bg-[#5A4BFF] text-white shadow-xs"
                       : "bg-slate-100 text-[#3D3D3D] hover:bg-slate-200"
                   }`}
                 >
@@ -64,7 +93,7 @@ export default function BatchesTabBar({
                 <button
                   type="button"
                   onClick={() => onSearchChange("")}
-                  className="absolute right-2.5 p-0.5 text-[#7B7F86] hover:text-[#1B2124]"
+                  className="absolute right-2.5 p-0.5 text-[#7B7F86] hover:text-[#1B2124] cursor-pointer"
                   aria-label="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />

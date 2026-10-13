@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SlidersHorizontal, ChevronDown, Check, X, RotateCcw } from "lucide-react";
+import { SlidersHorizontal, ChevronDown, Check, RotateCcw } from "lucide-react";
 import BatchesFilterDrawer from "./BatchesFilterDrawer";
 
 export default function BatchesFilterBar({
@@ -26,8 +26,11 @@ export default function BatchesFilterBar({
     }
   };
 
-  // Dropdown options
-  const targetAttempts = ["May 2026", "Nov 2026", "May 2027"];
+  // Dropdown options based on user handwritten specifications & PW portal
+  const deliveryModes = ["Online Live", "Face to Face", "Test Series", "Exam Oriented"];
+  const categoryTypes = ["Combo", "Individual"];
+  const paperOptions = ["Paper - 1", "Paper - 2", "Paper - 3", "Paper - 4", "Paper - 5", "Paper - 6", "All Papers"];
+  const targetAttempts = ["May 2026", "Nov 2026", "Jan 2027", "May 2027", "Sep 2027", "Dec 2026", "June 2027"];
   const batchTypes = ["Paid", "Free"];
   const groups = ["Group 1", "Group 2", "Group 1+2", "All 4 Papers"];
   const subjects = [
@@ -43,6 +46,8 @@ export default function BatchesFilterBar({
     "Advanced Financial Mgmt (AFM)",
     "Direct Tax (DT)",
     "Indirect Tax (IDT)",
+    "Company Law",
+    "Jurisprudence",
   ];
 
   return (
@@ -93,6 +98,169 @@ export default function BatchesFilterBar({
               >
                 Offline
               </button>
+            </div>
+
+            {/* Handwritten Spec: Delivery Mode (Face to Face, Online Live, Test Series, Exam Oriented) */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => toggleDropdown("deliveryMode")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap cursor-pointer ${
+                  filters.deliveryMode
+                    ? "bg-[#5A4BFF]/10 text-[#5A4BFF] border-[#5A4BFF]"
+                    : "bg-white text-[#3D3D3D] border-[#EFEFEF] hover:border-slate-300"
+                }`}
+              >
+                <span>{filters.deliveryMode ? `Mode: ${filters.deliveryMode}` : "Delivery Mode"}</span>
+                <ChevronDown className="w-3 h-3 text-[#7B7F86]" />
+              </button>
+
+              {openDropdown === "deliveryMode" && (
+                <div className="absolute left-0 mt-2 w-48 bg-white border border-[#EFEFEF] rounded-xl shadow-xl py-1.5 z-30">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onFilterChange("deliveryMode", "");
+                      closeDropdown();
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-xs text-[#757575] hover:bg-slate-50 font-medium"
+                  >
+                    All Delivery Modes
+                  </button>
+                  {deliveryModes.map((dm) => (
+                    <button
+                      key={dm}
+                      type="button"
+                      onClick={() => {
+                        onFilterChange("deliveryMode", dm);
+                        closeDropdown();
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#1B2124] hover:bg-slate-50 flex items-center justify-between"
+                    >
+                      <span>{dm}</span>
+                      {filters.deliveryMode === dm && (
+                        <Check className="w-3.5 h-3.5 text-[#5A4BFF]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Handwritten Spec: Category (Individual vs Combo) */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => toggleDropdown("categoryType")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap cursor-pointer ${
+                  filters.categoryType
+                    ? "bg-[#5A4BFF]/10 text-[#5A4BFF] border-[#5A4BFF]"
+                    : "bg-white text-[#3D3D3D] border-[#EFEFEF] hover:border-slate-300"
+                }`}
+              >
+                <span>{filters.categoryType ? `Category: ${filters.categoryType}` : "Category"}</span>
+                <ChevronDown className="w-3 h-3 text-[#7B7F86]" />
+              </button>
+
+              {openDropdown === "categoryType" && (
+                <div className="absolute left-0 mt-2 w-44 bg-white border border-[#EFEFEF] rounded-xl shadow-xl py-1.5 z-30">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onFilterChange("categoryType", "");
+                      closeDropdown();
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-xs text-[#757575] hover:bg-slate-50 font-medium"
+                  >
+                    All Categories
+                  </button>
+                  {categoryTypes.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => {
+                        onFilterChange("categoryType", cat);
+                        closeDropdown();
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#1B2124] hover:bg-slate-50 flex items-center justify-between"
+                    >
+                      <span>{cat}</span>
+                      {filters.categoryType === cat && (
+                        <Check className="w-3.5 h-3.5 text-[#5A4BFF]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Handwritten Spec: Subject / Paper (Paper-1, Paper-2, etc.) */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => toggleDropdown("paper")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap cursor-pointer ${
+                  filters.paper
+                    ? "bg-[#5A4BFF]/10 text-[#5A4BFF] border-[#5A4BFF]"
+                    : "bg-white text-[#3D3D3D] border-[#EFEFEF] hover:border-slate-300"
+                }`}
+              >
+                <span>{filters.paper ? `Paper: ${filters.paper}` : "Paper / Subject"}</span>
+                <ChevronDown className="w-3 h-3 text-[#7B7F86]" />
+              </button>
+
+              {openDropdown === "paper" && (
+                <div className="absolute left-0 mt-2 w-52 max-h-64 overflow-y-auto bg-white border border-[#EFEFEF] rounded-xl shadow-xl py-1.5 z-30">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onFilterChange("paper", "");
+                      closeDropdown();
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-xs text-[#757575] hover:bg-slate-50 font-medium"
+                  >
+                    All Papers
+                  </button>
+                  <p className="px-3 py-1 text-[10px] font-bold text-[#757575] uppercase tracking-wider bg-slate-50">
+                    By Paper Number
+                  </p>
+                  {paperOptions.map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => {
+                        onFilterChange("paper", p);
+                        closeDropdown();
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#1B2124] hover:bg-slate-50 flex items-center justify-between"
+                    >
+                      <span>{p}</span>
+                      {filters.paper === p && (
+                        <Check className="w-3.5 h-3.5 text-[#5A4BFF]" />
+                      )}
+                    </button>
+                  ))}
+                  <p className="px-3 py-1 text-[10px] font-bold text-[#757575] uppercase tracking-wider bg-slate-50">
+                    By Subject Name
+                  </p>
+                  {subjects.map((subj) => (
+                    <button
+                      key={subj}
+                      type="button"
+                      onClick={() => {
+                        onFilterChange("subject", subj);
+                        closeDropdown();
+                      }}
+                      className="w-full text-left px-3 py-1.5 text-xs text-[#1B2124] hover:bg-slate-50 flex items-center justify-between"
+                    >
+                      <span className="truncate pr-2">{subj}</span>
+                      {filters.subject === subj && (
+                        <Check className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Dropdown Chip: Target Attempt */}
@@ -182,53 +350,6 @@ export default function BatchesFilterBar({
                       <span>{grp}</span>
                       {filters.group === grp && (
                         <Check className="w-3.5 h-3.5 text-[#5A4BFF]" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Dropdown Chip: Subject */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => toggleDropdown("subject")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap cursor-pointer ${
-                  filters.subject
-                    ? "bg-[#5A4BFF]/10 text-[#5A4BFF] border-[#5A4BFF]"
-                    : "bg-white text-[#3D3D3D] border-[#EFEFEF] hover:border-slate-300"
-                }`}
-              >
-                <span>{filters.subject ? `Subject: ${filters.subject}` : "Subject"}</span>
-                <ChevronDown className="w-3 h-3 text-[#7B7F86]" />
-              </button>
-
-              {openDropdown === "subject" && (
-                <div className="absolute left-0 mt-2 w-56 max-h-60 overflow-y-auto bg-white border border-[#EFEFEF] rounded-xl shadow-xl py-1.5 z-30">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onFilterChange("subject", "");
-                      closeDropdown();
-                    }}
-                    className="w-full text-left px-3 py-1.5 text-xs text-[#757575] hover:bg-slate-50 font-medium"
-                  >
-                    All Subjects
-                  </button>
-                  {subjects.map((subj) => (
-                    <button
-                      key={subj}
-                      type="button"
-                      onClick={() => {
-                        onFilterChange("subject", subj);
-                        closeDropdown();
-                      }}
-                      className="w-full text-left px-3 py-1.5 text-xs text-[#1B2124] hover:bg-slate-50 flex items-center justify-between"
-                    >
-                      <span className="truncate pr-2">{subj}</span>
-                      {filters.subject === subj && (
-                        <Check className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
                       )}
                     </button>
                   ))}

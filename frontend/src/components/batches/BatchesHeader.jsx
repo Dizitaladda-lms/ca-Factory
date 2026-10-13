@@ -100,6 +100,17 @@ export default function BatchesHeader({ brandName = "CA Factory" }) {
         { title: "CA Final Both Groups Infinity Pass", desc: "Unlimited Views Until You Clear", link: "/ca/final/batches" },
       ],
     },
+    {
+      id: "cs",
+      name: "CS Coaching",
+      count: "4 Batches",
+      items: [
+        { title: "CSEET Complete 4-Paper Flagship", desc: "Nov 2026 / Jan 2027 • 200+ Hrs", link: "/courses?exam=cs" },
+        { title: "CS Executive Both Groups Combo", desc: "Jurisprudence, Co Law & Tax", link: "/courses?exam=cs" },
+        { title: "CS Executive Company Law (Paper 2)", desc: "Offline Face-to-Face & Live", link: "/courses?exam=cs" },
+        { title: "CS Professional All-Groups Master", desc: "Governance, Risk & ESG", link: "/courses?exam=cs" },
+      ],
+    },
   ];
 
   return (
@@ -214,34 +225,49 @@ export default function BatchesHeader({ brandName = "CA Factory" }) {
             </div>
           </div>
 
-          {/* DESKTOP NAV LINKS */}
-          <nav className="hidden lg:flex items-center gap-8">
+          {/* DESKTOP NAV LINKS (Handwritten Specs: Home, Courses, Faculty, Free Resources, Blog, About Us, Contact) */}
+          <nav className="hidden lg:flex items-center gap-6">
+            <Link
+              to="/"
+              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
+            >
+              Home
+            </Link>
             <Link
               to="/courses"
               className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
             >
-              Batches
+              Courses
             </Link>
             <a
-              href="#offline-centres"
-              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors flex items-center gap-1.5"
+              href="#faculty"
+              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
             >
-              <MapPin className="w-4 h-4 text-[#7B7F86]" />
-              Offline Centres
+              Faculty
             </a>
             <a
-              href="#store"
-              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors flex items-center gap-1.5"
+              href="#free-resources"
+              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
             >
-              <ShoppingBag className="w-4 h-4 text-[#7B7F86]" />
-              Study Material Store
+              Free Resources
             </a>
-            <a
-              href="#test-series"
-              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors flex items-center gap-1.5"
+            <Link
+              to="/blogs"
+              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
             >
-              <FileCheck2 className="w-4 h-4 text-[#7B7F86]" />
-              Test Series
+              Blog
+            </Link>
+            <Link
+              to="/about"
+              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
+            >
+              About Us
+            </Link>
+            <a
+              href="#footer-contact"
+              className="text-sm font-medium text-[#3D3D3D] hover:text-[#5A4BFF] transition-colors"
+            >
+              Contact
             </a>
           </nav>
 
@@ -344,57 +370,88 @@ export default function BatchesHeader({ brandName = "CA Factory" }) {
         </div>
       </div>
 
-      {/* MOBILE DRAWER */}
+      {/* MOBILE DRAWER (Handwritten Specs: Home, Courses, Faculty, Free Resources, Blog, About Us, Contact) */}
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-[#EFEFEF] bg-white px-5 py-6 space-y-4 shadow-xl">
           <div className="space-y-1">
-            <p className="text-xs font-bold text-[#757575] uppercase tracking-wider mb-2">
-              Programs
-            </p>
             <Link
-              to="/ca/foundation/batches"
+              to="/"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
             >
-              CA Foundation Batches
+              Home
             </Link>
             <Link
-              to="/ca/intermediate/batches"
+              to="/courses"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
             >
-              CA Intermediate Batches
+              Courses
             </Link>
-            <Link
-              to="/ca/final/batches"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
-            >
-              CA Final Batches
-            </Link>
-          </div>
-
-          <div className="border-t border-[#EFEFEF] pt-3 space-y-2">
+            <div className="pl-4 py-1 space-y-1 text-xs">
+              <Link
+                to="/ca/foundation/batches"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-1 text-[#757575] hover:text-[#5A4BFF]"
+              >
+                • CA Foundation Batches
+              </Link>
+              <Link
+                to="/ca/intermediate/batches"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-1 text-[#757575] hover:text-[#5A4BFF]"
+              >
+                • CA Intermediate Batches
+              </Link>
+              <Link
+                to="/ca/final/batches"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-1 text-[#757575] hover:text-[#5A4BFF]"
+              >
+                • CA Final Batches
+              </Link>
+              <Link
+                to="/courses?exam=cs"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-1 text-[#757575] hover:text-[#5A4BFF]"
+              >
+                • CS (CSEET, Executive, Final)
+              </Link>
+            </div>
             <a
-              href="#offline-centres"
+              href="#faculty"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-[#3D3D3D]"
+              className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
             >
-              <MapPin className="w-4 h-4 text-[#7B7F86]" /> Offline Centres
+              Faculty
             </a>
             <a
-              href="#store"
+              href="#free-resources"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-[#3D3D3D]"
+              className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
             >
-              <ShoppingBag className="w-4 h-4 text-[#7B7F86]" /> Study Material Store
+              Free Resources
             </a>
-            <a
-              href="#test-series"
+            <Link
+              to="/blogs"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-[#3D3D3D]"
+              className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
             >
-              <FileCheck2 className="w-4 h-4 text-[#7B7F86]" /> Test Series
+              Blog
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
+            >
+              About Us
+            </Link>
+            <a
+              href="#footer-contact"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block px-3 py-2 text-sm font-semibold text-[#1B2124] hover:bg-slate-50 rounded-lg"
+            >
+              Contact
             </a>
           </div>
 

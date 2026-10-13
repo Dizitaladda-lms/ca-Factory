@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import api from "../lib/api";
-import { CA_LEVELS, CA_BATCHES_DATA, getCaBatchStats } from "../data/caBatchesData";
+import {
+  CA_LEVELS,
+  CS_LEVELS,
+  CA_BATCHES_DATA,
+  getCaBatchStats,
+} from "../data/caBatchesData";
 
 // Components
 import BatchesHeader from "../components/batches/BatchesHeader";
@@ -10,6 +15,10 @@ import BatchesTitleSection from "../components/batches/BatchesTitleSection";
 import BatchesTabBar from "../components/batches/BatchesTabBar";
 import BatchesFilterBar from "../components/batches/BatchesFilterBar";
 import BatchSectionRow from "../components/batches/BatchSectionRow";
+import BatchCard from "../components/batches/BatchCard";
+import BatchesFacultySection from "../components/batches/BatchesFacultySection";
+import FreeResourcesSection from "../components/batches/FreeResourcesSection";
+import BatchesBlogSection from "../components/batches/BatchesBlogSection";
 import BatchesInfoAccordion from "../components/batches/BatchesInfoAccordion";
 import BatchesFaqSection from "../components/batches/BatchesFaqSection";
 import DownloadAppBanner from "../components/batches/DownloadAppBanner";
@@ -20,18 +29,26 @@ export default function CourseListing() {
   const location = useLocation();
   const navigate = useNavigate();
   const { level: urlLevel } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const BRAND_NAME = "CA Factory";
 
-  // Tab State
+  // Exam state (CA vs CS)
+  const initialExam = searchParams.get("exam")?.toLowerCase() === "cs" ? "cs" : "ca";
+  const [activeExam, setActiveExam] = useState(initialExam);
+
+  // Tab State (All | Foundation/CSEET | Inter/Executive | Final)
   const [activeTab, setActiveTab] = useState("all");
 
   // Search State
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter States
+  // Handwritten & PW Filter States
   const [filters, setFilters] = useState({
     mode: "all",
+    deliveryMode: "",
+    categoryType: "",
+    paper: "",
     targetAttempt: "",
     group: "",
     subject: "",
@@ -45,10 +62,17 @@ export default function CourseListing() {
   const [batches, setBatches] = useState(CA_BATCHES_DATA);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Synchronize Tab with URL path (e.g. /ca/foundation/batches or location.state)
+  // Synchronize Exam and Tab with URL path/query
   useEffect(() => {
+    const queryExam = searchParams.get("exam")?.toLowerCase();
+    if (queryExam === "cs" || queryExam === "ca") {
+      setActiveExam(queryExam);
+    }
+
     if (urlLevel) {
-      const matched = CA_LEVELS.find((l) => l.slug === urlLevel.toLowerCase());
+      const matched = [...CA_LEVELS, ...CS_LEVELS].find(
+        (l) => l.slug === urlLevel.toLowerCase()
+      );
       if (matched) {
         setActiveTab(matched.id);
         return;
@@ -58,14 +82,19 @@ export default function CourseListing() {
     const path = location.pathname.toLowerCase();
     if (path.includes("/foundation")) {
       setActiveTab("foundation");
+      setActiveExam("ca");
     } else if (path.includes("/intermediate")) {
       setActiveTab("intermediate");
+      setActiveExam("ca");
     } else if (path.includes("/final")) {
       setActiveTab("final");
+      setActiveExam("ca");
+    } else if (searchParams.get("tab")) {
+      setActiveTab(searchParams.get("tab"));
     } else {
       setActiveTab("all");
     }
-  }, [location.pathname, urlLevel]);
+  }, [location.pathname, urlLevel, searchParams]);
 
   // Fetch batches from backend API with fallback
   const fetchBatches = useCallback(async () => {
@@ -77,6 +106,7 @@ export default function CourseListing() {
         // Map API fields if available, otherwise blend with CA batches
         const normalizedApi = apiCourses.map((c) => ({
           ...c,
+          exam: (c.category || "").toLowerCase().includes("cs") ? "cs" : "ca",
           level: (c.category || c.level || "foundation").toLowerCase().includes("final")
             ? "final"
             : (c.category || c.level || "").toLowerCase().includes("inter")
@@ -85,12 +115,15 @@ export default function CourseListing() {
           levelLabel: c.levelLabel || c.category || "CA Batch",
           title: c.title || c.name,
           mode: c.mode || "Online",
+          deliveryMode: c.deliveryMode || (c.mode === "Offline" ? "Face to Face" : "Online Live"),
+          categoryType: c.categoryType || (c.title?.toLowerCase().includes("combo") ? "Combo" : "Individual"),
+          paper: c.paper || "All Papers",
           language: c.language || "Hinglish",
           price: c.price || 9999,
           originalPrice: c.originalPrice || Math.round((c.price || 9999) * 2),
         }));
 
-        // Merge API batches with curated CA batches to guarantee complete coverage
+        // Merge API batches with curated CA & CS batches to guarantee complete coverage
         const existingIds = new Set(normalizedApi.map((c) => String(c.id)));
         const combined = [
           ...normalizedApi,
@@ -110,13 +143,28 @@ export default function CourseListing() {
     fetchBatches();
   }, [fetchBatches]);
 
+  // Handle Exam Toggle (CA <-> CS)
+  const handleExamChange = (newExam) => {
+    setActiveExam(newExam);
+    setActiveTab("all");
+    setSearchParams({ exam: newExam });
+  };
+
   // Handle Tab Switch (Updates URL slug smoothly)
   const handleTabChange = (tabId, slug) => {
     setActiveTab(tabId);
-    if (tabId === "all") {
-      navigate("/courses", { replace: true });
+    if (activeExam === "ca") {
+      if (tabId === "all") {
+        navigate("/courses", { replace: true });
+      } else {
+        navigate(`/ca/${slug}/batches`, { replace: true });
+      }
     } else {
-      navigate(`/ca/${slug}/batches`, { replace: true });
+      if (tabId === "all") {
+        navigate("/courses?exam=cs", { replace: true });
+      } else {
+        navigate(`/courses?exam=cs&tab=${tabId}`, { replace: true });
+      }
     }
   };
 
@@ -132,6 +180,9 @@ export default function CourseListing() {
   const handleResetFilters = () => {
     setFilters({
       mode: "all",
+      deliveryMode: "",
+      categoryType: "",
+      paper: "",
       targetAttempt: "",
       group: "",
       subject: "",
@@ -147,6 +198,9 @@ export default function CourseListing() {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.mode && filters.mode !== "all") count++;
+    if (filters.deliveryMode) count++;
+    if (filters.categoryType) count++;
+    if (filters.paper) count++;
     if (filters.targetAttempt) count++;
     if (filters.group) count++;
     if (filters.subject) count++;
@@ -160,12 +214,18 @@ export default function CourseListing() {
   // Filtered Batches List
   const filteredBatches = useMemo(() => {
     return batches.filter((b) => {
-      // Tab Level Filter
+      // 1. Exam Filter (CA vs CS)
+      const batchExam = (b.exam || "ca").toLowerCase();
+      if (batchExam !== activeExam) {
+        return false;
+      }
+
+      // 2. Tab Level Filter
       if (activeTab !== "all" && b.level !== activeTab) {
         return false;
       }
 
-      // Search Query Filter
+      // 3. Search Query Filter
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase();
         const matchesTitle = b.title?.toLowerCase().includes(query);
@@ -177,56 +237,83 @@ export default function CourseListing() {
         }
       }
 
-      // Mode Filter (Online / Offline)
+      // 4. Delivery Mode Filter (Face to Face, Online Live, Test Series, Exam Oriented)
+      if (filters.deliveryMode) {
+        const dMode = (b.deliveryMode || (b.mode === "Offline" ? "Face to Face" : "Online Live")).toLowerCase();
+        if (dMode !== filters.deliveryMode.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // 5. Category Filter (Individual vs Combo)
+      if (filters.categoryType) {
+        const catType = (b.categoryType || (b.isPack || b.title?.toLowerCase().includes("combo") ? "Combo" : "Individual")).toLowerCase();
+        if (catType !== filters.categoryType.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // 6. Paper Number Filter (Paper - 1, Paper - 2, etc.)
+      if (filters.paper) {
+        const paperStr = (b.paper || b.subject || "").toLowerCase();
+        if (!paperStr.includes(filters.paper.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // 7. Mode Filter (Online / Offline)
       if (filters.mode && filters.mode !== "all") {
         if (b.mode?.toLowerCase() !== filters.mode.toLowerCase()) {
           return false;
         }
       }
 
-      // Target Attempt Filter
+      // 8. Target Attempt Filter
       if (filters.targetAttempt) {
-        if (!b.targetAttempt?.includes(filters.targetAttempt) && b.attempt !== filters.targetAttempt) {
+        if (
+          !b.targetAttempt?.includes(filters.targetAttempt) &&
+          b.attempt !== filters.targetAttempt
+        ) {
           return false;
         }
       }
 
-      // Group Filter
+      // 9. Group Filter
       if (filters.group) {
         if (b.group !== filters.group) {
           return false;
         }
       }
 
-      // Subject Filter
+      // 10. Subject Filter
       if (filters.subject) {
         if (!b.subject?.toLowerCase().includes(filters.subject.toLowerCase())) {
           return false;
         }
       }
 
-      // Batch Type Filter (Paid / Free)
+      // 11. Batch Type Filter (Paid / Free)
       if (filters.batchType) {
         if (b.batchType?.toLowerCase() !== filters.batchType.toLowerCase()) {
           return false;
         }
       }
 
-      // Status Filter (Ongoing / Upcoming)
+      // 12. Status Filter (Ongoing / Upcoming)
       if (filters.status) {
         if (b.status?.toLowerCase() !== filters.status.toLowerCase()) {
           return false;
         }
       }
 
-      // Language Filter (Hinglish / English)
+      // 13. Language Filter (Hinglish / English)
       if (filters.language) {
         if (b.language?.toLowerCase() !== filters.language.toLowerCase()) {
           return false;
         }
       }
 
-      // Course Type Filter (Regular / Fastrack / Pro)
+      // 14. Course Type Filter (Regular / Fastrack / Pro)
       if (filters.courseType) {
         if (b.courseType?.toLowerCase() !== filters.courseType.toLowerCase()) {
           return false;
@@ -235,9 +322,9 @@ export default function CourseListing() {
 
       return true;
     });
-  }, [batches, activeTab, searchTerm, filters]);
+  }, [batches, activeExam, activeTab, searchTerm, filters]);
 
-  // Derived Level-wise Slices for Sections
+  // Derived Level-wise Slices for CA
   const foundationBatches = useMemo(
     () => filteredBatches.filter((b) => b.level === "foundation"),
     [filteredBatches]
@@ -251,14 +338,31 @@ export default function CourseListing() {
     [filteredBatches]
   );
 
+  // Derived Level-wise Slices for CS
+  const cseetBatches = useMemo(
+    () => filteredBatches.filter((b) => b.level === "cseet"),
+    [filteredBatches]
+  );
+  const csExecutiveBatches = useMemo(
+    () => filteredBatches.filter((b) => b.level === "executive"),
+    [filteredBatches]
+  );
+  const csFinalBatches = useMemo(
+    () => filteredBatches.filter((b) => b.level === "cs-final"),
+    [filteredBatches]
+  );
+
   // Dynamic Batch Stats for Title Section
   const batchStats = useMemo(() => getCaBatchStats(batches), [batches]);
+
+  // Current active tabs array based on selected exam
+  const currentTabs = activeExam === "cs" ? CS_LEVELS : CA_LEVELS;
 
   // SEO Breadcrumb Schema
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
+    itemListElement: [
       {
         "@type": "ListItem",
         "position": 1,
@@ -268,13 +372,13 @@ export default function CourseListing() {
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "CA Courses",
-        "item": `${window.location.origin}/courses`,
+        "name": activeExam === "cs" ? "CS Courses" : "CA Courses",
+        "item": `${window.location.origin}/courses?exam=${activeExam}`,
       },
       {
         "@type": "ListItem",
         "position": 3,
-        "name": "CA Batches",
+        "name": "Batches",
         "item": window.location.href,
       },
     ],
@@ -294,19 +398,21 @@ export default function CourseListing() {
       {/* B) HERO BANNER CAROUSEL (Inside white card with card shadow) */}
       <HeroBannerCarousel brandName={BRAND_NAME} />
 
-      {/* C) TITLE SECTION (Background image, breadcrumb, H1, dynamic database batch count description) */}
-      <BatchesTitleSection brandName={BRAND_NAME} stats={batchStats} />
+      {/* C) TITLE SECTION (Background image, breadcrumbs, H1, dynamic database batch count description) */}
+      <BatchesTitleSection brandName={BRAND_NAME} exam={activeExam} stats={batchStats} />
 
-      {/* D) STICKY TAB BAR + SEARCH (Tabs: All | Foundation | Intermediate | Final with rotating placeholder) */}
+      {/* D) STICKY TAB BAR + SEARCH (Exam Switcher CA/CS + Tabs + Rotating Search Placeholder) */}
       <BatchesTabBar
-        tabs={CA_LEVELS}
+        tabs={currentTabs}
         activeTab={activeTab}
         onTabChange={handleTabChange}
+        exam={activeExam}
+        onExamChange={handleExamChange}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
       />
 
-      {/* E) FILTER BAR (Toggle Online/Offline, Dropdown chips, Side panel trigger) */}
+      {/* E) FILTER BAR (Toggle Online/Offline, Delivery Mode, Category, Paper, Dropdown chips, Side panel trigger) */}
       <BatchesFilterBar
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -314,38 +420,69 @@ export default function CourseListing() {
         activeFilterCount={activeFilterCount}
       />
 
-      {/* F & G) COURSE SECTIONS (Foundation, Intermediate, Final blocks with Batch Cards) */}
+      {/* F & G) COURSE SECTIONS (Foundation, Intermediate, Final or CSEET, Executive, Professional blocks) */}
       <main className="flex-1 bg-[#FFFFFF]">
         {/* If All is selected: Show each level section in order */}
         {activeTab === "all" ? (
-          <>
-            <BatchSectionRow
-              title="Foundation CA Courses"
-              subtitle="Build rock-solid conceptual fundamentals with complete 4-paper ICAI preparation."
-              levelKey="foundation"
-              batches={foundationBatches}
-              isLoading={isLoading}
-              onViewAll={(lvl) => handleTabChange(lvl, "foundation")}
-            />
+          activeExam === "ca" ? (
+            <>
+              <BatchSectionRow
+                title="Foundation CA Courses"
+                subtitle="Build rock-solid conceptual fundamentals with complete 4-paper ICAI preparation."
+                levelKey="foundation"
+                batches={foundationBatches}
+                isLoading={isLoading}
+                onViewAll={(lvl) => handleTabChange(lvl, "foundation")}
+              />
 
-            <BatchSectionRow
-              title="Intermediate CA Courses"
-              subtitle="Master both groups with 6-paper New ICAI Scheme, integrated DPPs and mock tests."
-              levelKey="intermediate"
-              batches={intermediateBatches}
-              isLoading={isLoading}
-              onViewAll={(lvl) => handleTabChange(lvl, "intermediate")}
-            />
+              <BatchSectionRow
+                title="Intermediate CA Courses"
+                subtitle="Master both groups with 6-paper New ICAI Scheme, integrated DPPs and mock tests."
+                levelKey="intermediate"
+                batches={intermediateBatches}
+                isLoading={isLoading}
+                onViewAll={(lvl) => handleTabChange(lvl, "intermediate")}
+              />
 
-            <BatchSectionRow
-              title="Final CA Courses"
-              subtitle="Pinnacle mastery in Financial Reporting, AFM, Direct Tax, and Indirect Tax."
-              levelKey="final"
-              batches={finalBatches}
-              isLoading={isLoading}
-              onViewAll={(lvl) => handleTabChange(lvl, "final")}
-            />
-          </>
+              <BatchSectionRow
+                title="Final CA Courses"
+                subtitle="Pinnacle mastery in Financial Reporting, AFM, Direct Tax, and Indirect Tax."
+                levelKey="final"
+                batches={finalBatches}
+                isLoading={isLoading}
+                onViewAll={(lvl) => handleTabChange(lvl, "final")}
+              />
+            </>
+          ) : (
+            <>
+              <BatchSectionRow
+                title="CSEET Programs"
+                subtitle="Kickstart your Company Secretary career with full 4-paper ICSI syllabus preparation."
+                levelKey="cseet"
+                batches={cseetBatches}
+                isLoading={isLoading}
+                onViewAll={(lvl) => handleTabChange(lvl, "cseet")}
+              />
+
+              <BatchSectionRow
+                title="CS Executive Batches"
+                subtitle="Master Company Law, Jurisprudence, and Corporate Tax with top CS faculties."
+                levelKey="executive"
+                batches={csExecutiveBatches}
+                isLoading={isLoading}
+                onViewAll={(lvl) => handleTabChange(lvl, "executive")}
+              />
+
+              <BatchSectionRow
+                title="CS Professional (Final) Batches"
+                subtitle="Governance, ESG, Corporate Restructuring, and secretarial audit compliance."
+                levelKey="cs-final"
+                batches={csFinalBatches}
+                isLoading={isLoading}
+                onViewAll={(lvl) => handleTabChange(lvl, "cs-final")}
+              />
+            </>
+          )
         ) : (
           /* Single Selected Level View */
           <div className="py-8">
@@ -353,11 +490,7 @@ export default function CourseListing() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
-                    {activeTab === "foundation"
-                      ? "Foundation CA Courses"
-                      : activeTab === "intermediate"
-                      ? "Intermediate CA Courses"
-                      : "Final CA Courses"}
+                    {currentTabs.find((t) => t.id === activeTab)?.label || "Course Batches"}
                   </h2>
                   <p className="text-xs md:text-sm text-[#757575] mt-1">
                     Showing {filteredBatches.length} active batches for your selection.
@@ -380,7 +513,7 @@ export default function CourseListing() {
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="mt-4 px-5 py-2 bg-[#5A4BFF] text-white text-xs font-semibold rounded-[6px]"
+                    className="mt-4 px-5 py-2 bg-[#5A4BFF] text-white text-xs font-semibold rounded-[6px] cursor-pointer"
                   >
                     Reset All Filters
                   </button>
@@ -401,13 +534,23 @@ export default function CourseListing() {
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="px-5 py-2 bg-[#5A4BFF] text-white text-xs font-semibold rounded-[6px]"
+                className="px-5 py-2 bg-[#5A4BFF] text-white text-xs font-semibold rounded-[6px] cursor-pointer"
               >
                 Reset All Filters
               </button>
             </div>
           </div>
         )}
+
+        {/* 3 DEDICATED SECTIONS FROM HANDWRITTEN PAPER: */}
+        {/* 1. FACULTY SECTION (Subject-wise CA & CS Mentors) */}
+        <BatchesFacultySection brandName={BRAND_NAME} />
+
+        {/* 2. FREE RESOURCES SECTION (Notes, Video, Mock Test, PYQ) */}
+        <FreeResourcesSection brandName={BRAND_NAME} />
+
+        {/* 3. BLOG CATEGORIES SECTION (CA Foundation, Inter, Final, CSEET, Executive, Professional, etc.) */}
+        <BatchesBlogSection brandName={BRAND_NAME} />
 
         {/* H) INFO ACCORDION SECTION (Features, Level-wise overviews, Comparison tables with #c2e0f4 header) */}
         <BatchesInfoAccordion brandName={BRAND_NAME} />
