@@ -19,7 +19,12 @@ async function run() {
         if (e?.stack) console.error('Stack:\n' + e.stack);
       });
     } else {
-      console.error(err);
+      if (err && typeof err === 'object') {
+        const { watchFiles, ...cleanErr } = err;
+        console.error(cleanErr);
+      } else {
+        console.error(err);
+      }
     }
     process.exit(1);
   }
