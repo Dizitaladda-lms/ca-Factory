@@ -55,6 +55,8 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/about" element={<About />} />
       <Route path="/courses" element={<CourseListing />} />
+      <Route path="/ca/batches" element={<CourseListing />} />
+      <Route path="/ca/:level/batches" element={<CourseListing />} />
       <Route path="/courses-explore" element={<Courses />} />
       <Route path="/course/:id" element={<CourseDetails />} />
       <Route path="/popular" element={<PopularCourses />} />

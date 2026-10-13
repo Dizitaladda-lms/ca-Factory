@@ -2,6 +2,51 @@
 
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --color-page-bg: #FFFFFF;
+  --color-heading: #3D3D3D;
+  --color-strong: #1B2124;
+  --color-muted: #757575;
+  --color-icon-grey: #7B7F86;
+  --color-border-edtech: #EFEFEF;
+  --color-table-header: #c2e0f4;
+  --color-primary: #5A4BFF;
+  --color-primary-10: rgba(90, 75, 255, 0.1);
+  --color-accent: #F59E0B;
+}
+
+:root {
+  --bg: #FFFFFF;
+  --heading: #3D3D3D;
+  --text-strong: #1B2124;
+  --text-muted: #757575;
+  --icon-grey: #7B7F86;
+  --border: #EFEFEF;
+  --dot-inactive: #D9DCE1;
+  --dot-active: #414347;
+  --table-header: #c2e0f4;
+  --table-border: #000000;
+  --primary: #5A4BFF;
+  --primary-10: rgba(90, 75, 255, 0.1);
+  --accent: #F59E0B;
+  --card-shadow: 0 0 5px rgba(163, 163, 163, 0.54);
+}
+
+.edtech-card-shadow {
+  box-shadow: 0 0 5px rgba(163, 163, 163, 0.54);
+}
+
+.edtech-container {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+@media (min-width: 768px) {
+  .edtech-container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 }
 
 /* Global Uniform Typography */
