@@ -1,1688 +1,662 @@
-import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
-import api from "../../lib/api";
-import Features from "../../components/landing/Features";
-const logo = "/logo.png";
-import { getCourseDescriptionUrl } from "../../utils/courseNavigation";
-import TrackComparisonSection from "../../components/TrackComparisonSection.jsx";
-import Footer from "../../components/Footer";
-
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  FaClock,
-  FaSignal,
-  FaChevronLeft,
-  FaChevronRight,
-  FaArrowRight,
-} from "react-icons/fa";
+  Sparkles,
+  Award,
+  Users,
+  CheckCircle2,
+  BookOpen,
+  ArrowRight,
+  ShieldCheck,
+  Video,
+  FileText,
+  HelpCircle,
+  PhoneCall,
+  Clock,
+  Star,
+  Layers,
+  ChevronDown,
+  TrendingUp,
+  Target,
+  GraduationCap,
+  MessageCircleQuestion,
+  Lightbulb,
+} from "lucide-react";
 
-function LandingPage() {
-  
+// Shared Components & Data
+import BatchesHeader from "../../components/batches/BatchesHeader";
+import BatchCard from "../../components/batches/BatchCard";
+import BatchesFooter from "../../components/batches/BatchesFooter";
+import FloatingHelpButton from "../../components/batches/FloatingHelpButton";
+import { CA_BATCHES_DATA, FACULTY_MEMBERS } from "../../data/caBatchesData";
 
-  // ==========================
-  // STATES
-  // ==========================
+export default function LandingPage() {
+  const navigate = useNavigate();
+  const BRAND_NAME = "CA Factory";
 
-  const DEFAULT_LANDING_COURSES = [
-    // Artificial Intelligence (2 Courses)
+  // Tab state for Popular Courses
+  const [courseCategory, setCourseCategory] = useState("all");
+
+  // FAQ Accordion State
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
+
+  // Filter Popular Courses
+  const popularCourses = CA_BATCHES_DATA.filter((course) => {
+    if (courseCategory === "all") {
+      // Pick top flagship courses across levels
+      return [
+        "ca-foundation-sampurna-3-0-jan-2027",
+        "ca-inter-udesh-regular-sep-2027-group--1-2--combo",
+        "ca-inter-udesh-regular-sep-2027-group-1",
+        "ca-final-regular-batch-2-0-group-1-combo",
+        "ca-final-regular-batch-2-0-financial-reporting",
+        "cs-executive-group-combo",
+      ].includes(course.id);
+    }
+    if (courseCategory === "foundation") {
+      return course.level === "foundation";
+    }
+    if (courseCategory === "intermediate") {
+      return course.level === "intermediate";
+    }
+    if (courseCategory === "final") {
+      return course.level === "final";
+    }
+    if (courseCategory === "cs") {
+      return course.exam === "cs";
+    }
+    return true;
+  }).slice(0, 6);
+
+  // FAQ Data for CA & CS Aspirants
+  const faqs = [
     {
-      id: 7,
-      course_id: "ai-expert",
-      title: "Diploma in Generative AI & Prompt Engineering",
-      description: "12-Month / 288-hour comprehensive diploma program covering AI Foundations, Python, ML, NLP, Transformers, LLMs, LangChain, Vector DBs, RAG, and AI Agents.",
-      duration: "12 Months",
-      level: "Expert",
-      category: "Artificial Intelligence",
-      price: 48000,
-      original_price: 135000,
-      total_lectures: 60,
-      total_students: 780,
+      q: "What programs are offered at CA Factory?",
+      a: "CA Factory provides full-spectrum coaching across all 3 levels of Chartered Accountancy: CA Foundation (all 4 papers), CA Intermediate (Group 1 & Group 2), and CA Final (FR, AFM, DT, IDT, Audit & IBS). We also provide specialized batches for Company Secretary (CSEET, CS Executive, and CS Professional).",
     },
     {
-      id: 13,
-      course_id: "ai-6m-agents",
-      title: "Advanced Certification in Gen AI & Prompt Engineering",
-      description: "6-Month intensive advanced certification covering Large Language Models (LLMs), Prompt Engineering frameworks (CoT, ReAct), LangChain, and Multi-Agent systems.",
-      duration: "6 Months",
-      level: "Advanced",
-      category: "Artificial Intelligence",
-      price: 34999,
-      original_price: 60000,
-      total_lectures: 48,
-      total_students: 650,
-    },
-    // Cyber Security (2 Courses)
-    {
-      id: 6,
-      course_id: "cyber-advanced",
-      title: "Expert Training in Cyber Security & Ethical Hacking | DizitalAdda",
-      description: "Master 12-month Cyber Security & Ethical Hacking: Python automation, networking, VAPT, forensics, reverse engineering, and Splunk SOC operations.",
-      duration: "12 Months",
-      level: "Expert",
-      category: "Cyber Security",
-      price: 95000,
-      original_price: 135000,
-      total_lectures: 48,
-      total_students: 480,
+      q: "Are the lectures aligned with the latest ICAI & ICSI New Scheme?",
+      a: "Yes, 100%. All batches are updated under the latest ICAI and ICSI New Schemes, including the 30% case-scenario MCQ weightage, negative marking rules, Self-Paced Online Modules (SPOM) strategy, and latest Finance Act tax amendments.",
     },
     {
-      id: 10,
-      course_id: "cyber-intermediate",
-      title: "Advanced Certification in Cyber Security and Ethical Hacking",
-      description: "6-month intensive training in enterprise VAPT, web application pentesting, OWASP Top 10, digital forensics, and CEH certification prep.",
-      duration: "6 Months",
-      level: "Advanced",
-      category: "Cyber Security",
-      price: 45000,
-      original_price: 60000,
-      total_lectures: 24,
-      total_students: 310,
-    },
-    // Data Science & Analytics (2 Courses)
-    {
-      id: 8,
-      course_id: "data-science",
-      title: "Diploma in Data Science & AI | Master Track (NIDADS Flagship)",
-      description: "Flagship 12-month National Diploma from NIDADS & Dizital Adda. Master Python, Mathematical Statistics, Scikit-Learn ML, PyTorch Deep Learning, LLMOps, and MLOps.",
-      duration: "12 Months",
-      level: "Master Track",
-      category: "Data Science",
-      price: 39999,
-      original_price: 79999,
-      total_lectures: 43,
-      total_students: 460,
+      q: "Can I watch recorded lectures if I miss a live session?",
+      a: "Absolutely! Every live lecture is automatically archived in crisp 1080p HD within 2 hours of completion. You get unlimited playback views at adjustable speeds (1x, 1.25x, 1.5x, 2x) until your exam attempt is completed.",
     },
     {
-      id: 5,
-      course_id: "data-analytics",
-      title: "Diploma in Data Analytics & AI | Job-Ready Program (NIDADS)",
-      description: "Complete 12-month National Diploma from NIDADS & Dizital Adda. Master Advanced Excel, SQL, Power BI, Tableau, Python EDA, and real portfolio capstones.",
-      duration: "12 Months",
-      level: "Job-Ready",
-      category: "Data Analytics",
-      price: 34999,
-      original_price: 69999,
-      total_lectures: 87,
-      total_students: 520,
-    },
-    // Digital Marketing (2 Courses)
-    {
-      id: 2,
-      course_id: "dm-expert",
-      title: "Expert in Digital Marketing",
-      description: "12-month master program with 70 comprehensive modules, 60+ AI tools, 10 live brand projects, paid agency internship, and 100% placement guarantee.",
-      duration: "12 Months",
-      level: "Expert",
-      category: "Digital Marketing",
-      price: 34999,
-      original_price: 69999,
-      total_lectures: 70,
-      total_students: 890,
+      q: "How does doubt support work at CA Factory?",
+      a: "We provide dual-layer doubt resolution. During live sessions, students can ask real-time audio and chat questions. After class, students can upload photos of problematic problems to our 24/7 in-app Doubt Engine, where subject faculties solve doubts within 15 minutes.",
     },
     {
-      id: 1,
-      course_id: "dm-advanced",
-      title: "Advanced Digital Marketing Course",
-      description: "6-month Advanced Digital Marketing Course — 10 live brand campaigns, 54+ AI tools, Google & Meta certifications, and agency internship.",
-      duration: "6 Months",
-      level: "Advanced",
-      category: "Digital Marketing",
-      price: 18999,
-      original_price: 35999,
-      total_lectures: 60,
-      total_students: 1420,
+      q: "Do you offer hardcopy books and study materials?",
+      a: "Yes! Our Pro and Infinity packs include colored hardcopy theory modules, question banks with ICAI RTP/MTP/PYQs, and summary formula charts delivered right to your residential address with free tracking.",
+    },
+    {
+      q: "Is there a test series included with evaluation?",
+      a: "Every batch includes chapter-wise Daily Practice Problems (DPPs), weekly unit tests, and 2 full-syllabus ICAI simulation mock tests. Subjective answer sheets are audited by qualified Chartered Accountants with step-by-step marking within 72 hours.",
     },
   ];
 
-  const [courses, setCourses] = useState(DEFAULT_LANDING_COURSES);
+  // Key stats
+  const stats = [
+    { value: "1,50,000+", label: "Aspirants Mentored", icon: Users },
+    { value: "87.4%", label: "First Attempt Pass Rate", icon: Award },
+    { value: "50+ AIR", label: "Top Ranks Produced", icon: Target },
+    { value: "10,000+", label: "Hours HD Content", icon: Video },
+  ];
 
-
- const ministers = [
-
-  {
-    name: "Dharmendra Pradhan",
-    state: "India",
-    message:
-      "Education is the foundation of a developed India and AI powered learning will shape the future generation.",
-  },
-
-  {
-    name: "Atishi Marlena",
-    state: "Delhi",
-    message:
-      "Modern digital classrooms and innovation based learning are transforming India’s education ecosystem.",
-  },
-
-  {
-    name: "Sunil Kumar",
-    state: "Bihar",
-    message:
-      "Skill development and quality education are empowering youth towards a stronger nation.",
-  },
-
-  {
-    name: "Madhu Bangarappa",
-    state: "Karnataka",
-    message:
-      "Technology integrated education will create future-ready students for global leadership.",
-  },
-
-  {
-    name: "Ranoj Pegu",
-    state: "Assam",
-    message:
-      "AI, innovation and smart education systems are essential for Vikshit Bharat 2047.",
-  },
-
-  {
-    name: "Harjot Singh Bains",
-    state: "Punjab",
-    message:
-      "Digital transformation in education will create new opportunities for every student in India.",
-  },
-
-  {
-    name: "Deepak Kesarkar",
-    state: "Maharashtra",
-    message:
-      "Future ready education and AI learning ecosystems are shaping India’s innovation economy.",
-  },
-
-  {
-    name: "Brij Kishore Sharma",
-    state: "Rajasthan",
-    message:
-      "Modern classrooms and technology driven education are essential for youth empowerment.",
-  },
-
-  {
-    name: "Kanwar Pal",
-    state: "Haryana",
-    message:
-      "Education reforms and skill development are accelerating India’s journey towards Vikshit Bharat.",
-  },
-
-  {
-    name: "Dhan Singh Rawat",
-    state: "Uttarakhand",
-    message:
-      "AI based learning systems will create smarter and globally competitive students.",
-  },
-
-  {
-    name: "Sabita Indra Reddy",
-    state: "Telangana",
-    message:
-      "Innovation and digital education will transform India into a knowledge superpower.",
-  },
-
-  {
-    name: "K. Ponmudy",
-    state: "Tamil Nadu",
-    message:
-      "Higher education and AI innovation are the pillars of India’s future economy.",
-  },
-
-  {
-    name: "Jagdish Devda",
-    state: "Madhya Pradesh",
-    message:
-      "Skill based education and technology training are empowering the next generation.",
-  },
-
-  {
-    name: "Govind Singh Dotasra",
-    state: "Rajasthan",
-    message:
-      "Educational excellence and digital literacy are building a stronger India.",
-  },
-
-  {
-    name: "Brajesh Pathak",
-    state: "Uttar Pradesh",
-    message:
-      "Modern education infrastructure and AI integration will empower millions of students.",
-  },
-
-  {
-    name: "Partha Chatterjee",
-    state: "West Bengal",
-    message:
-      "Innovation driven education ecosystems are shaping the leaders of tomorrow.",
-  },
-
-  {
-    name: "P. Rajeeve",
-    state: "Kerala",
-    message:
-      "Smart education and digital transformation are creating a future ready India.",
-  },
-
-  {
-    name: "Ramesh Pokhriyal",
-    state: "India",
-    message:
-      "Technology enabled learning will revolutionize education across the nation.",
-  },
-
-  {
-    name: "Ashish Sood",
-    state: "Goa",
-    message:
-      "Education, innovation and AI development are the future pillars of national growth.",
-  },
-
-  {
-    name: "Anbil Mahesh Poyyamozhi",
-    state: "Tamil Nadu",
-    message:
-      "AI, robotics and future technologies are redefining India’s educational vision.",
-  },
-
-];
-const [currentSlide, setCurrentSlide] =
-  useState(0);
-
-const nextSlide = () => {
-
-  setCurrentSlide(
-
-    (prev) =>
-
-      (prev + 1) %
-
-      ministers.length
-
-  );
-
-};
-
-const prevSlide = () => {
-
-  setCurrentSlide(
-
-    (prev) =>
-
-      prev === 0
-
-        ? ministers.length - 1
-
-        : prev - 1
-
-  );
-
-};
-  // ==========================
-  // FETCH COURSES
-  // ==========================
-
-  const fetchCourses = async () => {
-    try {
-      const response = await api.get("/api/courses");
-      const courseData = response.data?.courses || response.data || [];
-      if (Array.isArray(courseData) && courseData.length > 0) {
-        setCourses(courseData);
-      }
-    } catch (error) {
-      console.warn("LMS courses API offline or reconnecting, keeping fallback data:", error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  // ==========================
-  // POPULAR COURSES SLIDER (2 COURSES PER DOMAIN)
-  // ==========================
-  const sliderRef = useRef(null);
-  const [isSliderPaused, setIsSliderPaused] = useState(false);
-
-  const scrollSlider = (direction = "next") => {
-    if (!sliderRef.current) return;
-    const container = sliderRef.current;
-    const scrollAmount = 390; // card width + gap
-    if (direction === "next") {
-      if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 30) {
-        container.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        container.scrollBy({ left: scrollAmount, behavior: "smooth" });
-      }
-    } else {
-      if (container.scrollLeft <= 30) {
-        container.scrollTo({ left: container.scrollWidth, behavior: "smooth" });
-      } else {
-        container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (isSliderPaused) return;
-    const interval = setInterval(() => {
-      scrollSlider("next");
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [isSliderPaused]);
-
-  // Strictly select 2 flagship courses per domain
-  const popularCourses = (() => {
-    if (!courses || courses.length === 0) return DEFAULT_LANDING_COURSES;
-
-    // 1. Artificial Intelligence (2 courses)
-    const aiCourses = courses.filter((c) =>
-      c.category === "Artificial Intelligence" ||
-      c.title?.toLowerCase().includes("generative ai") ||
-      c.course_id?.startsWith("ai-")
-    ).slice(0, 2);
-
-    // 2. Cyber Security (2 courses)
-    const cyberCourses = courses.filter((c) =>
-      c.category === "Cyber Security" ||
-      c.title?.toLowerCase().includes("cyber")
-    ).slice(0, 2);
-
-    // 3. Data Science & Analytics (2 courses)
-    const dataCourses = courses.filter((c) =>
-      c.category === "Data Science" ||
-      c.category === "Data Analytics" ||
-      c.title?.toLowerCase().includes("data")
-    ).slice(0, 2);
-
-    // 4. Digital Marketing (2 courses)
-    const dmCourses = courses.filter((c) =>
-      c.category === "Digital Marketing" ||
-      c.title?.toLowerCase().includes("marketing")
-    ).slice(0, 2);
-
-    const combined = [...aiCourses, ...cyberCourses, ...dataCourses, ...dmCourses];
-    return combined.length >= 4 ? combined : DEFAULT_LANDING_COURSES;
-  })();
-
-  const getDomainBadge = (category, title) => {
-    const text = `${category || ""} ${title || ""}`.toLowerCase();
-    if (text.includes("ai") || text.includes("generative")) {
-      return {
-        name: "Artificial Intelligence",
-        bg: "bg-purple-100 text-purple-900 border-purple-300",
-        border: "border-purple-500",
-      };
-    }
-    if (text.includes("cyber") || text.includes("ethical")) {
-      return {
-        name: "Cyber Security",
-        bg: "bg-rose-100 text-rose-900 border-rose-300",
-        border: "border-rose-500",
-      };
-    }
-    if (text.includes("data")) {
-      return {
-        name: "Data Science & Analytics",
-        bg: "bg-blue-100 text-blue-900 border-blue-300",
-        border: "border-blue-500",
-      };
-    }
-    return {
-      name: "Digital Marketing",
-      bg: "bg-amber-100 text-amber-900 border-amber-300",
-      border: "border-amber-500",
-    };
-  };
+  // Why choose us items
+  const whyChooseUsFeatures = [
+    {
+      icon: Lightbulb,
+      title: "Conceptual Clarity over Rote Learning",
+      desc: "Master the fundamental 'Why' behind every Ind AS standard, Companies Act section, and Income Tax provision with real-world corporate case studies.",
+      badge: "Concept First",
+    },
+    {
+      icon: ShieldCheck,
+      title: "100% ICAI & ICSI New Scheme Aligned",
+      desc: "Complete coverage of the revised 6-paper Intermediate and Final structures, SPOM modules, and latest Finance Act direct/indirect tax amendments.",
+      badge: "Always Updated",
+    },
+    {
+      icon: FileText,
+      title: "Daily Practice & Answer Auditing",
+      desc: "Comprehensive DPPs with step marking evaluated by qualified CAs. Learn how to structure answers to score guaranteed 70+ exemption marks.",
+      badge: "Evaluated Mocks",
+    },
+    {
+      icon: Clock,
+      title: "Unlimited Views & Offline Downloads",
+      desc: "Never fall behind your study timetable. Watch live or download lectures offline in our mobile app to learn anytime, anywhere at your convenience.",
+      badge: "Flexible Access",
+    },
+    {
+      icon: MessageCircleQuestion,
+      title: "24/7 Dedicated Doubt Engine",
+      desc: "Stuck on a complex consolidation or taxation problem at midnight? Upload your question and get detailed step-by-step solutions from subject mentors.",
+      badge: "Instant Resolution",
+    },
+    {
+      icon: TrendingUp,
+      title: "All-India Test Series & Ranking",
+      desc: "Benchmark your preparation against thousands of students across India with simulated ICAI 3-hour tests and granular question analytics.",
+      badge: "All-India Rank",
+    },
+  ];
 
   return (
-
-   <div className="bg-[#f8fafc] min-h-screen">
-
-{/* ==========================
-    VIKSHIT BHARAT HEADER
-========================== */}
-
-<div
-  id="hero-section"
-  className="bg-[#0B1220] text-white border-b-4 border-[#D4A017]"
->
-
-  <div className="w-full px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
-
-    <div
-      className="
-        relative
-        w-full
-        flex
-        flex-col
-        lg:block
-        items-center
-      "
-    >
-
-      {/* ================= LOGO ================= */}
-
-      <div className="relative lg:absolute left-0 lg:left-2 top-0 lg:top-1 mb-6 lg:mb-0">
-
-        <div
-          className="
-          w-[120px]
-          h-[120px]
-          rounded-full
-          border-2
-          border-[#D4A017]
-          overflow-hidden
-          bg-black
-          "
-        >
-
-          <img
-            src={logo}
-            alt="TGS Logo"
-            className="w-full h-full object-cover"
-          />
-
-        </div>
-
-      </div>
-
-      {/* ================= LOGIN PORTAL ================= */}
-
-      <div
-        className="
-          relative
-          lg:absolute
-          right-0
-          lg:right-2
-          top-0
-          lg:top-1
-          flex
-          flex-col
-          w-full
-          sm:w-[260px]
-          lg:w-[200px]
-          mt-6
-          lg:mt-0
-        "
-      >
-
-        <Link
-          to="/login"
-          className="
-          text-center
-          bg-[#1E293B]
-          border
-          border-[#D4A017]
-          py-3
-          font-semibold
-          text-white
-          hover:bg-[#7C2D12]
-          hover:border-amber-400
-          transition
-          shadow-lg
-          "
-        >
-          Login Portal
-        </Link>
-
-      </div>
-
-      {/* ================= CENTER CONTENT ================= */}
-
-      <div
-        className="
-          flex
-          flex-col
-          justify-center
-          items-center
-          text-center
-          px-4
-          md:px-10
-          lg:px-56
-          pt-2
-          pb-4
-        "
-      >
-
-        <h1
-          className="
-          text-3xl
-sm:text-4xl
-md:text-5xl
-lg:text-6xl
-          "
-        >
-          A MISSION FOR
-            <br />
-          VIKSHIT BHARAT 2047
-        </h1>
-
-        <p
-          className="
-          mt-3
-          text-lg
-          md:text-xl
-          text-[#D4A017]
-          font-bold
-          "
-        >
-          ASSOCIATED BY TIMELESS FOUNDATION
-        </p>
-
-        <div className="w-28 h-1 bg-[#D4A017] mt-3"></div>
-
-        <p
-          className="
-          mt-4
-text-slate-300
-text-sm
-sm:text-base
-leading-7
-max-w-2xl
-mx-auto
-px-4
-          "
-        >
-          National Education • Competitive Exams • Future Skills • Career Development
-        </p>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-  {/* ==========================
-      NAVBAR
-  ========================== */}
-
-  <div className="bg-[#0B1220] sticky top-0 z-50 border-b border-orange-400/20">
-  <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4">
-
-  {/* HOME */}
-
-  <Link
-    to="/"
-    onClick={() =>
-      document
-        .getElementById("hero-section")
-        ?.scrollIntoView({
-          behavior: "smooth",
-        })
-    }
-    className="
-    text-white
-    py-3
-    flex
-    items-center
-    justify-center
-    border
-    border-orange-400/20
-    hover:bg-[#7C2D12]
-    transition
-    text-base sm:text-lg
-    font-bold
-    "
-  >
-    HOME
-  </Link>
-
-  {/* GOVERNMENT PARTNERS */}
-
-  <Link
-    to="/government-partners"
-    className="
-    text-white
-    py-3
-    flex
-    items-center
-    justify-center
-    border
-    border-orange-400/20
-    hover:bg-[#7C2D12]
-    transition
-    text-base sm:text-lg
-    font-bold
-    "
-  >
-    GOVERNMENT PARTNERS
-  </Link>
-
-  {/* BLOGS */}
-
-  <Link
-    to="/blogs"
-    className="
-    text-white
-    py-3
-    flex
-    items-center
-    justify-center
-    border
-    border-orange-400/20
-    hover:bg-[#7C2D12]
-    transition
-    text-base sm:text-lg
-    font-bold
-    text-amber-300
-    "
-  >
-    BLOGS & GUIDES
-  </Link>
-
-  {/* CONTACT */}
-
-  <button
-    onClick={() => {
-      document
-        .getElementById("contact")
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-    }}
-    className="
-    text-white
-    py-3
-    flex
-    items-center
-    justify-center
-    border
-    border-orange-400/20
-    hover:bg-[#7C2D12]
-    transition
-    text-base sm:text-lg
-    font-bold
-    "
-  >
-    CONTACT
-  </button>
-
-</div>
-
-    {/* SECOND ROW */}
-
-    <div className="bg-[#1E293B]">
-
-      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5">
-
-        <Link
-          to="/academic"
-          className="
-          text-orange-200
-          py-3
-          text-center
-          border
-          border-orange-400/20
-          hover:bg-[#7C2D12]
-          transition
-          text-base
-          md:text-lg
-          font-bold
-          block
-          "
-        >
-         Academics
-        </Link>
-
-        <Link
-          to="/entrance"
-          className="
-          text-orange-200
-          py-3
-          text-center
-          border
-          border-orange-400/20
-          hover:bg-[#7C2D12]
-          transition
-          text-base
-          md:text-lg
-          font-bold
-          block
-          "
-        >
-          Entrance
-        </Link>
-
-        <Link
-          to="/competition"
-          className="
-          text-orange-200
-          py-3
-          text-center
-          border
-          border-orange-400/20
-          hover:bg-[#7C2D12]
-          transition
-          text-base
-          md:text-lg
-          font-bold
-          block
-          "
-        >
-          Competition
-        </Link>
-
-        <Link
-          to="/skilling"
-          className="
-          text-orange-200
-          py-3
-          text-center
-          border
-          border-orange-400/20
-          hover:bg-[#7C2D12]
-          transition
-          text-base
-          md:text-lg
-          font-bold
-          block
-          "
-        >
-          Skilling
-        </Link>
-
-        <Link
-          to="/placement"
-          className="
-          text-orange-200
-          py-3
-          text-center
-          border
-          border-orange-400/20
-          hover:bg-[#7C2D12]
-          transition
-          text-base
-          md:text-lg
-          font-bold
-          block
-          "
-        >
-          Placement
-        </Link>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-      {/* ==========================
-          TOP NEWS TICKER
-      ========================== */}
-    <div className="bg-yellow-400 border-y-4 border-[#7C2D12] py-3 overflow-hidden">
-
-  <marquee
-    behavior="scroll"
-    direction="left"
-    scrollamount="8"
-    className="text-black text-sm md:text-base font-bold"
-  >
-
-     Artificial Intelligence Revolution
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Machine Learning Development Program
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Deep Learning Research Mission
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Data Science & Analytics Training
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-    Full Stack AI Engineering Bootcamp
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Generative AI Innovation Lab
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-    AI Powered Digital India Mission
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     AI For Business Transformation
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Human + AI Future Workforce Program
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     AI Automation & Robotics Training
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Future Tech & Innovation Ecosystem
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     AI Research & Development Initiative
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     India's Largest AI Learning Platform
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Learn Python, AI & Data Science
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     AI Career & Placement Mission
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Cloud Computing & AI Infrastructure
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     AI Chatbot & Automation Systems
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Computer Vision & NLP Programs
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     AI App Development Training
-    &nbsp;&nbsp;&nbsp;&nbsp;
-
-     Building AI Powered Vikshit Bharat 2047 🇮🇳
-
-  </marquee>
-
-</div>
-      
-
-{/* ==========================
-    WELCOME TEXT
-========================== */}
-
-<div className="flex justify-center mt-2">
-  <div className="w-20 h-[2px] bg-[#D4A017]" />
-</div>
-
-<div className="max-w-7xl mx-auto px-6 pt-6 pb-4">
-
-  <div className="bg-white border border-slate-200 rounded-md shadow-sm p-6 md:p-8">
-
-    <div className="text-center">
-
-      <p
-        className="
-        text-[#7C2D12]
-        font-semibold
-        tracking-widest
-        uppercase
-        "
-      >
-        National Education Mission
-      </p>
-
-      <h1
-        className="
-        mt-3
-        text-3xl
-        md:text-5xl
-        font-bold
-        text-slate-900
-        "
-      >
-        Empowering India Through Education
-      </h1>
-
-      <div className="w-32 h-1 bg-[#D4A017] mx-auto mt-4"></div>
-
-      <p
-        className="
-        mt-5
-        text-base
-        md:text-lg
-        text-slate-700
-        leading-8
-        max-w-5xl
-        mx-auto
-        "
-      >
-        Your existing welcome paragraph yahi rakho.
-        Content bilkul same rahega.
-        Sirf styling change hogi.
-      </p>
-
-    </div>
-
-  </div>
-
-</div>
-
-{/* ==========================
-    INDIA EDUCATION SECTIONS
-========================== */}
-
-<section className="max-w-[1800px] mx-auto px-4 pt-2 pb-8">
-
-  <div className="text-center mb-6">
-
-    <h2 className="text-3xl md:text-4xl font-bold text-[#0B1220]">
-      National Education & Skill Development Programs
-    </h2>
-
-    <div className="w-24 h-1 bg-[#D4A017] mx-auto mt-3"></div>
-
-    <p className="mt-3 text-slate-600">
-      Academic Excellence • Competitive Examinations • Future Skills • Career Development
-    </p>
-
-  </div>
-  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-
-   {/* ACADEMIC */}
-
-<Link
-  to="/academic"
-  className="
-  bg-white
-  border
-  border-slate-300
-  rounded-md
-  overflow-hidden
-  shadow-sm
-  hover:border-[#7C2D12]
-  transition
-  block
-  "
->
-
-  {/* HEADER */}
-
-  <div className="bg-[#0B1220] text-white text-center py-4 border-b-4 border-[#D4A017]">
-
-    <p className="text-xs tracking-widest text-orange-300 uppercase">
-      Career In
-    </p>
-
-    <h3 className="text-xl font-bold mt-1">
-      Academic
-    </h3>
-
-  </div>
-
-  {/* PROGRAM LIST */}
-
-  <div>
-
-    {[
-      "Class 5 - Foundation Program",
-      "Class 6 - Digital Learning",
-      "Class 7 - Smart Learning Program",
-      "Class 8 - Academic Excellence",
-      "Class 9 - Career Foundation",
-      "Class 10 - Board Examination Preparation",
-      "Class 11 - Science, Commerce & Arts",
-      "Class 12 - Board & Competitive Preparation",
-      "Online BBA",
-      "Online BCA",
-      "Online B.Com",
-      "Online BA / B.Sc",
-      "Online MBA",
-      "Online MCA",
-      "Online M.Tech & PG Programs",
-    ].map((item, index) => (
-
-      <div
-        key={index}
-        className="
-        px-3
-        py-2
-        border-b
-        border-slate-200
-        hover:bg-slate-50
-        hover:text-[#7C2D12]
-        text-[#1E3A8A]
-        text-sm
-        font-medium
-        transition
-        cursor-pointer
-        "
-      >
-
-        {item}
-
-      </div>
-
-    ))}
-
-  </div>
-
-</Link>
-   {/* COMPETITION */}
-
-<Link
-  to="/competition"
-  className="
-  bg-white
-  border
-  border-slate-300
-  rounded-md
-  overflow-hidden
-  shadow-sm
-  hover:border-[#7C2D12]
-  transition
-  block
-  "
->
-
-  {/* HEADER */}
-
-  <div className="bg-[#0B1220] text-white text-center py-4 border-b-4 border-[#D4A017]">
-
-    <p className="text-xs tracking-widest text-orange-300 uppercase">
-      Career In
-    </p>
-
-    <h3 className="text-xl font-bold mt-1">
-      Competition
-    </h3>
-
-  </div>
-
-  {/* COURSE LIST */}
-
-  <div>
-
-    {[
-      "UPSC Civil Services (IAS / IPS / IFS)",
-      "State PCS Examinations",
-      "SSC (CGL, CHSL, CPO, MTS)",
-      "Banking (IBPS, SBI, RBI)",
-      "Railway Recruitment (RRB)",
-      "Defence (NDA, CDS, AFCAT)",
-      "Police Recruitment Exams",
-      "Teaching (CTET, UGC NET, DSSSB)",
-      "Judiciary Examination",
-      "CAPF Assistant Commandant",
-      "EPFO Enforcement Officer",
-      "Insurance (LIC, NIACL, UIIC)",
-      "Intelligence Bureau (IB)",
-      "Current Affairs & GS Preparation",
-      "Prelims, Mains & Interview Guidance",
-    ].map((item, index) => (
-
-      <div
-        key={index}
-        className="
-        px-3
-        py-2
-        border-b
-        border-slate-200
-        hover:bg-slate-50
-        hover:text-[#7C2D12]
-        text-[#1E3A8A]
-        text-sm
-        font-medium
-        transition
-        cursor-pointer
-        "
-      >
-
-        {item}
-
-      </div>
-
-    ))}
-
-  </div>
-
-</Link>
-   {/* ENTRANCE */}
-
-<Link
-  to="/entrance"
-  className="
-  bg-white
-  border
-  border-slate-300
-  rounded-md
-  overflow-hidden
-  shadow-sm
-  hover:border-[#7C2D12]
-  transition
-  block
-  "
->
-
-  {/* HEADER */}
-
-  <div className="bg-[#0B1220] text-white text-center py-4 border-b-4 border-[#D4A017]">
-
-    <p className="text-xs tracking-widest text-orange-300 uppercase">
-      Career In
-    </p>
-
-    <h3 className="text-xl font-bold mt-1">
-      Entrance
-    </h3>
-
-  </div>
-
-  {/* COURSE LIST */}
-
-  <div>
-
-    {[
-      "JEE Main & JEE Advanced",
-      "NEET UG",
-      "CUET (UG & PG)",
-      "CLAT & Law Entrance",
-      "NDA Entrance Examination",
-      "NIFT Entrance Exam",
-      "NID Design Entrance",
-      "IPMAT (IIM Integrated Program)",
-      "BBA Entrance Examination",
-      "CAT (MBA Entrance)",
-      "GATE Examination",
-      "GRE Preparation",
-      "GMAT Preparation",
-      "SAT & International Admissions",
-      "Study Abroad Entrance Programs",
-    ].map((item, index) => (
-
-      <div
-        key={index}
-        className="
-        px-3
-        py-2
-        border-b
-        border-slate-200
-        hover:bg-slate-50
-        hover:text-[#7C2D12]
-        text-[#1E3A8A]
-        text-sm
-        font-medium
-        transition
-        cursor-pointer
-        "
-      >
-
-        {item}
-
-      </div>
-
-    ))}
-
-  </div>
-
-</Link>
-    {/* SKILLING */}
-    <div
-      className="
-      bg-white
-      border
-      border-slate-300
-      rounded-md
-      overflow-hidden
-      shadow-sm
-      hover:border-[#7C2D12]
-      transition
-      block
-      "
-    >
-      <Link
-        to="/skilling"
-        className="bg-[#0B1220] text-white text-center py-4 border-b-4 border-[#D4A017] block hover:bg-[#121c33] transition"
-      >
-        <p className="text-xs tracking-widest text-orange-300 uppercase">
-          Career in
-        </p>
-        <h3 className="text-xl font-bold mt-1">
-          Skilling
-        </h3>
-      </Link>
-
-      <div className="divide-y divide-slate-200">
-        {[
-          { title: "Diploma in Gen AI & Prompt Engineering", duration: "12 Months", domain: "ai-prompt-engineering", durationId: "12-months" },
-          { title: "Advanced Gen AI & Prompt Engineering", duration: "6 Months", domain: "ai-prompt-engineering", durationId: "6-months" },
-          { title: "Gen AI & Prompt Engineering for Professionals", duration: "3 Months", domain: "ai-prompt-engineering", durationId: "3-months" },
-          { title: "Expert in Cyber Security & Ethical Hacking", duration: "12 Months", domain: "cyber-security", durationId: "12-months" },
-          { title: "Advanced Cyber Security & Ethical Hacking", duration: "6 Months", domain: "cyber-security", durationId: "6-months" },
-          { title: "Foundation in Cyber Security & Hacking", duration: "4 Months", domain: "cyber-security", durationId: "4-months" },
-          { title: "Digital Forensic & Cyber Investigation", duration: "4 Months", domain: "cyber-security", durationId: "4-months" },
-          { title: "Expert Training in Bug Bounty & Pentesting", duration: "4 Months", domain: "cyber-security", durationId: "4-months" },
-          { title: "Diploma in Data Science & AI (NIDADS)", duration: "12 Months", domain: "data-science", durationId: "12-months", track: "data-science" },
-          { title: "Advanced Data Science & AI Program", duration: "6 Months", domain: "data-science", durationId: "6-months", track: "data-science" },
-          { title: "Diploma in Data Analytics & AI (NIDADS)", duration: "12 Months", domain: "data-science", durationId: "12-months", track: "data-analytics" },
-          { title: "Advanced Data Analytics & AI Program", duration: "6 Months", domain: "data-science", durationId: "6-months", track: "data-analytics" },
-          { title: "Certification in Data Analytics & AI", duration: "3 Months", domain: "data-science", durationId: "3-months", track: "data-analytics" },
-          { title: "Expert in Digital Marketing Master Course", duration: "12 Months", domain: "digital-marketing", durationId: "12-months" },
-          { title: "Advanced Digital Marketing Course", duration: "6 Months", domain: "digital-marketing", durationId: "6-months" },
-          { title: "Digital Marketing for Working Professionals", duration: "4 Months", domain: "digital-marketing", durationId: "4-months" },
-          { title: "Digital Marketing for Beginners Course", duration: "3 Months", domain: "digital-marketing", durationId: "3-months" },
-        ].map((item, index) => (
-          <Link
-            key={index}
-            to={`/skilling?domain=${item.domain}&duration=${item.durationId}${item.track ? `&track=${item.track}` : ''}`}
-            className="
-            px-3
-            py-2
-            hover:bg-slate-50
-            hover:text-[#7C2D12]
-            text-[#1E3A8A]
-            text-xs sm:text-sm
-            font-medium
-            transition
-            cursor-pointer
-            flex
-            items-center
-            justify-between
-            gap-2
-            group
-            "
-            title={`${item.title} (${item.duration})`}
-          >
-            <span className="truncate group-hover:underline">{item.title}</span>
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-[#7C2D12] border border-[#D4A017]/40 shrink-0">
-              {item.duration}
-            </span>
-          </Link>
-        ))}
-      </div>
-    </div>
-
-  </div>
-
-</section>
-{/* ==========================
-    POPULAR COURSES (MOVING SINGLE ROW - 2 COURSES PER DOMAIN)
-========================== */}
-
-<section className="max-w-[1800px] mx-auto px-6 py-12">
-
-  <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-    <div>
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0B1220] text-[#D4A017] text-xs font-semibold uppercase tracking-wider mb-2 border border-[#D4A017]/30">
-        <span className="w-2 h-2 rounded-full bg-[#D4A017] animate-ping"></span>
-        Top 8 Flagships • 2 Courses Per Domain
-      </div>
-      <h1 className="text-3xl md:text-5xl font-bold text-[#0B1220]">
-        Popular Courses
-      </h1>
-      <div className="w-28 h-1 bg-[#D4A017] mt-3"></div>
-      <p className="text-gray-600 mt-3 text-base md:text-lg">
-        Explore premier career programs across AI, Cyber Security, Data Science & Digital Marketing.
-      </p>
-    </div>
-
-    {/* Moving Controls & Pause Status */}
-    <div className="flex items-center gap-3 self-end md:self-auto">
-      <span className="text-xs text-slate-500 font-medium hidden sm:inline-block px-2.5 py-1 rounded bg-slate-100 border border-slate-200">
-        {isSliderPaused ? "⏸ Paused (Hovered)" : "▶ Moving"}
-      </span>
-      <button
-        onClick={() => scrollSlider("prev")}
-        className="w-11 h-11 rounded-lg bg-white border border-slate-300 text-[#0B1220] hover:bg-[#0B1220] hover:text-[#D4A017] hover:border-[#0B1220] shadow-sm flex items-center justify-center transition duration-200 cursor-pointer"
-        aria-label="Previous Course"
-        title="Previous Course"
-      >
-        <FaChevronLeft className="text-base" />
-      </button>
-      <button
-        onClick={() => scrollSlider("next")}
-        className="w-11 h-11 rounded-lg bg-[#0B1220] text-[#D4A017] hover:bg-[#7C2D12] hover:text-white shadow-sm flex items-center justify-center transition duration-200 cursor-pointer"
-        aria-label="Next Course"
-        title="Next Course"
-      >
-        <FaChevronRight className="text-base" />
-      </button>
-    </div>
-  </div>
-
-  {/* SINGLE HORIZONTAL MOVING ROW */}
-  <div className="relative">
-    <div
-      ref={sliderRef}
-      onMouseEnter={() => setIsSliderPaused(true)}
-      onMouseLeave={() => setIsSliderPaused(false)}
-      onTouchStart={() => setIsSliderPaused(true)}
-      onTouchEnd={() => setIsSliderPaused(false)}
-      className="flex flex-nowrap gap-6 overflow-x-auto scroll-smooth py-3 px-1 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-    >
-      {popularCourses?.length > 0 ? (
-        popularCourses.map((course) => {
-          const badge = getDomainBadge(course.category, course.title);
-          return (
-            <div
-              key={course.id}
-              className="
-                w-[320px] sm:w-[360px] md:w-[390px]
-                shrink-0
-                snap-start
-                bg-white
-                border
-                border-slate-300
-                rounded-xl
-                overflow-hidden
-                shadow-sm
-                hover:shadow-xl
-                hover:border-[#D4A017]
-                transition-all
-                duration-300
-                flex
-                flex-col
-                justify-between
-                group
-              "
-            >
-              {/* COURSE HEADER */}
-              <div
-                className="
-                  bg-[#0B1220]
-                  border-b-4
-                  border-[#D4A017]
-                  p-5
-                  relative
-                  flex
-                  flex-col
-                  justify-between
-                  min-h-[140px]
-                "
-              >
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span
-                    className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${badge.bg}`}
-                  >
-                    {badge.name}
-                  </span>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-white/10 text-amber-300 border border-white/20 shrink-0">
-                    {course.duration}
+    <div className="min-h-screen bg-white text-[#1B2124] flex flex-col antialiased">
+      {/* 1. STICKY HEADER */}
+      <BatchesHeader brandName={BRAND_NAME} />
+
+      {/* 2. HERO SECTION: INTRO TO CA FACTORY */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white pt-10 pb-16 md:pt-16 md:pb-24 border-b border-[#EFEFEF]">
+        {/* Subtle Background Glows */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#5A4BFF]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 right-5 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="edtech-container relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Left Column: Heading & Intro */}
+            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+              {/* Slogan Pill */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5A4BFF]/10 border border-[#5A4BFF]/20 text-[#5A4BFF] text-xs font-bold tracking-wide">
+                <Sparkles className="w-3.5 h-3.5 text-[#5A4BFF]" />
+                <span>India's Dedicated CA & CS Edtech • Selection Hoga Yahi Se!!</span>
+              </div>
+
+              {/* Main Heading */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-extrabold tracking-tight text-[#1B2124] leading-[1.15]">
+                Welcome to{" "}
+                <span className="text-[#5A4BFF] relative inline-block">
+                  CA Factory
+                  <span className="absolute left-0 bottom-1 w-full h-[6px] bg-[#F59E0B]/30 rounded-full -z-10" />
+                </span>
+                <br />
+                Your Gateway to CA & CS Ranks
+              </h1>
+
+              {/* Intro Description */}
+              <p className="text-sm sm:text-base md:text-lg text-[#757575] leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                <strong className="text-[#1B2124] font-semibold">{BRAND_NAME}</strong> is India's premier online coaching platform built exclusively for Chartered Accountancy & Company Secretary aspirants. We blend All-India Ranker mentors, 100% ICAI syllabus coverage, daily answer evaluation, and 24/7 doubt resolution to make passing exams predictable and achievable.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+                <Link
+                  to="/courses"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-[6px] bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-sm font-bold transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Explore Batches</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+
+                <a
+                  href="#why-choose-us"
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-[6px] border border-[#EFEFEF] bg-white hover:bg-slate-50 text-[#1B2124] text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Why CA Factory?</span>
+                </a>
+
+                <Link
+                  to="/courses?exam=cs"
+                  className="w-full sm:w-auto px-5 py-3.5 rounded-[6px] border border-amber-300 bg-amber-50/70 hover:bg-amber-100/70 text-amber-900 text-sm font-semibold transition flex items-center justify-center gap-1.5"
+                >
+                  <GraduationCap className="w-4 h-4 text-amber-600" />
+                  <span>CS Programs</span>
+                </Link>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-[#757575] font-medium">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>100% ICAI New Scheme Syllabus</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Live Classes + Unlimited Backup</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Personal Doubt Support</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Hero Visual Card */}
+            <div className="lg:col-span-5">
+              <div className="bg-white rounded-2xl border border-[#EFEFEF] edtech-card-shadow p-6 sm:p-7 relative overflow-hidden space-y-6">
+                {/* Top Badge Strip */}
+                <div className="flex items-center justify-between border-b border-[#EFEFEF] pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-bold text-[#1B2124]">Admissions Open • 2026-27</span>
+                  </div>
+                  <span className="text-xs font-bold text-[#5A4BFF] bg-[#5A4BFF]/10 px-2.5 py-0.5 rounded-full">
+                    Flat 55% Off
                   </span>
                 </div>
 
-                <h2 className="text-white text-lg font-bold line-clamp-2 group-hover:text-amber-300 transition-colors">
-                  {course.title}
-                </h2>
-              </div>
-
-              {/* COURSE CONTENT */}
-              <div className="p-6 flex flex-col flex-1 justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-[#0B1220] line-clamp-1">
-                    {course.title}
-                  </h3>
-
-                  <p className="text-gray-600 mt-3 text-sm leading-relaxed line-clamp-3 min-h-[60px]">
-                    {course.description}
-                  </p>
-
-                  {/* INFO TAGS */}
-                  <div className="flex flex-wrap gap-2.5 mt-5">
-                    <div
-                      className="
-                        border
-                        border-slate-200
-                        px-3
-                        py-1.5
-                        rounded-md
-                        bg-slate-50
-                        text-xs
-                        font-medium
-                        text-slate-700
-                        flex
-                        items-center
-                        gap-2
-                      "
-                    >
-                      <FaClock className="text-[#D4A017]" />
-                      <span>{course.duration}</span>
+                {/* Hero Showcase Highlight */}
+                <div className="space-y-3">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-50/80 via-white to-slate-50 border border-indigo-100/80">
+                    <span className="text-[11px] font-bold text-[#5A4BFF] uppercase tracking-wider">
+                      Flagship Program
+                    </span>
+                    <h3 className="text-lg font-bold text-[#1B2124] mt-1">
+                      CA Intermediate Udesh Regular Batch
+                    </h3>
+                    <p className="text-xs text-[#757575] mt-1">
+                      Group 1 + Group 2 Complete 6-Paper Coverage with live answer writing.
+                    </p>
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-200/60">
+                      <div>
+                        <span className="text-base font-extrabold text-[#1B2124]">₹18,999</span>
+                        <span className="text-xs text-[#757575] line-through ml-2">₹42,999</span>
+                      </div>
+                      <Link
+                        to="/course/ca-inter-udesh-regular-sep-2027-group--1-2--combo"
+                        className="text-xs font-bold text-[#5A4BFF] hover:underline flex items-center gap-1"
+                      >
+                        Enroll Now <ArrowRight className="w-3 h-3" />
+                      </Link>
                     </div>
+                  </div>
 
-                    <div
-                      className="
-                        border
-                        border-slate-200
-                        px-3
-                        py-1.5
-                        rounded-md
-                        bg-slate-50
-                        text-xs
-                        font-medium
-                        text-slate-700
-                        flex
-                        items-center
-                        gap-2
-                      "
-                    >
-                      <FaSignal className="text-slate-500" />
-                      <span>{course.level || "Diploma / Certificate"}</span>
+                  {/* Quick Feature Grid */}
+                  <div className="grid grid-cols-2 gap-2.5 text-xs">
+                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF] flex items-center gap-2.5">
+                      <BookOpen className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                      <div>
+                        <p className="font-bold text-[#1B2124]">Hardcopy Books</p>
+                        <p className="text-[10px] text-[#757575]">Free Doorstep Delivery</p>
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF] flex items-center gap-2.5">
+                      <Target className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <div>
+                        <p className="font-bold text-[#1B2124]">Evaluated Tests</p>
+                        <p className="text-[10px] text-[#757575]">Step-by-step marking</p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* ACTION BUTTON */}
-                <div className="mt-6 pt-4 border-t border-slate-100">
-                  <Link
-                    to={getCourseDescriptionUrl(course)}
-                    className="
-                      w-full
-                      bg-[#0B1220]
-                      text-white
-                      px-5
-                      py-2.5
-                      rounded-lg
-                      font-semibold
-                      text-sm
-                      hover:bg-[#7C2D12]
-                      hover:text-amber-200
-                      transition-all
-                      duration-200
-                      flex
-                      items-center
-                      justify-center
-                      gap-2
-                      shadow-sm
-                    "
+                {/* Call Support CTA */}
+                <div className="bg-slate-900 text-white rounded-xl p-4 flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <p className="text-[11px] text-slate-400">Need Guidance from Senior Counsellor?</p>
+                    <p className="text-sm font-bold text-white">+91 98765 43210</p>
+                  </div>
+                  <a
+                    href="tel:9876543210"
+                    className="p-2.5 bg-[#5A4BFF] hover:bg-[#4939E8] rounded-lg transition"
+                    aria-label="Call student counsellor"
                   >
-                    <span>Explore Program</span>
-                    <FaArrowRight className="text-xs group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
+                    <PhoneCall className="w-4 h-4 text-white" />
+                  </a>
                 </div>
               </div>
             </div>
-          );
-        })
-      ) : (
-        <div className="w-full text-center py-16 bg-white border border-slate-200 rounded-xl">
-          <h2 className="text-xl font-semibold text-gray-400">
-            No Courses Found
-          </h2>
+          </div>
+
+          {/* Stats Ribbon */}
+          <div className="mt-14 pt-8 border-t border-[#EFEFEF] grid grid-cols-2 md:grid-cols-4 gap-6">
+            {stats.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div key={idx} className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-[#5A4BFF]/10 text-[#5A4BFF] flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xl sm:text-2xl font-black text-[#1B2124] tracking-tight">
+                      {item.value}
+                    </p>
+                    <p className="text-xs text-[#757575] font-medium">{item.label}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      )}
-    </div>
-  </div>
+      </section>
 
-</section>
+      {/* 3. POPULAR COURSES SECTION */}
+      <section className="py-16 bg-white border-b border-[#EFEFEF]">
+        <div className="edtech-container">
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold rounded-full mb-2">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Flagship Learning Batches</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
+                Our Popular CA & CS Courses
+              </h2>
+              <p className="text-xs md:text-sm text-[#757575] mt-1 max-w-xl">
+                Structured batches for Foundation, Intermediate, Final, and CS students with live classes, hardcopy books, and mentorship.
+              </p>
+            </div>
 
-{/* ==========================
-    COURSE DURATION TRACK COMPARISON MATRIX
-========================== */}
-<div className="max-w-[1800px] mx-auto px-6 py-2">
-  <TrackComparisonSection />
-</div>
+            {/* Filter Pills */}
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl overflow-x-auto no-scrollbar self-start md:self-auto">
+              {[
+                { id: "all", label: "All Flagship" },
+                { id: "foundation", label: "Foundation" },
+                { id: "intermediate", label: "Intermediate" },
+                { id: "final", label: "Final" },
+                { id: "cs", label: "CS Coaching" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setCourseCategory(tab.id)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
+                    courseCategory === tab.id
+                      ? "bg-white text-[#5A4BFF] shadow-xs font-bold"
+                      : "text-[#757575] hover:text-[#1B2124]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-<Features />
- {/* ==========================
-    EDUCATION LEADERSHIP OF INDIA
-========================== */}
+          {/* Courses Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {popularCourses.map((course) => (
+              <BatchCard key={course.id} course={course} />
+            ))}
+          </div>
 
-<section className="max-w-[1800px] mx-auto px-6 py-12">
-
-  <div className="text-center mb-10">
-
-    <h1 className="text-4xl md:text-5xl font-bold text-[#0B1220]">
-
-      Education Leadership Of India
-
-    </h1>
-
-    <div className="w-32 h-1 bg-[#D4A017] mx-auto mt-4"></div>
-
-    <p className="text-gray-600 mt-5 text-lg">
-
-      Visionary leaders guiding India's education and skill development mission
-
-    </p>
-
-  </div>
-
-  <div
-    className="
-    relative
-    bg-white
-    border
-    border-slate-300
-    rounded-md
-    shadow-sm
-    overflow-hidden
-    "
-  >
-
-    {/* HEADER */}
-
-    <div className="bg-[#0B1220] text-white border-b-4 border-[#D4A017] p-6">
-
-      <h2 className="text-center text-2xl font-bold">
-
-        National Education Leadership Council
-
-      </h2>
-
-    </div>
-
-    {/* LEFT BUTTON */}
-
-    <button
-      onClick={prevSlide}
-      className="
-      absolute
-      left-4
-      top-1/2
-      -translate-y-1/2
-      bg-[#0B1220]
-      text-white
-      w-12
-      h-12
-      rounded-full
-      hover:bg-[#7C2D12]
-      transition
-      z-10
-      "
-    >
-      ←
-    </button>
-
-    {/* CONTENT */}
-
-    <div className="p-10 md:p-14">
-
-      <div className="flex flex-col items-center">
-
-        {/* PROFILE */}
-
-        <div
-          className="
-          w-24
-          h-24
-          rounded-full
-          bg-[#0B1220]
-          text-white
-          flex
-          items-center
-          justify-center
-          text-3xl
-          font-bold
-          border-4
-          border-[#D4A017]
-          "
-        >
-          {ministers[currentSlide].name.charAt(0)}
+          {/* Bottom Action: View All Batches */}
+          <div className="mt-10 text-center">
+            <Link
+              to="/courses"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-[6px] bg-slate-100 hover:bg-[#5A4BFF] text-[#1B2124] hover:text-white text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer group"
+            >
+              <span>Explore All Batches & Study Packs</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
         </div>
+      </section>
 
-        {/* NAME */}
+      {/* 4. WHY CHOOSE US ("WHY CA FACTORY?") */}
+      <section id="why-choose-us" className="py-16 bg-slate-50/70 border-b border-[#EFEFEF]">
+        <div className="edtech-container">
+          {/* Section Header */}
+          <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 text-xs font-bold rounded-full border border-amber-200">
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span>Proven Pedagogy for CA Aspirants</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#3D3D3D]">
+              Why Thousands of Toppers Choose CA Factory
+            </h2>
+            <p className="text-xs sm:text-sm text-[#757575]">
+              We understand the precision Chartered Accountancy demands. Here is how our comprehensive learning methodology turns your efforts into single-attempt success.
+            </p>
+          </div>
 
-        <h2 className="mt-6 text-3xl font-bold text-[#0B1220] text-center">
+          {/* 6 Feature Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {whyChooseUsFeatures.map((feat, idx) => {
+              const Icon = feat.icon;
+              return (
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl border border-[#EFEFEF] edtech-card-shadow p-6 flex flex-col justify-between hover:border-[#5A4BFF]/50 transition-all duration-200 group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-[#5A4BFF]/10 text-[#5A4BFF] flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#757575] bg-slate-100 px-2 py-0.5 rounded">
+                        {feat.badge}
+                      </span>
+                    </div>
 
-          {ministers[currentSlide].name}
+                    <h3 className="text-base font-bold text-[#1B2124] mb-2 group-hover:text-[#5A4BFF] transition-colors leading-snug">
+                      {feat.title}
+                    </h3>
 
-        </h2>
+                    <p className="text-xs text-[#757575] leading-relaxed">
+                      {feat.desc}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-        {/* DESIGNATION */}
+          {/* Slogan Banner Inside Why Choose Us */}
+          <div className="mt-12 bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+            <div className="space-y-1 text-center md:text-left">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                Uncompromising Dedication
+              </span>
+              <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                "Selection Hoga Yahi Se!!"
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+                Join thousands of students who cleared CA Foundation, Intermediate, and Final on their very first attempt with CA Factory.
+              </p>
+            </div>
 
-        <p className="mt-2 text-[#7C2D12] font-semibold text-lg">
+            <Link
+              to="/courses"
+              className="px-6 py-3 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs sm:text-sm font-bold rounded-[6px] whitespace-nowrap transition shadow-md"
+            >
+              Start Learning Today
+            </Link>
+          </div>
+        </div>
+      </section>
 
-          {ministers[currentSlide].state}
+      {/* 5. TOP FACULTY (WITH PHOTOS) */}
+      <section id="faculty" className="py-16 bg-white border-b border-[#EFEFEF]">
+        <div className="edtech-container">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold rounded-full mb-2">
+                <GraduationCap className="w-3.5 h-3.5" />
+                <span>Mentors Who Have Been There</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#3D3D3D]">
+                Learn from India's Top CA & CS Faculties
+              </h2>
+              <p className="text-xs md:text-sm text-[#757575] mt-1 max-w-2xl">
+                All-India Rank holders, Ex-Big 4 tax consultants, and celebrated authors with decades of experience guiding students to the merit list.
+              </p>
+            </div>
 
-        </p>
+            <Link
+              to="/courses#faculty"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5A4BFF] hover:underline self-start md:self-auto"
+            >
+              <span>View Full Faculty Directory</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
 
-      </div>
+          {/* Faculty Grid with Photos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FACULTY_MEMBERS.map((mentor) => (
+              <div
+                key={mentor.id}
+                className="bg-white rounded-xl border border-[#EFEFEF] edtech-card-shadow p-5 flex flex-col justify-between hover:border-[#5A4BFF]/50 transition-all duration-200 group"
+              >
+                <div>
+                  <div className="flex items-start gap-4 mb-4">
+                    {/* Faculty Photo Avatar */}
+                    <div className="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-[#5A4BFF]/30">
+                      <img
+                        src={mentor.avatar}
+                        alt={mentor.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+                        }}
+                      />
+                    </div>
 
-      {/* MESSAGE */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#5A4BFF]/10 text-[#5A4BFF]">
+                          {mentor.exam}
+                        </span>
+                        <span className="text-[11px] text-[#757575] font-medium truncate">
+                          {mentor.level}
+                        </span>
+                      </div>
+                      <h3 className="text-base font-bold text-[#1B2124] truncate group-hover:text-[#5A4BFF] transition-colors">
+                        {mentor.name}
+                      </h3>
+                      <p className="text-xs text-[#757575] truncate mt-0.5">{mentor.role}</p>
+                    </div>
+                  </div>
 
-      <div
-        className="
-        mt-10
-        bg-slate-50
-        border
-        border-slate-200
-        rounded-md
-        p-8
-        "
-      >
+                  {/* Subject Specialization Box */}
+                  <div className="bg-slate-50 rounded-lg p-3 border border-[#EFEFEF] mb-4 space-y-1">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1B2124]">
+                      <BookOpen className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
+                      <span>Subject Specialization:</span>
+                    </div>
+                    <p className="text-xs text-[#3D3D3D] pl-5">{mentor.subject}</p>
+                  </div>
+                </div>
 
-        <p
-          className="
-          text-gray-700
-          leading-8
-          text-center
-          text-lg
-          "
-        >
-          {ministers[currentSlide].message}
-        </p>
+                {/* Footer Metrics */}
+                <div className="flex items-center justify-between text-xs text-[#757575] border-t border-[#EFEFEF] pt-3">
+                  <div className="flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>{mentor.exp}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 font-semibold text-[#1B2124]">
+                    <Users className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
+                    <span>{mentor.taughtStudents} Students</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      </div>
+      {/* 6. FAQ SECTION */}
+      <section className="py-16 bg-[#F8FAFC] border-b border-[#EFEFEF]">
+        <div className="edtech-container max-w-4xl">
+          <div className="bg-white rounded-2xl border border-[#EFEFEF] edtech-card-shadow p-6 sm:p-10">
+            {/* Header */}
+            <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-semibold">
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>Got Questions?</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xs md:text-sm text-[#757575]">
+                Clear answers to everything you need to know about CA Factory batches, ICAI new scheme, and study support.
+              </p>
+            </div>
 
-      {/* COUNTER */}
+            {/* Accordion Items */}
+            <div className="space-y-3">
+              {faqs.map((faq, idx) => {
+                const isOpen = openFaqIndex === idx;
+                return (
+                  <div
+                    key={idx}
+                    className="border border-[#EFEFEF] rounded-xl overflow-hidden transition-all duration-200"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                      className="w-full p-4 sm:p-5 flex items-center justify-between text-left bg-white hover:bg-slate-50 transition cursor-pointer"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="text-sm sm:text-base font-bold text-[#1B2124] pr-4">
+                        {faq.q}
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-[#7B7F86] shrink-0 transition-transform duration-200 ${
+                          isOpen ? "rotate-180 text-[#5A4BFF]" : ""
+                        }`}
+                      />
+                    </button>
 
-      <div className="text-center mt-6 text-slate-500 font-semibold">
+                    {isOpen && (
+                      <div className="px-4 pb-5 pt-1 sm:px-5 border-t border-[#EFEFEF] bg-slate-50/50">
+                        <p className="text-xs sm:text-sm text-[#757575] leading-relaxed">
+                          {faq.a}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
 
-        {currentSlide + 1} / {ministers.length}
+      {/* 7. PRE-FOOTER CTA SECTION */}
+      <section className="py-14 bg-white">
+        <div className="edtech-container">
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-8 sm:p-12 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
+            <div className="space-y-2 text-center md:text-left max-w-xl">
+              <span className="text-xs font-bold tracking-wider uppercase text-amber-400">
+                Transform Your Preparation Today
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                Ready to Join India's Most Trusted CA & CS Academy?
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300">
+                Enroll in your target batch today, access 550+ hours of live classes, and get personal rank mentorship. Selection Hoga Yahi Se!
+              </p>
+            </div>
 
-      </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <Link
+                to="/courses"
+                className="w-full sm:w-auto px-7 py-3.5 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs sm:text-sm font-bold rounded-[6px] transition shadow-md text-center"
+              >
+                Browse All Batches
+              </Link>
+              <a
+                href="tel:9876543210"
+                className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center flex items-center justify-center gap-2"
+              >
+                <PhoneCall className="w-4 h-4" />
+                <span>Call +91 98765 43210</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      {/* FLOATING HELP BUTTON */}
+      <FloatingHelpButton
+        brandName={BRAND_NAME}
+        phone="+91 98765 43210"
+        rawPhone="9876543210"
+      />
+
+      {/* 8. FOOTER */}
+      <BatchesFooter
+        brandName={BRAND_NAME}
+        phone="+91 98765 43210"
+        email="support@cafactory.in"
+      />
     </div>
-
-    {/* RIGHT BUTTON */}
-
-    <button
-      onClick={nextSlide}
-      className="
-      absolute
-      right-4
-      top-1/2
-      -translate-y-1/2
-      bg-[#0B1220]
-      text-white
-      w-12
-      h-12
-      rounded-full
-      hover:bg-[#7C2D12]
-      transition
-      z-10
-      "
-    >
-      →
-    </button>
-
-  </div>
-
-</section>
-
-    
-{/* ==========================
-    OFFICIAL CONTACT SECTION
-========================== */}
-
-      {/* FOOTER */}
-      <Footer />
-    </div>
-
   );
-
 }
-
-export default LandingPage;

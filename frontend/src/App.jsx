@@ -51,8 +51,7 @@ function App() {
   return (
     <Routes>
       {/* ================= PUBLIC ROUTES ================= */}
-      <Route path="/" element={<CourseListing />} />
-      <Route path="/legacy-landing" element={<LandingPage />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/about" element={<About />} />
       <Route path="/courses" element={<CourseListing />} />
