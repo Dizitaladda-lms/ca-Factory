@@ -65,7 +65,7 @@ export default function BatchCard({ course }) {
       <div>
         {/* Optional Top Strip for Pack-Type Courses */}
         {course.isPack && (
-          <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-bold px-3 py-1 tracking-wide">
+          <div className="bg-amber-600 text-white text-[11px] font-bold px-3 py-1 tracking-wide">
             <span className="truncate">
               {course.packLabel || "Pack: Access multiple batches with one pack"}
             </span>

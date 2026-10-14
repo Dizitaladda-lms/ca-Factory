@@ -431,7 +431,7 @@ export default function BlogDetail() {
               {/* 2. MATCHING COURSE CROSS-SELL CTA WIDGET */}
               {blog.crossSellCourse && (
                 <div className="mt-6 pt-6 border-t border-slate-100">
-                  <div className="p-5 bg-gradient-to-br from-[#0B1220] to-[#1E293B] rounded-2xl text-white shadow-lg border border-[#D4A017]/50">
+                  <div className="p-5 bg-[#0F172A] rounded-2xl text-white shadow-md border border-slate-800">
                     <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/30">
                       {blog.crossSellCourse.badge}
                     </span>

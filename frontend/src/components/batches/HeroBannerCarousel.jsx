@@ -16,9 +16,8 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
       highlight: "87% Success Rate",
       cta: "Explore Foundation Batches",
       link: "/ca/foundation/batches",
-      gradient: "from-blue-900 via-indigo-900 to-slate-900",
+      bgSolid: "bg-[#0F172A]",
       accentTag: "AIR 12, 19, 28 in Foundation",
-      bgPattern: "radial-gradient(circle at 80% 20%, rgba(90, 75, 255, 0.35) 0%, transparent 60%)",
     },
     {
       id: 2,
@@ -28,9 +27,8 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
       highlight: "AIR 4, 9 & 14 Produced",
       cta: "Explore Intermediate Batches",
       link: "/ca/intermediate/batches",
-      gradient: "from-purple-950 via-slate-900 to-indigo-950",
+      bgSolid: "bg-[#1E1B4B]",
       accentTag: "920+ Exemptions in Adv Accounting & Tax",
-      bgPattern: "radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.25) 0%, transparent 60%)",
     },
     {
       id: 3,
@@ -40,9 +38,8 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
       highlight: "AIR 1, 3 & 7 Mentors",
       cta: "Explore Final Batches",
       link: "/ca/final/batches",
-      gradient: "from-slate-950 via-blue-950 to-zinc-900",
+      bgSolid: "bg-[#0B1329]",
       accentTag: "100% Comprehensive Ind AS & Amendments",
-      bgPattern: "radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.3) 0%, transparent 60%)",
     },
     {
       id: 4,
@@ -52,9 +49,8 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
       highlight: "Save up to ₹25,000",
       cta: "Claim Admission Discount",
       link: "/courses",
-      gradient: "from-indigo-950 via-blue-950 to-purple-950",
+      bgSolid: "bg-[#18181B]",
       accentTag: "Use Code: CACRACK2026",
-      bgPattern: "radial-gradient(circle at 80% 20%, rgba(234, 179, 8, 0.3) 0%, transparent 60%)",
     },
   ];
 
@@ -81,13 +77,10 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        <div
-          className="relative min-h-[260px] md:min-h-[300px] lg:min-h-[320px] flex items-center transition-all duration-500 overflow-hidden"
-          style={{ background: slides[currentSlide].bgPattern }}
-        >
-          {/* Active slide gradient overlay */}
+        <div className="relative min-h-[260px] md:min-h-[300px] lg:min-h-[320px] flex items-center transition-all duration-500 overflow-hidden">
+          {/* Active slide solid overlay */}
           <div
-            className={`absolute inset-0 bg-gradient-to-r ${slides[currentSlide].gradient} opacity-95 transition-all duration-700`}
+            className={`absolute inset-0 ${slides[currentSlide].bgSolid} transition-colors duration-500`}
           />
 
           {/* Slide Content */}

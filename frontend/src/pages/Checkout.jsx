@@ -530,7 +530,7 @@ const Checkout = () => {
           {/* Top Success Badge */}
           <div className="bg-white rounded-3xl shadow-2xl border-2 border-emerald-500 overflow-hidden">
             {/* Header Banner */}
-            <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-emerald-800 text-white p-8 sm:p-10 text-center relative overflow-hidden">
+            <div className="bg-emerald-700 text-white p-8 sm:p-10 text-center relative">
               <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md">
                 <CheckCircle2 size={48} className="text-white" />
               </div>
@@ -717,7 +717,7 @@ const Checkout = () => {
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <button
                   onClick={() => navigate("/student")}
-                  className="flex-1 bg-gradient-to-r from-[#7C2D12] to-[#b88a10] hover:from-[#60230e] hover:to-[#9c750d] text-white py-4 px-6 rounded-2xl font-bold text-base shadow-xl flex items-center justify-center gap-2 transition hover:scale-[1.02] cursor-pointer"
+                  className="flex-1 bg-[#5A4BFF] hover:bg-[#4939E8] text-white py-4 px-6 rounded-2xl font-bold text-base shadow-md flex items-center justify-center gap-2 transition hover:scale-[1.02] cursor-pointer"
                 >
                   <UserCheck size={20} /> Access Student Portal Now 🚀
                 </button>
@@ -756,7 +756,7 @@ const Checkout = () => {
       <BatchesHeader brandName="CS Factory" />
 
       {/* Header Banner */}
-      <section className="bg-gradient-to-r from-[#0B1220] via-[#16243D] to-[#0B1220] text-white py-10">
+      <section className="bg-[#0F172A] text-white py-10 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-6">
           {/* Breadcrumb */}
           <div className="flex items-center text-xs sm:text-sm text-gray-300 mb-4 flex-wrap">

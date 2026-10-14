@@ -7,9 +7,7 @@ export default function DownloadAppBanner({
   return (
     <section className="py-12 bg-white border-b border-[#EFEFEF]">
       <div className="edtech-container">
-        <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-10 md:p-12 text-white relative overflow-hidden shadow-xl">
-          {/* Subtle background glow */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#5A4BFF]/20 blur-3xl pointer-events-none" />
+        <div className="bg-[#0F172A] rounded-2xl p-6 sm:p-10 md:p-12 text-white relative border border-slate-800 shadow-md">
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Content */}
@@ -86,7 +84,7 @@ export default function DownloadAppBanner({
 
             {/* Right Phone Mockup Illustration */}
             <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="relative w-64 sm:w-72 bg-gradient-to-b from-slate-800 to-slate-900 border-4 border-slate-700 rounded-3xl p-4 shadow-2xl space-y-3">
+              <div className="relative w-64 sm:w-72 bg-slate-900 border-4 border-slate-700 rounded-3xl p-4 shadow-xl space-y-3">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-700/60">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />

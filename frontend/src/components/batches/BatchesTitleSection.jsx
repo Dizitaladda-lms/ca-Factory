@@ -9,7 +9,7 @@ export default function BatchesTitleSection({
   const isCs = exam === "cs";
 
   return (
-    <section className="bg-gradient-to-b from-[#F8FAFC] to-white border-b border-[#EFEFEF] py-8 md:py-10">
+    <section className="bg-white border-b border-[#EFEFEF] py-8 md:py-10">
       <div className="edtech-container">
         {/* Breadcrumb: Home > CA / CS > Batches */}
         <nav

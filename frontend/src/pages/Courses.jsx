@@ -34,8 +34,7 @@ function Courses() {
       <BatchesHeader brandName="CS Factory" />
 
       {/* HERO */}
-
-      <div className="bg-gradient-to-r from-blue-900 to-slate-900 py-24 px-6">
+      <div className="bg-[#0F172A] py-20 px-6 border-b border-slate-800">
 
         <div className="max-w-7xl mx-auto">
 

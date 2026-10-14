@@ -290,7 +290,7 @@ export default function CourseDetails() {
       )}
 
       {/* 2. TOP HERO / BATCH TITLE BANNER (PW Style) */}
-      <section className="bg-gradient-to-b from-white via-slate-50 to-[#F8FAFC] border-b border-[#EFEFEF] pt-6 pb-10">
+      <section className="bg-white border-b border-[#EFEFEF] pt-6 pb-10">
         <div className="edtech-container">
           {/* Breadcrumb Navigation */}
           <nav
@@ -786,7 +786,7 @@ export default function CourseDetails() {
                     alt={currentBatch.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                     <button
                       type="button"
                       onClick={() => setActiveVideoModal(DEMO_LECTURES[0])}
@@ -856,7 +856,7 @@ export default function CourseDetails() {
                           : "border-[#EFEFEF] hover:border-slate-300"
                       }`}
                     >
-                      <span className="absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] font-black uppercase tracking-wider shadow-xs">
+                      <span className="absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider shadow-xs">
                         Recommended
                       </span>
                       <input
@@ -947,7 +947,7 @@ export default function CourseDetails() {
               </div>
 
               {/* Need Help Counseling Call Card */}
-              <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-2xl p-5 text-white space-y-3 shadow-md">
+              <div className="bg-[#0F172A] rounded-2xl p-5 text-white space-y-3 border border-slate-800 shadow-md">
                 <div className="text-amber-400 text-xs font-bold uppercase tracking-wider">
                   Free Academic Counseling
                 </div>

@@ -95,8 +95,7 @@ export default function BlogListing() {
       {/* ========================================================= */}
       {/* 1. HERO HEADER */}
       {/* ========================================================= */}
-      <header className="bg-gradient-to-b from-[#0B1220] via-[#0F172A] to-[#1E293B] text-white pt-16 pb-16 px-6 border-b-4 border-[#5A4BFF] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(90,75,255,0.15),transparent_50%)] pointer-events-none" />
+      <header className="bg-[#0F172A] text-white pt-16 pb-16 px-6 border-b-4 border-[#5A4BFF] relative">
 
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-amber-300 border border-amber-400/30 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
@@ -327,8 +326,7 @@ export default function BlogListing() {
         {/* ========================================================= */}
         {/* 3. NEWSLETTER / CAREER GUIDE LEAD CAPTURE */}
         {/* ========================================================= */}
-        <section className="mt-20 bg-gradient-to-br from-[#0B1220] via-[#111C33] to-[#1E293B] rounded-3xl p-8 sm:p-12 text-white border-2 border-[#D4A017] shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <section className="mt-20 bg-[#0F172A] rounded-2xl p-8 sm:p-12 text-white border border-slate-800 shadow-xl relative">
 
           <div className="max-w-3xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-extrabold uppercase tracking-wider mb-4">

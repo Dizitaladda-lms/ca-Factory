@@ -129,10 +129,7 @@ export default function LandingPage() {
       <BatchesHeader brandName={BRAND_NAME} />
 
       {/* 2. HERO SECTION: INTRO TO CA FACTORY */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white pt-10 pb-16 md:pt-16 md:pb-24 border-b border-[#EFEFEF]">
-        {/* Subtle Background Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#5A4BFF]/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 right-5 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative bg-white pt-10 pb-16 md:pt-16 md:pb-24 border-b border-[#EFEFEF]">
 
         <div className="edtech-container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -216,7 +213,7 @@ export default function LandingPage() {
 
                 {/* Hero Showcase Highlight */}
                 <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-50/80 via-white to-slate-50 border border-indigo-100/80">
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                     <span className="text-[11px] font-bold text-[#5A4BFF] uppercase tracking-wider">
                       Flagship Program
                     </span>
@@ -391,7 +388,7 @@ export default function LandingPage() {
           </div>
 
           {/* Slogan Banner Inside Why Choose Us */}
-          <div className="mt-12 bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="mt-12 bg-[#0F172A] text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-800 shadow-md">
             <div className="space-y-1 text-center md:text-left">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
                 Uncompromising Dedication
@@ -559,7 +556,7 @@ export default function LandingPage() {
       {/* 7. PRE-FOOTER CTA SECTION */}
       <section className="py-14 bg-white">
         <div className="edtech-container">
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-8 sm:p-12 text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
+          <div className="bg-[#0F172A] rounded-2xl p-8 sm:p-12 text-white relative flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-800 shadow-md">
             <div className="space-y-2 text-center md:text-left max-w-xl">
               <span className="text-xs font-bold tracking-wider uppercase text-amber-400">
                 Transform Your Preparation Today

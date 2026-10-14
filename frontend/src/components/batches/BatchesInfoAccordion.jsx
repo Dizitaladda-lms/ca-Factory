@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, CheckCircle2, ChevronRight, BookOpen } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
@@ -70,46 +70,42 @@ export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
 
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs md:text-sm text-[#3D3D3D]">
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>Experienced All-India Faculty Panel</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>100% Full ICAI Syllabus Coverage</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>Live Interactive + Unlimited Recorded Backups</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>Comprehensive Colored Notes & Daily Practice DPPs</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>Dedicated In-App Doubt Resolution Engine</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>Weekly Practice Exams with Step-by-Step Marking</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>Offline Centre Study Support & Library Access</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>1-on-1 Academic Mentorship & Personalised Counselling</span>
                   </li>
                   <li className="flex items-center gap-2 md:col-span-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+                    <span className="text-[#5A4BFF] font-bold">•</span>
                     <span>24/7 Multi-Device Flexible Access on Mobile & Web</span>
                   </li>
                 </ul>
-
-                {!expandedSections.features && (
-                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
-                )}
               </div>
 
               <button
@@ -172,10 +168,6 @@ export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
                     <span>Full syllabus All-India Simulated Mock Tests under actual exam time pressure.</span>
                   </li>
                 </ul>
-
-                {!expandedSections.foundationIntro && (
-                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
-                )}
               </div>
 
               <button
@@ -255,10 +247,6 @@ export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
                     </tr>
                   </tbody>
                 </table>
-
-                {!expandedSections.foundationTable && (
-                  <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
-                )}
               </div>
 
               <button
@@ -320,10 +308,6 @@ export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
                     <span>Auditing and Ethics memory charts & Financial Management capital budgeting deep dive.</span>
                   </li>
                 </ul>
-
-                {!expandedSections.interIntro && (
-                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
-                )}
               </div>
 
               <button
@@ -403,10 +387,6 @@ export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
                     </tr>
                   </tbody>
                 </table>
-
-                {!expandedSections.interTable && (
-                  <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
-                )}
               </div>
 
               <button
@@ -468,10 +448,6 @@ export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
                     <span>Indirect Tax Laws: Customs, GST appellate disputes & litigation strategies.</span>
                   </li>
                 </ul>
-
-                {!expandedSections.finalIntro && (
-                  <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
-                )}
               </div>
 
               <button
@@ -551,10 +527,6 @@ export default function BatchesInfoAccordion({ brandName = "CA Factory" }) {
                     </tr>
                   </tbody>
                 </table>
-
-                {!expandedSections.finalTable && (
-                  <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" />
-                )}
               </div>
 
               <button

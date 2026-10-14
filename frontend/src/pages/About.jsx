@@ -82,7 +82,7 @@ export default function About() {
       <BatchesHeader brandName={BRAND_NAME} />
 
       {/* 2. HERO / TITLE SECTION */}
-      <section className="bg-gradient-to-b from-white via-slate-50 to-[#F8FAFC] border-b border-[#EFEFEF] pt-8 pb-14">
+      <section className="bg-white border-b border-[#EFEFEF] pt-8 pb-14">
         <div className="edtech-container">
           {/* Breadcrumb: Home > About Us */}
           <nav
@@ -132,11 +132,7 @@ export default function About() {
       {/* 3. OWNER / FOUNDER PROFILE SECTION */}
       <section className="py-14 bg-white border-b border-[#EFEFEF]">
         <div className="edtech-container">
-          <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl text-white p-8 sm:p-12 shadow-xl overflow-hidden relative">
-            {/* Ambient Background Glow */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[#5A4BFF]/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
+          <div className="bg-[#0F172A] rounded-2xl text-white p-8 sm:p-12 border border-slate-800 shadow-md relative">
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               {/* Owner Photo */}
               <div className="lg:col-span-5 flex flex-col items-center">
@@ -262,7 +258,7 @@ export default function About() {
                     alt="TGS CS Factory Orientation Video"
                     className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                  <div className="absolute inset-0 bg-slate-950/40" />
 
                   {/* Play Button Overlay */}
                   <button
@@ -412,7 +408,7 @@ export default function About() {
       {/* 7. PRE-FOOTER ACADEMIC COUNSELING CTA */}
       <section className="py-14 bg-white">
         <div className="edtech-container">
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="bg-[#0F172A] rounded-2xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-800 shadow-md">
             <div className="space-y-2 text-center md:text-left max-w-xl">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
                 Begin Your Journey With TGS & CS Factory

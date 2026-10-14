@@ -46,7 +46,7 @@ export default function FloatingHelpButton({
       {isOpen && (
         <div className="w-[330px] sm:w-[360px] bg-white rounded-2xl shadow-2xl border border-[#EFEFEF] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           {/* Header */}
-          <div className="bg-gradient-to-r from-slate-900 to-indigo-950 p-4 text-white relative">
+          <div className="bg-[#0F172A] p-4 text-white relative">
             <button
               type="button"
               onClick={() => setIsOpen(false)}

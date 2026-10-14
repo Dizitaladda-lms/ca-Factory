@@ -68,7 +68,7 @@ export default function FacultyPage() {
       <BatchesHeader brandName={BRAND_NAME} />
 
       {/* 2. PAGE TITLE / HERO SECTION */}
-      <section className="bg-gradient-to-b from-white via-slate-50 to-[#F8FAFC] border-b border-[#EFEFEF] pt-8 pb-12">
+      <section className="bg-white border-b border-[#EFEFEF] pt-8 pb-12">
         <div className="edtech-container">
           {/* Breadcrumb: Home > Faculty */}
           <nav
@@ -421,7 +421,7 @@ export default function FacultyPage() {
       {/* 4. PRE-FOOTER ACADEMIC COUNSELING BANNER */}
       <section className="py-14 bg-white border-t border-[#EFEFEF]">
         <div className="edtech-container">
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="bg-[#0F172A] rounded-2xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-800 shadow-md">
             <div className="space-y-2 text-center md:text-left max-w-xl">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
                 Confused Which Mentor's Batch to Choose?

@@ -76,9 +76,9 @@ export default function AiMentorModal({ isOpen, onClose, courseTitle, lectureTit
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
       <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-lg shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[85vh] max-h-[640px] animate-in fade-in zoom-in-95 duration-200">
         {/* HEADER */}
-        <div className="bg-gradient-to-r from-[#0B1220] via-[#1E293B] to-[#7C2D12] text-white p-4 sm:p-5 flex items-center justify-between shrink-0 shadow-md">
+        <div className="bg-[#0F172A] text-white p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-800 shadow-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-200 text-[#0B1220] flex items-center justify-center text-lg font-bold shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-[#5A4BFF] text-white flex items-center justify-center text-lg font-bold shadow-sm">
               <FaRobot />
             </div>
             <div>
