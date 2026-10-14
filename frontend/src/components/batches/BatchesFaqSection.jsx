@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export default function BatchesFaqSection({ brandName = "CA Factory" }) {
   const [openIndex, setOpenIndex] = useState(0);
@@ -57,8 +57,7 @@ export default function BatchesFaqSection({ brandName = "CA Factory" }) {
         <div className="bg-white rounded-xl border border-[#EFEFEF] edtech-card-shadow p-6 md:p-10">
           {/* Centered Heading */}
           <div className="text-center max-w-xl mx-auto mb-8 space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-semibold">
-              <HelpCircle className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-semibold">
               <span>Got Doubts?</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">

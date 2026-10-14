@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { GraduationCap, Award, Users, BookOpen, Sparkles, CheckCircle2 } from "lucide-react";
 import { FACULTY_MEMBERS } from "../../data/caBatchesData";
 
 export default function BatchesFacultySection({ brandName = "CA Factory" }) {
@@ -7,7 +6,7 @@ export default function BatchesFacultySection({ brandName = "CA Factory" }) {
 
   const filteredFaculty = FACULTY_MEMBERS.filter((f) => {
     if (examFilter === "all") return true;
-    return f.exam.toLowerCase() === examFilter.toLowerCase();
+    return f.exam.toLowerCase().includes(examFilter.toLowerCase());
   });
 
   return (
@@ -17,7 +16,6 @@ export default function BatchesFacultySection({ brandName = "CA Factory" }) {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold rounded-full mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
               <span>Selection Hoga Yahi Se!!</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
@@ -103,25 +101,18 @@ export default function BatchesFacultySection({ brandName = "CA Factory" }) {
                 </div>
 
                 {/* Subject Specialization */}
-                <div className="bg-slate-50 rounded-lg p-3 border border-[#EFEFEF] mb-4 space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1B2124]">
-                    <BookOpen className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
-                    <span>Specialization:</span>
-                  </div>
-                  <p className="text-xs text-[#3D3D3D] pl-5">{mentor.subject}</p>
+                <div className="bg-slate-50 rounded-lg p-3 border border-[#EFEFEF] mb-4 space-y-0.5">
+                  <span className="text-[11px] font-bold text-[#757575] block uppercase tracking-wider">
+                    Specialization
+                  </span>
+                  <p className="text-xs font-semibold text-[#1B2124]">{mentor.subject}</p>
                 </div>
               </div>
 
               {/* Stats Footer */}
               <div className="flex items-center justify-between text-xs text-[#757575] border-t border-[#EFEFEF] pt-3">
-                <div className="flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <span>{mentor.exp}</span>
-                </div>
-                <div className="flex items-center gap-1.5 font-semibold text-[#1B2124]">
-                  <Users className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
-                  <span>{mentor.taughtStudents} Mentored</span>
-                </div>
+                <span className="font-medium">{mentor.exp}</span>
+                <span className="font-semibold text-[#1B2124]">{mentor.taughtStudents} Mentored</span>
               </div>
             </div>
           ))}

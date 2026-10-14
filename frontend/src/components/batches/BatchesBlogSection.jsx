@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BookOpen, ArrowRight, Sparkles, Newspaper, Calendar } from "lucide-react";
 import { BLOG_CATEGORIES } from "../../data/caBatchesData";
 
 export default function BatchesBlogSection({ brandName = "CA Factory" }) {
@@ -37,8 +36,7 @@ export default function BatchesBlogSection({ brandName = "CA Factory" }) {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold rounded-full mb-2">
-              <Newspaper className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center px-3 py-1 bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold rounded-full mb-2">
               <span>Exam Insights & Strategy</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
@@ -51,10 +49,9 @@ export default function BatchesBlogSection({ brandName = "CA Factory" }) {
 
           <Link
             to="/blogs"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5A4BFF] hover:underline self-start md:self-auto"
+            className="inline-flex items-center text-xs font-bold text-[#5A4BFF] hover:underline self-start md:self-auto"
           >
             <span>Browse All Articles</span>
-            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
@@ -101,15 +98,14 @@ export default function BatchesBlogSection({ brandName = "CA Factory" }) {
               </div>
 
               <div className="flex items-center justify-between border-t border-[#EFEFEF] pt-3 text-xs">
-                <span className="text-[#757575] flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-[#7B7F86]" />
+                <span className="text-[#757575]">
                   {article.date}
                 </span>
                 <Link
                   to={`/blog/${article.slug}`}
-                  className="font-bold text-[#5A4BFF] flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+                  className="font-bold text-[#5A4BFF] hover:underline"
                 >
-                  Read More <ArrowRight className="w-3 h-3" />
+                  Read More
                 </Link>
               </div>
             </div>

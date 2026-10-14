@@ -1,26 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Sparkles,
-  Award,
-  Users,
-  CheckCircle2,
-  BookOpen,
-  ArrowRight,
-  GraduationCap,
-  Play,
-  Pause,
-  PhoneCall,
-  Home,
-  ChevronRight,
-  ShieldCheck,
-  HeartHandshake,
-  Target,
-  Trophy,
-  Video,
-  Building,
-  Quote,
-} from "lucide-react";
+import { Play } from "lucide-react";
 
 import BatchesHeader from "../components/batches/BatchesHeader";
 import BatchesFooter from "../components/batches/BatchesFooter";
@@ -32,43 +12,43 @@ export default function About() {
 
   // Core Stats
   const STATS = [
-    { value: "50,000+", label: "Aspirants Mentored", icon: Users },
-    { value: "150+", label: "All India Ranks (AIR)", icon: Trophy },
-    { value: "15+", label: "Star Faculty Members", icon: Award },
-    { value: "98.4%", label: "Satisfaction & Pass Rate", icon: Target },
+    { value: "50,000+", label: "Aspirants Mentored" },
+    { value: "150+", label: "All India Ranks (AIR)" },
+    { value: "15+", label: "Star Faculty Members" },
+    { value: "98.4%", label: "Satisfaction & Pass Rate" },
   ];
 
   // Core Pillars of TGS CS Factory
   const PILLARS = [
     {
+      step: "01",
       title: "AIR-Ranker Faculty",
       desc: "Every subject is taught by experienced Chartered Accountants, Company Secretaries, and Ex-Big 4 professionals who bring real exam insight.",
-      icon: Award,
     },
     {
+      step: "02",
       title: "Concept-First Methodology",
       desc: "Zero rote memorization. We break down complex ICAI & ICSI sections, case laws, and Ind AS standards into crystal-clear flowcharts.",
-      icon: BookOpen,
     },
     {
+      step: "03",
       title: "Rigorous Test Series",
       desc: "ICAI/ICSI patterned simulated test papers evaluated by qualified CAs with line-by-line step marking feedback within 48 hours.",
-      icon: CheckCircle2,
     },
     {
+      step: "04",
       title: "24/7 Doubt Resolution",
       desc: "Dedicated faculty doubt counters, live Q&A clearing after every lecture, and personalized peer study groups.",
-      icon: HeartHandshake,
     },
     {
+      step: "05",
       title: "Smart Hybrid Learning",
       desc: "Seamless flexibility with high-definition live online streaming, unlimited backup recordings, and modern offline study centres.",
-      icon: Building,
     },
     {
+      step: "06",
       title: "100% Exam-Oriented Notes",
       desc: "Concise summary books, colored revision charts, RTP & MTP compilations, and previous 10-attempt question scanners.",
-      icon: ShieldCheck,
     },
   ];
 
@@ -111,19 +91,17 @@ export default function About() {
           >
             <Link
               to="/"
-              className="flex items-center gap-1 hover:text-[#5A4BFF] transition-colors"
+              className="hover:text-[#5A4BFF] transition-colors"
             >
-              <Home className="w-3.5 h-3.5" />
-              <span>Home</span>
+              Home
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-[#7B7F86]" />
+            <span className="text-[#7B7F86]">/</span>
             <span className="font-semibold text-[#1B2124]">About Us</span>
           </nav>
 
           {/* Heading Block */}
           <div className="max-w-3xl space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5" />
               <span>The Guidance Sanctuary (TGS) • CS Factory</span>
             </div>
 
@@ -138,23 +116,15 @@ export default function About() {
 
           {/* Metrics Strip */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
-            {STATS.map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={idx}
-                  className="bg-white p-5 rounded-2xl border border-[#EFEFEF] edtech-card-shadow flex items-center gap-4 transition hover:border-[#5A4BFF]/40"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-[#5A4BFF]/10 text-[#5A4BFF] flex items-center justify-center shrink-0">
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-black text-[#1B2124]">{stat.value}</div>
-                    <div className="text-xs font-medium text-[#757575]">{stat.label}</div>
-                  </div>
-                </div>
-              );
-            })}
+            {STATS.map((stat, idx) => (
+              <div
+                key={idx}
+                className="bg-white p-5 rounded-2xl border border-[#EFEFEF] edtech-card-shadow border-l-4 border-l-[#5A4BFF] transition hover:shadow-md"
+              >
+                <div className="text-2xl font-black text-[#1B2124]">{stat.value}</div>
+                <div className="text-xs font-medium text-[#757575] mt-1">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -171,17 +141,16 @@ export default function About() {
               {/* Owner Photo */}
               <div className="lg:col-span-5 flex flex-col items-center">
                 <div className="relative group">
-                  <div className="w-64 h-72 sm:w-72 sm:h-80 rounded-2xl overflow-hidden border-4 border-amber-400/80 shadow-2xl bg-slate-800">
+                  <div className="w-64 h-72 sm:w-72 sm:h-84 rounded-2xl overflow-hidden border-4 border-amber-400/80 shadow-2xl bg-white">
                     <img
-                      src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80"
+                      src="/founder.png"
                       alt="Founder & Director - TGS CS Factory"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
 
                   {/* Gold Badge */}
-                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase shadow-lg whitespace-nowrap flex items-center gap-1.5">
-                    <Trophy className="w-3.5 h-3.5" />
+                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase shadow-lg whitespace-nowrap flex items-center">
                     <span>Founder & Academic Director</span>
                   </div>
                 </div>
@@ -201,8 +170,7 @@ export default function About() {
 
               {/* Owner Description & Message */}
               <div className="lg:col-span-7 space-y-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-amber-300 border border-white/15 text-xs font-bold uppercase tracking-wider">
-                  <Quote className="w-3.5 h-3.5" />
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-amber-300 border border-white/15 text-xs font-bold uppercase tracking-wider">
                   <span>Founder's Message to CA & CS Aspirants</span>
                 </div>
 
@@ -225,19 +193,19 @@ export default function About() {
                 {/* Key Bullet Highlights */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-white/10">
                   <div className="flex items-center gap-2 text-xs font-medium text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-emerald-400 font-bold">✓</span>
                     <span>Mentored AIR 1, 3, 7 & 50+ Top 50 Rankers</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs font-medium text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-emerald-400 font-bold">✓</span>
                     <span>100% ICAI & ICSI Module Coverage</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs font-medium text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-emerald-400 font-bold">✓</span>
                     <span>Personal Doubt Clearing & 1:1 Reviews</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs font-medium text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-emerald-400 font-bold">✓</span>
                     <span>Offline Centres + Pan-India Live App</span>
                   </div>
                 </div>
@@ -255,10 +223,9 @@ export default function About() {
 
                   <Link
                     to="/faculty"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[6px] bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-bold transition shadow-md"
+                    className="inline-flex items-center px-5 py-2.5 rounded-[6px] bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-bold transition shadow-md"
                   >
                     <span>Meet All Star Faculty</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
@@ -271,8 +238,7 @@ export default function About() {
       <section className="py-16 bg-[#F8FAFC]">
         <div className="edtech-container">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold uppercase tracking-wider">
-              <Video className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold uppercase tracking-wider">
               <span>Director's Institutional Tour</span>
             </div>
 
@@ -336,10 +302,9 @@ export default function About() {
                   <button
                     type="button"
                     onClick={() => setIsPlayingVideo(false)}
-                    className="absolute top-4 right-4 z-20 px-3 py-1 rounded-lg bg-black/80 text-white text-xs font-semibold hover:bg-black transition flex items-center gap-1.5"
+                    className="absolute top-4 right-4 z-20 px-3 py-1 rounded-lg bg-black/80 text-white text-xs font-semibold hover:bg-black transition"
                   >
-                    <Pause className="w-3.5 h-3.5" />
-                    <span>Close Player</span>
+                    Close Player
                   </button>
                 </div>
               )}
@@ -391,25 +356,22 @@ export default function About() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {PILLARS.map((pillar, pIdx) => {
-              const Icon = pillar.icon;
-              return (
-                <div
-                  key={pIdx}
-                  className="bg-[#F8FAFC] p-6 rounded-2xl border border-[#EFEFEF] hover:border-[#5A4BFF]/40 transition-all hover:bg-white edtech-card-shadow group"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-[#5A4BFF]/10 text-[#5A4BFF] group-hover:bg-[#5A4BFF] group-hover:text-white transition flex items-center justify-center mb-4">
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-base font-bold text-[#1B2124] mb-2">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-xs text-[#757575] leading-relaxed">
-                    {pillar.desc}
-                  </p>
+            {PILLARS.map((pillar, pIdx) => (
+              <div
+                key={pIdx}
+                className="bg-[#F8FAFC] p-6 rounded-2xl border border-[#EFEFEF] hover:border-[#5A4BFF]/40 transition-all hover:bg-white edtech-card-shadow group"
+              >
+                <div className="text-2xl font-black font-mono text-[#5A4BFF] mb-3">
+                  {pillar.step}
                 </div>
-              );
-            })}
+                <h3 className="text-base font-bold text-[#1B2124] mb-2">
+                  {pillar.title}
+                </h3>
+                <p className="text-xs text-[#757575] leading-relaxed">
+                  {pillar.desc}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -472,10 +434,9 @@ export default function About() {
               </Link>
               <a
                 href="tel:9876543210"
-                className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center"
               >
-                <PhoneCall className="w-4 h-4" />
-                <span>Call +91 98765 43210</span>
+                Call +91 98765 43210
               </a>
             </div>
           </div>

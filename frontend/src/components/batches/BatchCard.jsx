@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Calendar, Info, Sparkles, User, GraduationCap } from "lucide-react";
+// BatchCard Component
 
 export default function BatchCard({ course }) {
   const navigate = useNavigate();
@@ -65,8 +65,7 @@ export default function BatchCard({ course }) {
       <div>
         {/* Optional Top Strip for Pack-Type Courses */}
         {course.isPack && (
-          <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-bold px-3 py-1 flex items-center gap-1.5 tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+          <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[11px] font-bold px-3 py-1 tracking-wide">
             <span className="truncate">
               {course.packLabel || "Pack: Access multiple batches with one pack"}
             </span>
@@ -115,8 +114,7 @@ export default function BatchCard({ course }) {
         <div className="p-4 space-y-2.5">
           {/* Attempt Row (Handwritten Spec) */}
           <div className="flex items-center justify-between text-xs font-semibold">
-            <div className="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
-              <Calendar className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <div className="text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
               <span>Attempt: {attemptLabel}</span>
             </div>
             {course.status && (
@@ -138,21 +136,20 @@ export default function BatchCard({ course }) {
           </h3>
 
           {/* Faculty Name (Handwritten Spec) */}
-          <div className="text-xs text-[#3D3D3D] font-medium flex items-center gap-1.5 pt-0.5">
-            <GraduationCap className="w-4 h-4 text-[#5A4BFF] shrink-0" />
+          <div className="text-xs text-[#3D3D3D] font-medium pt-0.5">
             <span className="truncate">Faculty: <strong className="text-[#1B2124] font-semibold">{course.faculty || "Senior CA/CS Faculty Panel"}</strong></span>
           </div>
 
           {/* 2 Pointer Rows */}
           <div className="space-y-1 pt-1 text-xs text-[#757575] border-t border-[#EFEFEF]">
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-3.5 h-3.5 text-[#7B7F86] shrink-0" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#5A4BFF] text-[8px]">●</span>
               <span className="truncate">
                 {course.pointers?.[0]?.text || `${course.levelLabel || "ICAI"} • Complete Syllabus`}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-[#7B7F86] shrink-0" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#5A4BFF] text-[8px]">●</span>
               <span className="truncate">
                 {course.pointers?.[1]?.text || course.startDate || "Started on 21st Sep"}
               </span>
@@ -181,7 +178,7 @@ export default function BatchCard({ course }) {
         </div>
 
         {/* Action Buttons Matching Handwritten Sketch:
-            1. (i) Explore Now (Info button leading to Course Details)
+            1. Explore Now (button leading to Course Details)
             2. Select Mode / Buy Now (Primary button leading to Checkout)
         */}
         <div className="flex items-center gap-2">
@@ -189,18 +186,17 @@ export default function BatchCard({ course }) {
             type="button"
             onClick={handleViewDetails}
             aria-label="Explore course details"
-            className="flex-1 py-2 px-3 border border-[#5A4BFF] text-[#5A4BFF] hover:bg-[#5A4BFF]/10 text-xs font-semibold rounded-[6px] transition flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 py-2 px-3 border border-[#5A4BFF] text-[#5A4BFF] hover:bg-[#5A4BFF]/10 text-xs font-semibold rounded-[6px] transition text-center cursor-pointer"
           >
-            <Info className="w-3.5 h-3.5 shrink-0" />
-            <span>Explore Now</span>
+            Explore Now
           </button>
 
           <button
             type="button"
             onClick={handleBuyNow}
-            className="flex-1 py-2 px-3 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-semibold rounded-[6px] shadow-xs transition active:scale-98 cursor-pointer flex items-center justify-center gap-1"
+            className="flex-1 py-2 px-3 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-semibold rounded-[6px] shadow-xs transition active:scale-98 cursor-pointer text-center"
           >
-            <span>{course.isPack ? "Select Mode" : "Buy Now"}</span>
+            {course.isPack ? "Select Mode" : "Buy Now"}
           </button>
         </div>
       </div>

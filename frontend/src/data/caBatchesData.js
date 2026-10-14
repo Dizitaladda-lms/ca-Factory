@@ -807,6 +807,50 @@ export const getCaBatchStats = (batches = CA_BATCHES_DATA) => {
 // ==========================================
 export const FACULTY_MEMBERS = [
   {
+    id: "f-founder",
+    name: "Dr. Gulshan Kumar",
+    exam: "CA & CS",
+    role: "Founder & Chief Academic Director (FCA, FCS, Ph.D.)",
+    subject: "Strategic Management & Corporate Jurisprudence",
+    level: "Foundation, Inter & Final",
+    exp: "15+ Years Experience",
+    avatar: "/founder.png",
+    taughtStudents: "50,000+",
+    rating: 4.99,
+    reviewCount: "4,850+ Reviews",
+    shortDescription: "Founder of The Guidance Sanctuary (TGS) & CS Factory. Ex-Big 4 Senior Advisor and pioneer of the 3-Tier CA/CS success framework.",
+    fullDescription: "Dr. Gulshan Kumar (FCA, FCS, Ph.D. in Commerce & Law) is the visionary Founder and Chief Academic Mentor of The Guidance Sanctuary (TGS) & CS Factory. With over 15 years of illustrious experience mentoring All India Rankers across CA and CS levels, Dr. Gulshan Kumar has served as a senior advisor at Big 4 accounting firms. He pioneered the conceptual flowchart technique for corporate law and strategic management, ensuring students clear exams in their very 1st attempt with top distinction.",
+    keyHighlights: [
+      "Mentored AIR 1, 3, 7 and 50+ Top-50 Rankers in CA & CS",
+      "Ex-Big 4 Senior Advisory Consultant",
+      "Founder of TGS & CS Factory Learning Methodology",
+      "Author of 6 acclaimed reference books on Law & Strategic Finance",
+    ],
+    activeBatches: [
+      { id: "ca-foundation-sampurna-3-0-jan-2027", title: "CA Foundation Sampurna 3.0 Jan 2027" },
+      { id: "ca-inter-udesh-regular-sep-2027-group--1-2--combo", title: "CA Inter Udesh Regular Both Groups Combo" },
+      { id: "ca-final-financial-reporting-fr", title: "CA Final Ind AS & Corporate Valuation" },
+    ],
+    reviews: [
+      {
+        studentName: "Rohan Verma",
+        rankOrAttempt: "AIR 3 CA Final (Nov 2025)",
+        rating: 5,
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+        comment: "Dr. Gulshan Kumar sir's mentorship was the turning point in my CA journey. His personal strategy sessions and structured answer templates gave me the confidence to secure AIR 3.",
+        date: "Verified Student • 2 weeks ago",
+      },
+      {
+        studentName: "Shreya Joshi",
+        rankOrAttempt: "CS Executive All Subjects Cleared (June 2026)",
+        rating: 5,
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+        comment: "Gulshan Sir doesn't just teach the syllabus, he teaches how to think like a corporate advisor. Truly inspiring guidance at CS Factory!",
+        date: "Verified Student • 1 month ago",
+      },
+    ],
+  },
+  {
     id: "f-1",
     name: "CA Gaurav Agarwal",
     exam: "CA",

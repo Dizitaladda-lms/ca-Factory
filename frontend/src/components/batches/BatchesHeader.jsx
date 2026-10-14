@@ -1,20 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  ChevronDown,
-  Menu,
-  X,
-  User,
-  BookOpen,
-  GraduationCap,
-  LogOut,
-  MapPin,
-  ShoppingBag,
-  FileCheck2,
-  Sparkles,
-  Search,
-  ArrowRight,
-} from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 
 export default function BatchesHeader({ brandName = "CS Factory" }) {
   const navigate = useNavigate();
@@ -146,7 +132,6 @@ export default function BatchesHeader({ brandName = "CS Factory" }) {
                 aria-expanded={isMegaMenuOpen}
                 className="flex items-center gap-2 px-4 py-2 border-2 border-[#5A4BFF] text-[#5A4BFF] rounded-[6px] font-semibold text-sm hover:bg-[#5A4BFF]/10 transition-colors"
               >
-                <BookOpen className="w-4 h-4" />
                 <span>All Courses</span>
                 <ChevronDown
                   className={`w-4 h-4 transition-transform duration-200 ${
@@ -191,9 +176,9 @@ export default function BatchesHeader({ brandName = "CS Factory" }) {
                       <Link
                         to={`/ca/${activeCategory}/batches`}
                         onClick={() => setIsMegaMenuOpen(false)}
-                        className="text-xs font-semibold text-[#5A4BFF] hover:underline flex items-center gap-1"
+                        className="text-xs font-semibold text-[#5A4BFF] hover:underline"
                       >
-                        View all <ArrowRight className="w-3 h-3" />
+                        View all
                       </Link>
                     </div>
 
@@ -298,25 +283,22 @@ export default function BatchesHeader({ brandName = "CS Factory" }) {
                     <Link
                       to="/student"
                       onClick={() => setIsProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#3D3D3D] hover:bg-slate-50 transition"
+                      className="block px-4 py-2.5 text-sm text-[#3D3D3D] hover:bg-slate-50 transition"
                     >
-                      <User className="w-4 h-4 text-[#7B7F86]" />
                       My Profile
                     </Link>
                     <Link
                       to="/student"
                       onClick={() => setIsProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#3D3D3D] hover:bg-slate-50 transition"
+                      className="block px-4 py-2.5 text-sm text-[#3D3D3D] hover:bg-slate-50 transition"
                     >
-                      <GraduationCap className="w-4 h-4 text-[#7B7F86]" />
                       Study & Lectures
                     </Link>
                     <Link
                       to="/courses"
                       onClick={() => setIsProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#3D3D3D] hover:bg-slate-50 transition"
+                      className="block px-4 py-2.5 text-sm text-[#3D3D3D] hover:bg-slate-50 transition"
                     >
-                      <BookOpen className="w-4 h-4 text-[#7B7F86]" />
                       My Batches
                     </Link>
 
@@ -325,9 +307,8 @@ export default function BatchesHeader({ brandName = "CS Factory" }) {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition text-left"
+                      className="w-full block px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition text-left"
                     >
-                      <LogOut className="w-4 h-4" />
                       Logout
                     </button>
                   </div>

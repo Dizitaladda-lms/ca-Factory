@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MessageCircle, X, PhoneCall, Send, CheckCircle2 } from "lucide-react";
+import { X } from "lucide-react";
 
 export default function FloatingHelpButton({
   phone = "+91 98765 43210",
@@ -35,11 +35,7 @@ export default function FloatingHelpButton({
           className="flex items-center gap-2.5 px-4 py-3 bg-[#5A4BFF] hover:bg-[#4939E8] text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 group cursor-pointer"
           aria-label="Need Help? Talk to our CA Academic Counselor"
         >
-          <div className="relative">
-            <MessageCircle className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full" />
-          </div>
+          <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse" />
           <span className="text-xs sm:text-sm font-bold tracking-tight pr-1">
             Talk to Expert
           </span>
@@ -75,7 +71,7 @@ export default function FloatingHelpButton({
           <div className="p-4 space-y-4">
             {submitted ? (
               <div className="py-6 text-center space-y-2">
-                <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
+                <div className="text-3xl text-emerald-500 font-bold">✓</div>
                 <h4 className="text-sm font-bold text-[#1B2124]">Callback Request Received!</h4>
                 <p className="text-xs text-[#757575]">
                   A senior {brandName} counselor will call you within 15 minutes.
@@ -123,10 +119,9 @@ export default function FloatingHelpButton({
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-semibold rounded-[6px] shadow-sm transition flex items-center justify-center gap-1.5 active:scale-98 cursor-pointer"
+                  className="w-full py-2.5 px-4 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-semibold rounded-[6px] shadow-sm transition text-center active:scale-98 cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Request a Call Back</span>
+                  Request a Call Back
                 </button>
               </form>
             )}
@@ -135,10 +130,9 @@ export default function FloatingHelpButton({
             <div className="pt-2 border-t border-[#EFEFEF] text-center">
               <a
                 href={`tel:${rawPhone}`}
-                className="inline-flex items-center gap-2 text-xs font-bold text-[#1B2124] hover:text-[#5A4BFF] transition"
+                className="inline-flex items-center text-xs font-bold text-[#1B2124] hover:text-[#5A4BFF] transition"
               >
-                <PhoneCall className="w-3.5 h-3.5 text-emerald-600" />
-                <span>or call us @ {phone}</span>
+                or call us @ {phone}
               </a>
             </div>
           </div>

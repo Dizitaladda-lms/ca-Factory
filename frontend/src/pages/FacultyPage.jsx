@@ -1,24 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import {
-  Sparkles,
-  Award,
-  Users,
-  Star,
-  CheckCircle2,
-  BookOpen,
-  ArrowRight,
-  GraduationCap,
-  Search,
-  X,
-  MessageSquare,
-  Home,
-  ChevronRight,
-  PhoneCall,
-  Calendar,
-  ThumbsUp,
-  Quote,
-} from "lucide-react";
+import { Search, X } from "lucide-react";
 
 import BatchesHeader from "../components/batches/BatchesHeader";
 import BatchesFooter from "../components/batches/BatchesFooter";
@@ -43,7 +25,11 @@ export default function FacultyPage() {
   const filteredFaculties = useMemo(() => {
     return FACULTY_MEMBERS.filter((faculty) => {
       // 1. Exam filter
-      if (examFilter !== "all" && faculty.exam.toLowerCase() !== examFilter.toLowerCase()) {
+      if (
+        examFilter !== "all" &&
+        faculty.exam.toLowerCase() !== examFilter.toLowerCase() &&
+        !faculty.exam.toLowerCase().includes(examFilter.toLowerCase())
+      ) {
         return false;
       }
 
@@ -91,19 +77,17 @@ export default function FacultyPage() {
           >
             <Link
               to="/"
-              className="flex items-center gap-1 hover:text-[#5A4BFF] transition-colors"
+              className="hover:text-[#5A4BFF] transition-colors"
             >
-              <Home className="w-3.5 h-3.5" />
-              <span>Home</span>
+              Home
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-[#7B7F86]" />
+            <span className="text-[#7B7F86]">/</span>
             <span className="font-semibold text-[#1B2124]">Faculty Team</span>
           </nav>
 
           {/* Heading Block */}
           <div className="max-w-3xl space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5" />
               <span>India's Star Mentors • Selection Hoga Yahi Se!!</span>
             </div>
 
@@ -261,8 +245,7 @@ export default function FacultyPage() {
                             {mentor.exam} • {mentor.level}
                           </span>
                           <div className="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                            <Star className="w-3.5 h-3.5 fill-amber-500" />
-                            <span>{mentor.rating || 4.96}</span>
+                            <span>★ {mentor.rating || 4.96}</span>
                             <span className="text-slate-400 font-normal">({mentor.reviewCount || "1,500+ reviews"})</span>
                           </div>
                         </div>
@@ -277,18 +260,15 @@ export default function FacultyPage() {
 
                         {/* Subject Specialization Tag */}
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 border border-[#EFEFEF] rounded-lg text-xs font-medium text-[#3D3D3D]">
-                          <BookOpen className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
                           <span>Specialization: <strong className="text-[#1B2124]">{mentor.subject}</strong></span>
                         </div>
 
                         {/* Metrics Badges */}
                         <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-[#757575]">
-                          <div className="flex items-center gap-1.5">
-                            <Award className="w-4 h-4 text-amber-500" />
-                            <span className="font-semibold text-[#1B2124]">{mentor.exp}</span>
+                          <div>
+                            <span className="font-semibold text-[#1B2124]">{mentor.exp}</span> Experience
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <Users className="w-4 h-4 text-[#5A4BFF]" />
+                          <div>
                             <span className="font-semibold text-[#1B2124]">{mentor.taughtStudents}</span> Mentored
                           </div>
                         </div>
@@ -297,8 +277,7 @@ export default function FacultyPage() {
 
                     {/* Short Description (Chota sa description) */}
                     {mentor.shortDescription && (
-                      <div className="mt-5 p-3.5 rounded-xl bg-amber-50/60 border border-amber-200/60 text-xs sm:text-sm font-medium text-amber-950 flex items-start gap-2.5">
-                        <Quote className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                      <div className="mt-5 p-3.5 rounded-xl bg-amber-50/60 border border-amber-200/60 text-xs sm:text-sm font-medium text-amber-950">
                         <p className="italic">
                           "{mentor.shortDescription}"
                         </p>
@@ -319,7 +298,7 @@ export default function FacultyPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
                           {mentor.keyHighlights.map((highlight, hIdx) => (
                             <div key={hIdx} className="flex items-start gap-2 text-xs text-[#1B2124]">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                              <span className="text-[#5A4BFF] font-bold">●</span>
                               <span>{highlight}</span>
                             </div>
                           ))}
@@ -338,10 +317,9 @@ export default function FacultyPage() {
                             <Link
                               key={bIdx}
                               to={`/course/${batch.id}`}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-[#5A4BFF] text-[#1B2124] hover:text-white border border-[#EFEFEF] hover:border-[#5A4BFF] text-xs font-semibold transition group"
+                              className="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-[#5A4BFF] text-[#1B2124] hover:text-white border border-[#EFEFEF] hover:border-[#5A4BFF] text-xs font-semibold transition"
                             >
                               <span>{batch.title}</span>
-                              <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                             </Link>
                           ))}
                         </div>
@@ -352,12 +330,9 @@ export default function FacultyPage() {
                     {mentor.reviews && mentor.reviews.length > 0 && (
                       <div className="mt-6 pt-5 border-t border-[#EFEFEF] bg-slate-50/70 -mx-6 -mb-6 p-6 sm:-mx-8 sm:-mb-8 sm:p-8 space-y-4">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <MessageSquare className="w-4 h-4 text-[#5A4BFF]" />
-                            <h4 className="text-xs sm:text-sm font-bold text-[#1B2124] uppercase tracking-wider">
-                              Student Reviews & Topper Testimonials
-                            </h4>
-                          </div>
+                          <h4 className="text-xs sm:text-sm font-bold text-[#1B2124] uppercase tracking-wider">
+                            Student Reviews & Topper Testimonials
+                          </h4>
                           <span className="text-xs font-semibold text-[#5A4BFF]">
                             100% Verified Students
                           </span>
@@ -392,10 +367,8 @@ export default function FacultyPage() {
                                   </div>
                                 </div>
 
-                                <div className="flex items-center text-amber-500">
-                                  {[...Array(rev.rating || 5)].map((_, s) => (
-                                    <Star key={s} className="w-3 h-3 fill-amber-500" />
-                                  ))}
+                                <div className="flex items-center text-amber-500 text-xs font-bold">
+                                  <span>★ {rev.rating || 5}.0</span>
                                 </div>
                               </div>
 
@@ -407,8 +380,8 @@ export default function FacultyPage() {
                               {/* Date & Verified Tag */}
                               <p className="text-[10px] text-[#757575] pt-1 border-t border-slate-100 flex items-center justify-between">
                                 <span>{rev.date}</span>
-                                <span className="text-emerald-600 font-semibold flex items-center gap-1">
-                                  <CheckCircle2 className="w-3 h-3" /> Cleared Exam
+                                <span className="text-emerald-600 font-semibold">
+                                  ✓ Cleared Exam
                                 </span>
                               </p>
                             </div>
@@ -425,7 +398,6 @@ export default function FacultyPage() {
           {/* Empty State */}
           {filteredFaculties.length === 0 && (
             <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 p-8 space-y-3">
-              <GraduationCap className="w-12 h-12 text-[#7B7F86] mx-auto" />
               <h3 className="text-lg font-bold text-[#1B2124]">No Faculty Found</h3>
               <p className="text-xs text-[#757575] max-w-sm mx-auto">
                 No mentors matched your query "{searchQuery}". Try searching by another subject or resetting filters.
@@ -471,10 +443,9 @@ export default function FacultyPage() {
               </Link>
               <a
                 href="tel:9876543210"
-                className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center"
               >
-                <PhoneCall className="w-4 h-4" />
-                <span>Call +91 98765 43210</span>
+                Call +91 98765 43210
               </a>
             </div>
           </div>

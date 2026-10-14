@@ -1,15 +1,4 @@
 import React, { useState } from "react";
-import {
-  FileText,
-  Video,
-  ClipboardCheck,
-  History,
-  Download,
-  Play,
-  ArrowRight,
-  Sparkles,
-  CheckCircle,
-} from "lucide-react";
 import { FREE_RESOURCES } from "../../data/caBatchesData";
 
 export default function FreeResourcesSection({ brandName = "CA Factory" }) {
@@ -18,11 +7,11 @@ export default function FreeResourcesSection({ brandName = "CA Factory" }) {
   const [downloadSuccess, setDownloadSuccess] = useState(null);
 
   const categories = [
-    { id: "all", label: "All Resources", icon: Sparkles },
-    { id: "Notes", label: "Revision Notes", icon: FileText },
-    { id: "Video", label: "Video Masterclasses", icon: Video },
-    { id: "Mock Test", label: "Mock Tests", icon: ClipboardCheck },
-    { id: "PYQ", label: "Solved PYQs", icon: History },
+    { id: "all", label: "All Resources" },
+    { id: "Notes", label: "Revision Notes" },
+    { id: "Video", label: "Video Masterclasses" },
+    { id: "Mock Test", label: "Mock Tests" },
+    { id: "PYQ", label: "Solved PYQs" },
   ];
 
   const filteredResources = FREE_RESOURCES.filter((res) => {
@@ -47,8 +36,7 @@ export default function FreeResourcesSection({ brandName = "CA Factory" }) {
       <div className="edtech-container">
         {/* Header Block */}
         <div className="text-center max-w-3xl mx-auto mb-10 space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">
             <span>100% Free Learning Portal</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
@@ -64,20 +52,18 @@ export default function FreeResourcesSection({ brandName = "CA Factory" }) {
           {/* Category Chips (Notes, Video, Mock Test, PYQ) */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto py-1">
             {categories.map((cat) => {
-              const Icon = cat.icon;
               const isSelected = activeCategory === cat.id;
               return (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition cursor-pointer border ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition cursor-pointer border ${
                     isSelected
                       ? "bg-[#5A4BFF] text-white border-[#5A4BFF] shadow-xs"
                       : "bg-white text-[#757575] border-[#EFEFEF] hover:border-slate-300"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -139,33 +125,19 @@ export default function FreeResourcesSection({ brandName = "CA Factory" }) {
                 <button
                   type="button"
                   onClick={() => handleAction(res)}
-                  className={`w-full py-2 px-3 rounded-[6px] text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`w-full py-2 px-3 rounded-[6px] text-xs font-semibold transition text-center cursor-pointer ${
                     isDownloading
                       ? "bg-emerald-600 text-white"
                       : "bg-slate-50 hover:bg-[#5A4BFF] text-[#1B2124] hover:text-white border border-[#EFEFEF] hover:border-[#5A4BFF]"
                   }`}
                 >
-                  {isDownloading ? (
-                    <>
-                      <CheckCircle className="w-3.5 h-3.5" />
-                      <span>Downloaded Successfully!</span>
-                    </>
-                  ) : res.category === "Video" ? (
-                    <>
-                      <Play className="w-3.5 h-3.5" />
-                      <span>Watch Free Masterclass</span>
-                    </>
-                  ) : res.category === "Mock Test" ? (
-                    <>
-                      <ClipboardCheck className="w-3.5 h-3.5" />
-                      <span>Start Free Test</span>
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Download PDF</span>
-                    </>
-                  )}
+                  {isDownloading
+                    ? "Downloaded Successfully!"
+                    : res.category === "Video"
+                    ? "Watch Free Masterclass"
+                    : res.category === "Mock Test"
+                    ? "Start Free Test"
+                    : "Download PDF"}
                 </button>
               </div>
             );

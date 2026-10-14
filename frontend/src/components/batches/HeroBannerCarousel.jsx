@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, Sparkles, Award, TrendingUp, Gift } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
@@ -11,7 +11,6 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
     {
       id: 1,
       badge: "RESULTS 2025-26",
-      badgeIcon: Award,
       title: "1,450+ CA Foundation Cleared in 1st Attempt",
       subtitle: "Highest Passing Percentage Nationwide • Conceptual Law & Math Masterclasses",
       highlight: "87% Success Rate",
@@ -24,7 +23,6 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
     {
       id: 2,
       badge: "INTER RESULTS",
-      badgeIcon: TrendingUp,
       title: "CA Intermediate Both Groups Revolution",
       subtitle: "6-Paper ICAI Pattern Master Batches with Daily Evaluation & Mentorship",
       highlight: "AIR 4, 9 & 14 Produced",
@@ -37,7 +35,6 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
     {
       id: 3,
       badge: "FINAL LEGACY",
-      badgeIcon: Sparkles,
       title: "Become a Chartered Accountant in 2026",
       subtitle: "CA Final Ind AS (FR), AFM, DT & IDT Masterclasses with Top Faculty Panel",
       highlight: "AIR 1, 3 & 7 Mentors",
@@ -50,7 +47,6 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
     {
       id: 4,
       badge: "LIMITED PERIOD OFFER",
-      badgeIcon: Gift,
       title: "Mega Academic Carnival: Flat 55% Off",
       subtitle: "Get All Batches with Free Hardcopy Notes, RTP/MTP Test Series & Doubt Engine",
       highlight: "Save up to ₹25,000",
@@ -98,7 +94,6 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
           <div className="relative z-10 w-full px-6 py-8 md:px-12 md:py-10 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="max-w-2xl space-y-3 md:space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wide text-amber-300">
-                {React.createElement(slides[currentSlide].badgeIcon, { className: "w-3.5 h-3.5" })}
                 <span>{slides[currentSlide].badge}</span>
                 <span className="w-1 h-1 rounded-full bg-amber-400" />
                 <span className="text-white/80">{slides[currentSlide].accentTag}</span>
@@ -115,10 +110,9 @@ export default function HeroBannerCarousel({ brandName = "CA Factory" }) {
               <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Link
                   to={slides[currentSlide].link}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs md:text-sm font-semibold rounded-[6px] shadow-lg transition-transform active:scale-95"
+                  className="inline-flex items-center px-6 py-2.5 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs md:text-sm font-semibold rounded-[6px] shadow-lg transition-transform active:scale-95"
                 >
                   <span>{slides[currentSlide].cta}</span>
-                  <ChevronRight className="w-4 h-4" />
                 </Link>
 
                 <div className="text-xs text-slate-300 font-medium hidden sm:block">

@@ -1,5 +1,4 @@
 import React from "react";
-import { CheckCircle2, Smartphone, Download, Star } from "lucide-react";
 
 export default function DownloadAppBanner({
   studentCount = "1,50,000+",
@@ -15,8 +14,7 @@ export default function DownloadAppBanner({
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-amber-300">
-                <Smartphone className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-amber-300">
                 <span>Available on Android & iOS</span>
               </div>
 
@@ -33,15 +31,15 @@ export default function DownloadAppBanner({
               {/* 3 Tick Points */}
               <div className="space-y-2.5 pt-1">
                 <div className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-200">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="text-emerald-400 font-bold">✓</span>
                   <span>Live & recorded classes at ease with speed control</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-200">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="text-emerald-400 font-bold">✓</span>
                   <span>Interactive student dashboard for disciplined progress tracking</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-200">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="text-emerald-400 font-bold">✓</span>
                   <span>Lakhs of practice questions & ICAI past-paper question bank</span>
                 </div>
               </div>

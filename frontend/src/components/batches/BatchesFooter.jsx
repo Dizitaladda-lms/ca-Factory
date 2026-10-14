@@ -1,13 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  Mail,
-  Phone,
-  MapPin,
-  ShieldCheck,
-  Award,
-} from "lucide-react";
-import {
   FaFacebookF,
   FaInstagram,
   FaYoutube,
@@ -171,17 +164,17 @@ export default function BatchesFooter({
               Connect With Us
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
-              <li className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
-                <a href={`tel:${phone}`} className="hover:text-white transition">{phone}</a>
+              <li>
+                <span className="text-slate-500 mr-1.5 font-semibold">Tel:</span>
+                <a href={`tel:${phone}`} className="hover:text-white transition font-medium text-slate-300">{phone}</a>
               </li>
-              <li className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
-                <a href={`mailto:${email}`} className="hover:text-white transition">{email}</a>
+              <li>
+                <span className="text-slate-500 mr-1.5 font-semibold">Email:</span>
+                <a href={`mailto:${email}`} className="hover:text-white transition font-medium text-slate-300">{email}</a>
               </li>
-              <li className="flex items-start gap-2 pt-1">
-                <MapPin className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0 mt-0.5" />
-                <span>Headquarters: Team CA Factory Hub, New Delhi - 110048</span>
+              <li className="pt-1 text-slate-400">
+                <span className="text-slate-500 font-semibold block">Headquarters:</span>
+                <span>Team CS Factory Hub, New Delhi - 110048</span>
               </li>
             </ul>
           </div>

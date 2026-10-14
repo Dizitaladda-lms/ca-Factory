@@ -1,27 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Sparkles,
-  Award,
-  Users,
-  CheckCircle2,
-  BookOpen,
-  ArrowRight,
-  ShieldCheck,
-  Video,
-  FileText,
-  HelpCircle,
-  PhoneCall,
-  Clock,
-  Star,
-  Layers,
-  ChevronDown,
-  TrendingUp,
-  Target,
-  GraduationCap,
-  MessageCircleQuestion,
-  Lightbulb,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 // Shared Components & Data
 import BatchesHeader from "../../components/batches/BatchesHeader";
@@ -98,46 +77,46 @@ export default function LandingPage() {
 
   // Key stats
   const stats = [
-    { value: "1,50,000+", label: "Aspirants Mentored", icon: Users },
-    { value: "87.4%", label: "First Attempt Pass Rate", icon: Award },
-    { value: "50+ AIR", label: "Top Ranks Produced", icon: Target },
-    { value: "10,000+", label: "Hours HD Content", icon: Video },
+    { value: "1,50,000+", label: "Aspirants Mentored" },
+    { value: "87.4%", label: "First Attempt Pass Rate" },
+    { value: "50+ AIR", label: "Top Ranks Produced" },
+    { value: "10,000+", label: "Hours HD Content" },
   ];
 
   // Why choose us items
   const whyChooseUsFeatures = [
     {
-      icon: Lightbulb,
+      step: "01",
       title: "Conceptual Clarity over Rote Learning",
       desc: "Master the fundamental 'Why' behind every Ind AS standard, Companies Act section, and Income Tax provision with real-world corporate case studies.",
       badge: "Concept First",
     },
     {
-      icon: ShieldCheck,
+      step: "02",
       title: "100% ICAI & ICSI New Scheme Aligned",
       desc: "Complete coverage of the revised 6-paper Intermediate and Final structures, SPOM modules, and latest Finance Act direct/indirect tax amendments.",
       badge: "Always Updated",
     },
     {
-      icon: FileText,
+      step: "03",
       title: "Daily Practice & Answer Auditing",
       desc: "Comprehensive DPPs with step marking evaluated by qualified CAs. Learn how to structure answers to score guaranteed 70+ exemption marks.",
       badge: "Evaluated Mocks",
     },
     {
-      icon: Clock,
+      step: "04",
       title: "Unlimited Views & Offline Downloads",
       desc: "Never fall behind your study timetable. Watch live or download lectures offline in our mobile app to learn anytime, anywhere at your convenience.",
       badge: "Flexible Access",
     },
     {
-      icon: MessageCircleQuestion,
+      step: "05",
       title: "24/7 Dedicated Doubt Engine",
       desc: "Stuck on a complex consolidation or taxation problem at midnight? Upload your question and get detailed step-by-step solutions from subject mentors.",
       badge: "Instant Resolution",
     },
     {
-      icon: TrendingUp,
+      step: "06",
       title: "All-India Test Series & Ranking",
       desc: "Benchmark your preparation against thousands of students across India with simulated ICAI 3-hour tests and granular question analytics.",
       badge: "All-India Rank",
@@ -161,7 +140,6 @@ export default function LandingPage() {
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               {/* Slogan Pill */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5A4BFF]/10 border border-[#5A4BFF]/20 text-[#5A4BFF] text-xs font-bold tracking-wide">
-                <Sparkles className="w-3.5 h-3.5 text-[#5A4BFF]" />
                 <span>India's Dedicated CA & CS Edtech • Selection Hoga Yahi Se!!</span>
               </div>
 
@@ -185,40 +163,38 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
                 <Link
                   to="/courses"
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-[6px] bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-sm font-bold transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-[6px] bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-sm font-bold transition shadow-md hover:shadow-lg flex items-center justify-center cursor-pointer"
                 >
-                  <span>Explore Batches</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Explore Batches
                 </Link>
 
                 <a
                   href="#why-choose-us"
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-[6px] border border-[#EFEFEF] bg-white hover:bg-slate-50 text-[#1B2124] text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-[6px] border border-[#EFEFEF] bg-white hover:bg-slate-50 text-[#1B2124] text-sm font-semibold transition flex items-center justify-center cursor-pointer"
                 >
-                  <span>Why CA Factory?</span>
+                  Why CA Factory?
                 </a>
 
                 <Link
                   to="/courses?exam=cs"
-                  className="w-full sm:w-auto px-5 py-3.5 rounded-[6px] border border-amber-300 bg-amber-50/70 hover:bg-amber-100/70 text-amber-900 text-sm font-semibold transition flex items-center justify-center gap-1.5"
+                  className="w-full sm:w-auto px-5 py-3.5 rounded-[6px] border border-amber-300 bg-amber-50/70 hover:bg-amber-100/70 text-amber-900 text-sm font-semibold transition flex items-center justify-center"
                 >
-                  <GraduationCap className="w-4 h-4 text-amber-600" />
-                  <span>CS Programs</span>
+                  CS Programs
                 </Link>
               </div>
 
               {/* Trust Indicators */}
               <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-[#757575] font-medium">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
                   <span>100% ICAI New Scheme Syllabus</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
                   <span>Live Classes + Unlimited Backup</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
                   <span>Personal Doubt Support</span>
                 </div>
               </div>
@@ -257,28 +233,22 @@ export default function LandingPage() {
                       </div>
                       <Link
                         to="/course/ca-inter-udesh-regular-sep-2027-group--1-2--combo"
-                        className="text-xs font-bold text-[#5A4BFF] hover:underline flex items-center gap-1"
+                        className="text-xs font-bold text-[#5A4BFF] hover:underline"
                       >
-                        Enroll Now <ArrowRight className="w-3 h-3" />
+                        Enroll Now
                       </Link>
                     </div>
                   </div>
 
                   {/* Quick Feature Grid */}
                   <div className="grid grid-cols-2 gap-2.5 text-xs">
-                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF] flex items-center gap-2.5">
-                      <BookOpen className="w-4 h-4 text-[#5A4BFF] shrink-0" />
-                      <div>
-                        <p className="font-bold text-[#1B2124]">Hardcopy Books</p>
-                        <p className="text-[10px] text-[#757575]">Free Doorstep Delivery</p>
-                      </div>
+                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF]">
+                      <p className="font-bold text-[#1B2124]">Hardcopy Books</p>
+                      <p className="text-[10px] text-[#757575] mt-0.5">Free Doorstep Delivery</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF] flex items-center gap-2.5">
-                      <Target className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <div>
-                        <p className="font-bold text-[#1B2124]">Evaluated Tests</p>
-                        <p className="text-[10px] text-[#757575]">Step-by-step marking</p>
-                      </div>
+                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF]">
+                      <p className="font-bold text-[#1B2124]">Evaluated Tests</p>
+                      <p className="text-[10px] text-[#757575] mt-0.5">Step-by-step marking</p>
                     </div>
                   </div>
                 </div>
@@ -291,10 +261,9 @@ export default function LandingPage() {
                   </div>
                   <a
                     href="tel:9876543210"
-                    className="p-2.5 bg-[#5A4BFF] hover:bg-[#4939E8] rounded-lg transition"
-                    aria-label="Call student counsellor"
+                    className="px-3.5 py-2 bg-[#5A4BFF] hover:bg-[#4939E8] rounded-lg transition text-xs font-bold text-white"
                   >
-                    <PhoneCall className="w-4 h-4 text-white" />
+                    Call Now
                   </a>
                 </div>
               </div>
@@ -303,22 +272,14 @@ export default function LandingPage() {
 
           {/* Stats Ribbon */}
           <div className="mt-14 pt-8 border-t border-[#EFEFEF] grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div key={idx} className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-[#5A4BFF]/10 text-[#5A4BFF] flex items-center justify-center shrink-0">
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xl sm:text-2xl font-black text-[#1B2124] tracking-tight">
-                      {item.value}
-                    </p>
-                    <p className="text-xs text-[#757575] font-medium">{item.label}</p>
-                  </div>
-                </div>
-              );
-            })}
+            {stats.map((item, idx) => (
+              <div key={idx} className="border-l-2 border-[#5A4BFF] pl-3.5">
+                <p className="text-2xl sm:text-3xl font-extrabold text-[#1B2124] tracking-tight">
+                  {item.value}
+                </p>
+                <p className="text-xs text-[#757575] font-medium mt-0.5">{item.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -330,7 +291,6 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold rounded-full mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
                 <span>Flagship Learning Batches</span>
               </div>
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
@@ -377,10 +337,9 @@ export default function LandingPage() {
           <div className="mt-10 text-center">
             <Link
               to="/courses"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-[6px] bg-slate-100 hover:bg-[#5A4BFF] text-[#1B2124] hover:text-white text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer group"
+              className="inline-flex items-center px-6 py-3 rounded-[6px] bg-slate-100 hover:bg-[#5A4BFF] text-[#1B2124] hover:text-white text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer"
             >
-              <span>Explore All Batches & Study Packs</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              Explore All Batches & Study Packs
             </Link>
           </div>
         </div>
@@ -392,7 +351,6 @@ export default function LandingPage() {
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-800 text-xs font-bold rounded-full border border-amber-200">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
               <span>Proven Pedagogy for CA Aspirants</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#3D3D3D]">
@@ -405,34 +363,31 @@ export default function LandingPage() {
 
           {/* 6 Feature Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {whyChooseUsFeatures.map((feat, idx) => {
-              const Icon = feat.icon;
-              return (
-                <div
-                  key={idx}
-                  className="bg-white rounded-xl border border-[#EFEFEF] edtech-card-shadow p-6 flex flex-col justify-between hover:border-[#5A4BFF]/50 transition-all duration-200 group"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded-xl bg-[#5A4BFF]/10 text-[#5A4BFF] flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <Icon className="w-6 h-6" />
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#757575] bg-slate-100 px-2 py-0.5 rounded">
-                        {feat.badge}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base font-bold text-[#1B2124] mb-2 group-hover:text-[#5A4BFF] transition-colors leading-snug">
-                      {feat.title}
-                    </h3>
-
-                    <p className="text-xs text-[#757575] leading-relaxed">
-                      {feat.desc}
-                    </p>
+            {whyChooseUsFeatures.map((feat, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-xl border border-[#EFEFEF] edtech-card-shadow p-6 flex flex-col justify-between hover:border-[#5A4BFF]/50 transition-all duration-200 group"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xl font-black text-[#5A4BFF]/80 font-mono tracking-tight">
+                      {feat.step}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#757575] bg-slate-100 px-2 py-0.5 rounded">
+                      {feat.badge}
+                    </span>
                   </div>
+
+                  <h3 className="text-base font-bold text-[#1B2124] mb-2 group-hover:text-[#5A4BFF] transition-colors leading-snug">
+                    {feat.title}
+                  </h3>
+
+                  <p className="text-xs text-[#757575] leading-relaxed">
+                    {feat.desc}
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
           {/* Slogan Banner Inside Why Choose Us */}
@@ -466,7 +421,6 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold rounded-full mb-2">
-                <GraduationCap className="w-3.5 h-3.5" />
                 <span>Mentors Who Have Been There</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#3D3D3D]">
@@ -479,10 +433,9 @@ export default function LandingPage() {
 
             <Link
               to="/courses#faculty"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5A4BFF] hover:underline self-start md:self-auto"
+              className="inline-flex items-center text-xs font-bold text-[#5A4BFF] hover:underline self-start md:self-auto"
             >
-              <span>View Full Faculty Directory</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              View Full Faculty Directory
             </Link>
           </div>
 
@@ -525,25 +478,20 @@ export default function LandingPage() {
                   </div>
 
                   {/* Subject Specialization Box */}
-                  <div className="bg-slate-50 rounded-lg p-3 border border-[#EFEFEF] mb-4 space-y-1">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1B2124]">
-                      <BookOpen className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
-                      <span>Subject Specialization:</span>
-                    </div>
-                    <p className="text-xs text-[#3D3D3D] pl-5">{mentor.subject}</p>
+                  <div className="bg-slate-50 rounded-lg p-3 border border-[#EFEFEF] mb-4 space-y-0.5">
+                    <span className="text-[11px] font-bold text-[#757575] block uppercase tracking-wider">
+                      Subject Specialization
+                    </span>
+                    <p className="text-xs font-semibold text-[#1B2124]">{mentor.subject}</p>
                   </div>
                 </div>
 
                 {/* Footer Metrics */}
                 <div className="flex items-center justify-between text-xs text-[#757575] border-t border-[#EFEFEF] pt-3">
-                  <div className="flex items-center gap-1.5">
-                    <Award className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                    <span>{mentor.exp}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 font-semibold text-[#1B2124]">
-                    <Users className="w-3.5 h-3.5 text-[#5A4BFF] shrink-0" />
-                    <span>{mentor.taughtStudents} Students</span>
-                  </div>
+                  <span className="font-medium">{mentor.exp}</span>
+                  <span className="font-semibold text-[#1B2124]">
+                    {mentor.taughtStudents} Students
+                  </span>
                 </div>
               </div>
             ))}
@@ -558,7 +506,6 @@ export default function LandingPage() {
             {/* Header */}
             <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-semibold">
-                <HelpCircle className="w-3.5 h-3.5" />
                 <span>Got Questions?</span>
               </div>
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-[#3D3D3D]">
@@ -634,10 +581,9 @@ export default function LandingPage() {
               </Link>
               <a
                 href="tel:9876543210"
-                className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center"
               >
-                <PhoneCall className="w-4 h-4" />
-                <span>Call +91 98765 43210</span>
+                Call +91 98765 43210
               </a>
             </div>
           </div>

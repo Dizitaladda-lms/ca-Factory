@@ -1,32 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
-import {
-  Sparkles,
-  BookOpen,
-  Calendar,
-  Clock,
-  CheckCircle2,
-  Users,
-  Award,
-  Star,
-  ShieldCheck,
-  Video,
-  Play,
-  X,
-  PhoneCall,
-  ChevronDown,
-  ChevronRight,
-  Home,
-  ArrowRight,
-  FileText,
-  HelpCircle,
-  Laptop,
-  GraduationCap,
-  Download,
-  Flame,
-  Check,
-  Share2,
-} from "lucide-react";
+import { Play, X, ChevronDown } from "lucide-react";
 
 import api from "../../lib/api";
 import BatchesHeader from "../../components/batches/BatchesHeader";
@@ -310,7 +284,7 @@ export default function CourseDetails() {
       {/* Share Toast Notification */}
       {showShareNotice && (
         <div className="fixed top-24 right-6 z-50 bg-[#1B2124] text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span className="text-emerald-400 font-bold">✓</span>
           <span>Batch link copied to clipboard!</span>
         </div>
       )}
@@ -323,19 +297,18 @@ export default function CourseDetails() {
             aria-label="Breadcrumb"
             className="flex items-center gap-2 text-xs text-[#757575] mb-4 overflow-x-auto whitespace-nowrap scrollbar-none"
           >
-            <Link to="/" className="hover:text-[#5A4BFF] flex items-center gap-1 transition">
-              <Home className="w-3.5 h-3.5" />
-              <span>Home</span>
+            <Link to="/" className="hover:text-[#5A4BFF] transition">
+              Home
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-[#7B7F86]" />
+            <span className="text-[#7B7F86]">/</span>
             <Link to="/courses" className="hover:text-[#5A4BFF] transition">
               CA & CS
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-[#7B7F86]" />
+            <span className="text-[#7B7F86]">/</span>
             <Link to="/ca/foundation/batches" className="hover:text-[#5A4BFF] transition uppercase">
               {currentBatch.levelLabel || "Batches"}
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-[#7B7F86]" />
+            <span className="text-[#7B7F86]">/</span>
             <span className="font-semibold text-[#1B2124] truncate max-w-xs md:max-w-md">
               {currentBatch.title}
             </span>
@@ -343,14 +316,13 @@ export default function CourseDetails() {
 
           {/* Top Badges Strip */}
           <div className="flex flex-wrap items-center gap-2.5 mb-3">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200 text-xs font-extrabold uppercase tracking-wide">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-600 border border-red-200 text-xs font-extrabold uppercase tracking-wide">
               <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
               <span>Live Batch</span>
             </span>
 
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold">
-              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-              <span>{currentBatch.rating || "4.9"}</span>
+              <span>★ {currentBatch.rating || "4.9"}</span>
               <span className="text-slate-500 font-normal">({currentBatch.enrolledCount || "15,000+"} Enrolled)</span>
             </span>
 
@@ -361,11 +333,10 @@ export default function CourseDetails() {
             <button
               type="button"
               onClick={handleShare}
-              className="ml-auto p-1.5 rounded-lg border border-[#EFEFEF] bg-white text-[#757575] hover:text-[#1B2124] hover:border-slate-300 transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+              className="ml-auto px-3 py-1 rounded-lg border border-[#EFEFEF] bg-white text-[#757575] hover:text-[#1B2124] hover:border-slate-300 transition text-xs font-semibold cursor-pointer"
               title="Share Batch"
             >
-              <Share2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Share</span>
+              Share
             </button>
           </div>
 
@@ -468,7 +439,6 @@ export default function CourseDetails() {
               <section id="overview" className="bg-white rounded-2xl border border-[#EFEFEF] p-6 sm:p-8 edtech-card-shadow space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold mb-2">
-                    <Sparkles className="w-3.5 h-3.5" />
                     <span>Comprehensive Preparation Roadmap</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-[#1B2124]">
@@ -481,10 +451,8 @@ export default function CourseDetails() {
 
                 {/* 6 Feature Pillars Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1.5">
-                    <div className="w-9 h-9 rounded-lg bg-[#5A4BFF]/10 text-[#5A4BFF] flex items-center justify-center">
-                      <Video className="w-4 h-4" />
-                    </div>
+                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1">
+                    <span className="text-xs font-mono font-bold text-[#5A4BFF]">01</span>
                     <h3 className="text-xs sm:text-sm font-bold text-[#1B2124]">
                       550+ Hours Live Interactive Lectures
                     </h3>
@@ -493,10 +461,8 @@ export default function CourseDetails() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1.5">
-                    <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-                      <FileText className="w-4 h-4" />
-                    </div>
+                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1">
+                    <span className="text-xs font-mono font-bold text-[#5A4BFF]">02</span>
                     <h3 className="text-xs sm:text-sm font-bold text-[#1B2124]">
                       Daily Practice Problems (DPP)
                     </h3>
@@ -505,10 +471,8 @@ export default function CourseDetails() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1.5">
-                    <div className="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center">
-                      <Award className="w-4 h-4" />
-                    </div>
+                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1">
+                    <span className="text-xs font-mono font-bold text-[#5A4BFF]">03</span>
                     <h3 className="text-xs sm:text-sm font-bold text-[#1B2124]">
                       Evaluated Mock Test Series
                     </h3>
@@ -517,10 +481,8 @@ export default function CourseDetails() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1.5">
-                    <div className="w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
-                      <BookOpen className="w-4 h-4" />
-                    </div>
+                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1">
+                    <span className="text-xs font-mono font-bold text-[#5A4BFF]">04</span>
                     <h3 className="text-xs sm:text-sm font-bold text-[#1B2124]">
                       Colored Notes & Formula Compilations
                     </h3>
@@ -529,10 +491,8 @@ export default function CourseDetails() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1.5">
-                    <div className="w-9 h-9 rounded-lg bg-cyan-500/10 text-cyan-600 flex items-center justify-center">
-                      <HelpCircle className="w-4 h-4" />
-                    </div>
+                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1">
+                    <span className="text-xs font-mono font-bold text-[#5A4BFF]">05</span>
                     <h3 className="text-xs sm:text-sm font-bold text-[#1B2124]">
                       24/7 Dedicated Doubt Engine
                     </h3>
@@ -541,10 +501,8 @@ export default function CourseDetails() {
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1.5">
-                    <div className="w-9 h-9 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center">
-                      <Users className="w-4 h-4" />
-                    </div>
+                  <div className="p-4 rounded-xl border border-[#EFEFEF] bg-[#F8FAFC] space-y-1">
+                    <span className="text-xs font-mono font-bold text-[#5A4BFF]">06</span>
                     <h3 className="text-xs sm:text-sm font-bold text-[#1B2124]">
                       1-on-1 Mentorship & Counseling
                     </h3>
@@ -636,7 +594,6 @@ export default function CourseDetails() {
               <section id="faculty" className="bg-white rounded-2xl border border-[#EFEFEF] p-6 sm:p-8 edtech-card-shadow space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold mb-2">
-                    <Award className="w-3.5 h-3.5" />
                     <span>India's Star Educators</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-[#1B2124]">
@@ -669,8 +626,7 @@ export default function CourseDetails() {
                         <p className="text-xs text-[#5A4BFF] font-semibold">{mentor.subject}</p>
                         <p className="text-[11px] text-[#757575]">{mentor.role}</p>
                         <div className="flex items-center gap-2 pt-1 text-[11px] text-amber-600 font-bold">
-                          <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                          <span>4.96 Rating</span>
+                          <span>★ 4.96 Rating</span>
                           <span className="text-[#757575] font-normal">• {mentor.exp}</span>
                         </div>
                       </div>
@@ -681,10 +637,9 @@ export default function CourseDetails() {
                 <div className="pt-2 text-center sm:text-left">
                   <Link
                     to="/faculty"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5A4BFF] hover:underline"
+                    className="inline-flex items-center text-xs font-bold text-[#5A4BFF] hover:underline"
                   >
-                    <span>View all faculty credentials, student reviews & bios</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    View all faculty credentials, student reviews & bios
                   </Link>
                 </div>
               </section>
@@ -720,7 +675,7 @@ export default function CourseDetails() {
                       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         {paper.chapters.map((ch, chIdx) => (
                           <div key={chIdx} className="flex items-start gap-2 text-xs text-[#3D3D3D]">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <span className="text-[#5A4BFF] font-bold">●</span>
                             <span>{ch}</span>
                           </div>
                         ))}
@@ -734,7 +689,6 @@ export default function CourseDetails() {
               <section id="demos" className="bg-white rounded-2xl border border-[#EFEFEF] p-6 sm:p-8 edtech-card-shadow space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5A4BFF]/10 text-[#5A4BFF] text-xs font-bold mb-2">
-                    <Play className="w-3.5 h-3.5" />
                     <span>Try Before You Enroll</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-[#1B2124]">
@@ -939,9 +893,8 @@ export default function CourseDetails() {
                         {activePlanData.discount}% OFF
                       </span>
                     </div>
-                    <p className="text-[11px] text-amber-700 font-medium mt-1 flex items-center gap-1">
-                      <Flame className="w-3.5 h-3.5 text-amber-600" />
-                      <span>Limited Seats Early-Bird Discount Active</span>
+                    <p className="text-[11px] text-amber-700 font-medium mt-1">
+                      Limited Seats Early-Bird Discount Active
                     </p>
                   </div>
 
@@ -950,19 +903,17 @@ export default function CourseDetails() {
                     <button
                       type="button"
                       onClick={handleEnrollNow}
-                      className="w-full py-3.5 px-6 rounded-[6px] bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-sm font-black transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                      className="w-full py-3.5 px-6 rounded-[6px] bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-sm font-black transition-all shadow-md hover:shadow-lg flex items-center justify-center cursor-pointer active:scale-98"
                     >
-                      <span>Buy Now</span>
-                      <ArrowRight className="w-4 h-4" />
+                      Buy Now
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setActiveVideoModal(DEMO_LECTURES[0])}
-                      className="w-full py-2.5 px-4 rounded-[6px] border border-[#5A4BFF] text-[#5A4BFF] hover:bg-[#5A4BFF]/10 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-[6px] border border-[#5A4BFF] text-[#5A4BFF] hover:bg-[#5A4BFF]/10 text-xs font-bold transition flex items-center justify-center cursor-pointer"
                     >
-                      <Play className="w-3.5 h-3.5" />
-                      <span>Watch Free Demo Class</span>
+                      Watch Free Demo Class
                     </button>
                   </div>
 
@@ -971,23 +922,23 @@ export default function CourseDetails() {
                     <span className="text-xs font-bold text-[#1B2124] block">Package Includes:</span>
                     <div className="space-y-1.5 text-xs text-[#3D3D3D]">
                       <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-emerald-600 font-bold">✓</span>
                         <span>550+ Hours Live & Recorded Classes</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-emerald-600 font-bold">✓</span>
                         <span>Daily Practice Problems (DPP) & Solutions</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-emerald-600 font-bold">✓</span>
                         <span>Evaluated Mock Tests with Ranking</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-emerald-600 font-bold">✓</span>
                         <span>Dedicated 24/7 Doubt Engine</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span className="text-emerald-600 font-bold">✓</span>
                         <span>Unlimited Watch Time till Exam Date</span>
                       </div>
                     </div>
@@ -997,9 +948,8 @@ export default function CourseDetails() {
 
               {/* Need Help Counseling Call Card */}
               <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-2xl p-5 text-white space-y-3 shadow-md">
-                <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                  <PhoneCall className="w-4 h-4" />
-                  <span>Free Academic Counseling</span>
+                <div className="text-amber-400 text-xs font-bold uppercase tracking-wider">
+                  Free Academic Counseling
                 </div>
                 <h4 className="text-sm font-bold text-white">
                   Confused between variants or syllabus attempts?
@@ -1009,10 +959,9 @@ export default function CourseDetails() {
                 </p>
                 <a
                   href="tel:9876543210"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-[6px] text-xs font-bold text-white transition"
+                  className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-[6px] text-xs font-bold text-white transition"
                 >
-                  <PhoneCall className="w-3.5 h-3.5" />
-                  <span>Call +91 98765 43210</span>
+                  Call +91 98765 43210
                 </a>
               </div>
             </div>
@@ -1039,10 +988,9 @@ export default function CourseDetails() {
         <button
           type="button"
           onClick={handleEnrollNow}
-          className="px-6 py-3 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-black rounded-[6px] transition flex items-center gap-1.5 shadow-md"
+          className="px-6 py-3 bg-[#5A4BFF] hover:bg-[#4939E8] text-white text-xs font-black rounded-[6px] transition shadow-md"
         >
-          <span>Buy Now</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          Buy Now
         </button>
       </div>
 
