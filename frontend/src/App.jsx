@@ -55,6 +55,7 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/faculty" element={<FacultyPage />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Login defaultTab="register" />} />
       <Route path="/about" element={<About />} />
       <Route path="/courses" element={<CourseListing />} />
       <Route path="/ca/batches" element={<CourseListing />} />

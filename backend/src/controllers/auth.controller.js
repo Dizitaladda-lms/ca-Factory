@@ -44,18 +44,19 @@ const ensureVerificationSchema = async () => {
 // ==========================================
 const loginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const id = req.body.email || req.body.id || req.body.userId || req.body.phone;
+    const { password } = req.body;
 
-    if (!email || !password) {
+    if (!id || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required",
+        message: "User ID (Email or Phone) and password are required",
       });
     }
 
     const userQuery = await pool.query(
-      "SELECT * FROM users WHERE LOWER(email) = LOWER($1)",
-      [email.trim()]
+      "SELECT * FROM users WHERE LOWER(email) = LOWER($1) OR phone = $1",
+      [String(id).trim()]
     );
 
     if (userQuery.rows.length === 0) {
