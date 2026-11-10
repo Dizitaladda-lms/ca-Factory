@@ -464,7 +464,7 @@ export default function CourseCard({
     <div className="cc-card">
       <style>{`
         .cc-card{
-          font-family:'Inter',sans-serif;
+          font-family:'Fredoka', 'Segoe UI', sans-serif;
           width:100%;
           max-width:380px;
           border-radius:22px;
@@ -513,7 +513,7 @@ export default function CourseCard({
           padding:6px 12px;border-radius:100px;
         }
         .cc-title{
-          font-family:'Space Grotesk',sans-serif;
+          font-family:'Fredoka', 'Segoe UI', sans-serif;
           font-size:23px;font-weight:700;line-height:1.32;
           color:#fff;margin:0 0 10px;letter-spacing:-0.01em;
           position:relative;z-index:1;
@@ -567,14 +567,14 @@ export default function CourseCard({
         .cc-hr{border:none;border-top:1px solid #eceef3;margin:0 0 18px;}
         .cc-foot{display:flex;justify-content:space-between;align-items:flex-end;}
         .cc-old{font-size:12px;color:#a0a2b0;text-decoration:line-through;margin-bottom:2px;}
-        .cc-now{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:#111322;}
+        .cc-now{font-family:'Fredoka', 'Segoe UI', sans-serif;font-size:26px;font-weight:700;color:#111322;}
         .cc-save{
           display:inline-block;font-size:11px;font-weight:700;color:#0f9d58;
           background:#e6f7ee;padding:2px 8px;border-radius:6px;
           margin-left:8px;vertical-align:middle;
         }
         .cc-cta{
-          font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;color:#fff;
+          font-family:'Fredoka', 'Segoe UI', sans-serif;font-size:13.5px;font-weight:700;color:#fff;
           background:linear-gradient(135deg,#8b5cf6,#5b3fd1);
           border:none;border-radius:12px;padding:13px 22px;cursor:pointer;
           box-shadow:0 10px 24px -8px rgba(91,63,209,0.55);
