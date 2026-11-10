@@ -25,11 +25,12 @@ function Navbar() {
 
           {/* LOGO */}
 
-          <Link
-            to="/"
-            className="text-3xl font-bold text-blue-900"
-          >
-            DIZITAL ADDA
+          <Link to="/" className="flex items-center gap-3 shrink-0" aria-label="CA Factory home">
+            <img
+              src="/logo.png"
+              alt="CA Factory logo"
+              className="h-14 w-auto object-contain drop-shadow-sm"
+            />
           </Link>
 
           {/* DESKTOP MENU */}
