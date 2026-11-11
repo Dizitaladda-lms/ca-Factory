@@ -9,9 +9,21 @@ import BatchesFooter from "../../components/batches/BatchesFooter";
 import FloatingHelpButton from "../../components/batches/FloatingHelpButton";
 import { CA_BATCHES_DATA, FACULTY_MEMBERS } from "../../data/caBatchesData";
 
+const getMentorVideo = (url) => {
+  const value = String(url || "").trim();
+  if (!value) return { type: "placeholder" };
+  const youtubeId = value.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|shorts\/|watch\?v=))([\w-]{11})/)?.[1];
+  if (youtubeId) return { type: "embed", src: `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0` };
+  const vimeoId = value.match(/vimeo\.com\/(?:video\/)?(\d+)/)?.[1];
+  if (vimeoId) return { type: "embed", src: `https://player.vimeo.com/video/${vimeoId}` };
+  if (/^https:\/\/[^\s]+\.(mp4|webm)(?:\?.*)?$/i.test(value)) return { type: "file", src: value };
+  return { type: "placeholder" };
+};
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const BRAND_NAME = "CS Factory";
+  const mentorVideo = getMentorVideo(import.meta.env.VITE_MENTOR_MESSAGE_VIDEO_URL);
 
   // Tab state for Popular Courses
   const [courseCategory, setCourseCategory] = useState("all");
@@ -206,10 +218,29 @@ export default function LandingPage() {
                     <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
                     <span className="text-xs font-bold text-[#1B2124]">Admissions Open • 2026-27</span>
                   </div>
-                  <span className="text-xs font-bold text-[#5A4BFF] bg-[#5A4BFF]/10 px-2.5 py-0.5 rounded-full">
-                    Flat 55% Off
-                  </span>
                 </div>
+
+                {/* Mentor's welcome video for CA and CS students */}
+                <section aria-label="Mentor welcome video" className="overflow-hidden rounded-xl border border-slate-200 bg-slate-950">
+                  <div className="relative aspect-video">
+                    {mentorVideo.type === "embed" ? (
+                      <iframe src={mentorVideo.src} title="A welcome message from your mentor" className="absolute inset-0 h-full w-full" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+                    ) : mentorVideo.type === "file" ? (
+                      <video className="absolute inset-0 h-full w-full" controls playsInline preload="metadata" aria-label="A welcome message from your mentor">
+                        <source src={mentorVideo.src} />
+                        Your browser does not support video playback.
+                      </video>
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.55),transparent_48%),linear-gradient(135deg,#111827,#172554)] px-6 text-center text-white">
+                        <span aria-hidden="true" className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/70 bg-white/10 text-2xl">▶</span>
+                        <div>
+                          <h3 id="mentor-message-title" className="text-base font-extrabold">A message from your mentor</h3>
+                          <p className="mt-1 text-xs text-slate-200">Guidance and encouragement for every CA &amp; CS student</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </section>
 
                 {/* Hero Showcase Highlight */}
                 <div className="space-y-3">
@@ -223,11 +254,7 @@ export default function LandingPage() {
                     <p className="text-xs text-[#757575] mt-1">
                       Group 1 + Group 2 Complete 6-Paper Coverage with live answer writing.
                     </p>
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-200/60">
-                      <div>
-                        <span className="text-base font-extrabold text-[#1B2124]">₹18,999</span>
-                        <span className="text-xs text-[#757575] line-through ml-2">₹42,999</span>
-                      </div>
+                    <div className="flex justify-end mt-3 pt-3 border-t border-slate-200/60">
                       <Link
                         to="/course/ca-inter-udesh-regular-sep-2027-group--1-2--combo"
                         className="text-xs font-bold text-[#5A4BFF] hover:underline"
@@ -290,9 +317,6 @@ export default function LandingPage() {
                 <span className="h-3.5 w-3.5 rounded-full bg-[#22c55e] shadow-[0_0_0_4px_rgba(34,197,94,0.12)]" />
                 <span className="text-base sm:text-lg font-black text-[#1B2124]">Admissions Open • 2026-27</span>
               </div>
-              <span className="inline-flex items-center justify-center rounded-full bg-[#E9E3FF] px-3 py-1 text-xs font-black text-[#5A4BFF] tracking-tight">
-                Flat 55% Off
-              </span>
             </div>
 
             <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-4 sm:p-5">
@@ -311,12 +335,7 @@ export default function LandingPage() {
                       Group 1 + Group 2 complete 6-paper coverage with live answer writing, mentor guidance, and exam-ready strategy support.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-                      <div className="flex items-center gap-2 text-2xl font-black tracking-tight text-[#1B2124]">
-                        <span className="text-[#5A4BFF]">₹18,999</span>
-                        <span className="text-base font-medium text-[#94A3B8] line-through">₹42,999</span>
-                      </div>
-
+                    <div className="flex justify-end pt-2">
                       <Link
                         to="/courses"
                         className="inline-flex items-center justify-center rounded-xl bg-[#5A4BFF] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4939E8]"

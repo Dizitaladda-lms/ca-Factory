@@ -1,5 +1,9 @@
 # React + Vite
 
+## Mentor welcome video
+
+Set `VITE_MENTOR_MESSAGE_VIDEO_URL` in the frontend environment to a YouTube, Vimeo, MP4, or WebM URL. The landing page displays the mentor video in the hero card below the admissions strip.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

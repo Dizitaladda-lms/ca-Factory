@@ -55,6 +55,12 @@ const app = express();
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        frameSrc: ["'self'", "https://www.youtube-nocookie.com", "https://player.vimeo.com"],
+        mediaSrc: ["'self'", "https:"],
+      },
+    },
   })
 );
 
