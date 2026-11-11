@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import PopularCourses from "./components/PopularCourses";
 import About from "./pages/About";
@@ -41,7 +41,6 @@ import CourseListing from "./pages/CourseListing";
 import Checkout from "./pages/Checkout";
 import AdminCertificates from "./pages/admin/AdminCertificates";
 import VerifyCertificate from "./pages/VerifyCertificate";
-import VerifyEmail from "./pages/VerifyEmail";
 import BlogListing from "./pages/blog/BlogListing";
 import BlogDetail from "./pages/blog/BlogDetail";
 import FacultyPage from "./pages/FacultyPage";
@@ -74,7 +73,7 @@ function App() {
       <Route path="/placement" element={<Placement />} />
       <Route path="/verify-certificate" element={<VerifyCertificate />} />
       <Route path="/verify-certificate/:code" element={<VerifyCertificate />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/verify-email" element={<Navigate to="/checkout" replace />} />
       <Route path="/blogs" element={<BlogListing />} />
       <Route path="/blog/:slug" element={<BlogDetail />} />
 

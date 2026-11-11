@@ -21,8 +21,6 @@ import {
   Mail,
   UserCheck,
   Calendar,
-  RefreshCw,
-  Clock,
 } from "lucide-react";
 import api from "../lib/api";
 import BatchesHeader from "../components/batches/BatchesHeader";
@@ -84,57 +82,23 @@ const Checkout = () => {
   // Email Verification States
   const [isEmailVerified, setIsEmailVerified] = useState(() => {
     if (isUrlVerified) return true;
+    const currentEmail = (urlEmail || storedDraft?.email || storedUser?.email || "").trim().toLowerCase();
     try {
       const stored = sessionStorage.getItem("verified_email");
-      const currentEmail = (urlEmail || storedDraft?.email || storedUser?.email || "").trim().toLowerCase();
-      if (stored && currentEmail && stored === currentEmail) {
-        return true;
-      }
+      if (stored && currentEmail && stored === currentEmail) return true;
     } catch {}
-    return Boolean(storedUser?.is_verified);
+    return Boolean(currentEmail && currentEmail.includes("@"));
   });
-  const [isSendingVerification, setIsSendingVerification] = useState(false);
-  const [verificationSent, setVerificationSent] = useState(false);
-  const [verificationMsg, setVerificationMsg] = useState("");
-  const [previewLink, setPreviewLink] = useState("");
 
-  // Check verification status whenever email changes
+  // Email verification is intentionally disabled app-wide.
   useEffect(() => {
     const cleanEmail = formData.email?.trim().toLowerCase();
-    const urlVerified = searchParams.get("verified") === "true";
-    let storedVerifiedEmail = "";
-    try {
-      storedVerifiedEmail = sessionStorage.getItem("verified_email") || "";
-    } catch {}
-
-    // If verified by return URL or already verified in session for this email, preserve it!
-    if (urlVerified || (cleanEmail && storedVerifiedEmail === cleanEmail)) {
-      setIsEmailVerified(true);
-      return;
-    }
-
-    if (cleanEmail && cleanEmail.includes("@") && cleanEmail.includes(".")) {
-      api
-        .post("/api/auth/check-verification", { email: cleanEmail })
-        .then((res) => {
-          if (res.data?.verified) {
-            setIsEmailVerified(true);
-            try {
-              sessionStorage.setItem("verified_email", cleanEmail);
-            } catch {}
-          } else {
-            // Only reset to false if not verified by URL or session
-            const curUrlVerified = searchParams.get("verified") === "true";
-            let curStored = "";
-            try { curStored = sessionStorage.getItem("verified_email") || ""; } catch {}
-            if (!curUrlVerified && curStored !== cleanEmail) {
-              setIsEmailVerified(false);
-            }
-          }
-        })
-        .catch(() => {});
-    } else {
-      setIsEmailVerified(false);
+    const isValidEmail = Boolean(cleanEmail && cleanEmail.includes("@") && cleanEmail.includes("."));
+    setIsEmailVerified(isValidEmail || searchParams.get("verified") === "true");
+    if (isValidEmail) {
+      try {
+        sessionStorage.setItem("verified_email", cleanEmail);
+      } catch {}
     }
   }, [formData.email, searchParams]);
 
@@ -151,8 +115,6 @@ const Checkout = () => {
 
     if (verifiedParam === "true") {
       setIsEmailVerified(true);
-      setVerificationSent(false);
-      setVerificationMsg("✅ Email verified successfully! You can now complete your admission.");
       const emailToSave = (emailParam || formData.email || "").trim().toLowerCase();
       if (emailToSave) {
         try {
@@ -179,88 +141,6 @@ const Checkout = () => {
       return updated;
     });
   }, [searchParams]);
-
-  // Live polling while student verifies email in their inbox
-  useEffect(() => {
-    let intervalId;
-    if (verificationSent && !isEmailVerified && formData.email) {
-      intervalId = setInterval(() => {
-        api
-          .post("/api/auth/check-verification", { email: formData.email.trim().toLowerCase() })
-          .then((res) => {
-            if (res.data?.verified) {
-              setIsEmailVerified(true);
-              setVerificationSent(false);
-              setVerificationMsg("Email verified successfully! 🎉 You can now proceed to payment.");
-              clearInterval(intervalId);
-            }
-          })
-          .catch(() => {});
-      }, 3500);
-    }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [verificationSent, isEmailVerified, formData.email]);
-
-  const handleSendVerification = async () => {
-    if (!formData.email || !formData.email.includes("@")) {
-      setErrorMsg("Please enter a valid email address first.");
-      return;
-    }
-    try {
-      setIsSendingVerification(true);
-      setErrorMsg("");
-      const fullName = [formData.firstName, formData.lastName].filter(Boolean).join(" ");
-
-      // Prepare returnUrl pointing back to this checkout form so email button directly opens this form
-      // with ALL student details auto-filled!
-      let returnUrl = null;
-      if (typeof window !== "undefined") {
-        try {
-          const u = new URL(window.location.href);
-          if (course?.id) u.searchParams.set("courseId", course.id);
-          if (formData.email) u.searchParams.set("email", formData.email.trim().toLowerCase());
-          if (formData.firstName) u.searchParams.set("firstName", formData.firstName.trim());
-          if (formData.lastName) u.searchParams.set("lastName", formData.lastName.trim());
-          if (formData.phone) u.searchParams.set("phone", formData.phone.trim());
-          if (formData.dob) u.searchParams.set("dob", formData.dob.trim());
-          if (formData.state) u.searchParams.set("state", formData.state.trim());
-          if (formData.city) u.searchParams.set("city", formData.city.trim());
-          returnUrl = u.toString();
-        } catch {
-          returnUrl = window.location.href;
-        }
-      }
-
-      // Persist to session and local storage
-      try {
-        localStorage.setItem("checkout_draft", JSON.stringify(formData));
-        sessionStorage.setItem("checkout_draft", JSON.stringify(formData));
-      } catch {}
-
-      const res = await api.post("/api/auth/send-verification-email", {
-        email: formData.email.trim().toLowerCase(),
-        name: fullName || "Student",
-        clientUrl: typeof window !== "undefined" ? window.location.origin : null,
-        returnUrl,
-      });
-      if (res.data?.alreadyVerified) {
-        setIsEmailVerified(true);
-        setVerificationMsg("This email is already verified! ✅");
-      } else {
-        setVerificationSent(true);
-        setVerificationMsg(res.data?.message || "Verification link sent! Please check your email.");
-        if (res.data?.previewUrl) {
-          setPreviewLink(res.data.previewUrl);
-        }
-      }
-    } catch (err) {
-      setErrorMsg(err.response?.data?.message || "Failed to send verification email. Please try again.");
-    } finally {
-      setIsSendingVerification(false);
-    }
-  };
 
   // Fallback course fetch if user navigated to /checkout directly or via email redirect
   useEffect(() => {
@@ -385,11 +265,6 @@ const Checkout = () => {
       setErrorMsg("Please accept the Terms & Conditions to proceed with enrollment.");
       return;
     }
-    if (!isEmailVerified) {
-      setErrorMsg("⚠️ Email Verification Required: Please verify your email address by clicking 'Verify Email' above before proceeding to payment.");
-      return;
-    }
-
     try {
       setIsProcessing(true);
       setErrorMsg("");
@@ -866,15 +741,9 @@ const Checkout = () => {
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                       Email Address (Student Portal Username) <span className="text-red-500">*</span>
                     </label>
-                    {isEmailVerified ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300">
-                        <CheckCircle2 size={13} className="text-emerald-600" /> Verified Email
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
-                        <AlertCircle size={13} className="text-amber-600" /> Verification Required
-                      </span>
-                    )}
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300">
+                      <CheckCircle2 size={13} className="text-emerald-600" /> Ready
+                    </span>
                   </div>
 
                   <div className="relative flex items-center">
@@ -885,64 +754,20 @@ const Checkout = () => {
                       placeholder="e.g. rahul.sharma@example.com"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C2D12] transition pl-11 pr-36"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C2D12] transition pl-11"
                     />
                     <Mail className="absolute left-4 text-slate-400" size={18} />
-
-                    {/* Verification Trigger Button */}
-                    <div className="absolute right-2">
-                      {isEmailVerified ? (
-                        <div className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-                          <Check size={14} /> Ready
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleSendVerification}
-                          disabled={isSendingVerification || !formData.email || !formData.email.includes("@")}
-                          className="bg-[#0B1220] hover:bg-[#7C2D12] disabled:opacity-40 text-[#D4A017] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1 cursor-pointer"
-                        >
-                          {isSendingVerification ? (
-                            <>
-                              <RefreshCw size={12} className="animate-spin" /> Sending...
-                            </>
-                          ) : verificationSent ? (
-                            "Resend Link ✉️"
-                          ) : (
-                            "Verify Email ✉️"
-                          )}
-                        </button>
-                      )}
-                    </div>
                   </div>
 
-                  {/* Verification Status Alert Box */}
-                  {/* Verification Status Alert Box (Clean notice, auto-checked) */}
-                  {!isEmailVerified && verificationSent && (
-                    <div className="mt-2.5 bg-amber-50 border border-amber-300 rounded-xl p-3 flex items-center gap-2.5 text-xs text-amber-900 animate-fadeIn">
-                      <Clock size={16} className="text-amber-600 shrink-0 animate-spin" />
-                      <span>
-                        Verification link sent to <strong>{formData.email}</strong>. Please check your inbox and click the verification button in your email. We will automatically detect when you verify.
+                  <div className="mt-2.5 bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-2.5 text-xs text-emerald-900 animate-fadeIn">
+                    <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                    <div>
+                      <span className="font-bold text-emerald-800">Email verification is disabled.</span>
+                      <span className="block text-[11px] text-emerald-700">
+                        You can continue with your enrolment without a verification step.
                       </span>
                     </div>
-                  )}
-
-                  {/* Email Verified Banner */}
-                  {isEmailVerified ? (
-                    <div className="mt-2.5 bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center gap-2.5 text-xs text-emerald-900 animate-fadeIn">
-                      <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
-                      <div>
-                        <span className="font-bold text-emerald-800">Email Verified Successfully! ✅</span>
-                        <span className="block text-[11px] text-emerald-700">
-                          Your account has been authenticated. Temporary login password & tax invoice will be emailed to you upon payment.
-                        </span>
-                      </div>
-                    </div>
-                  ) : !verificationSent ? (
-                    <span className="text-[11px] text-slate-500 mt-1 block">
-                      Click <strong>"Verify Email ✉️"</strong> to receive a verification link before purchasing. Your account will not be created without verification.
-                    </span>
-                  ) : null}
+                  </div>
                 </div>
 
                 {/* Mobile Number */}

@@ -1,8 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 const pool = require("../config/db");
-const emailService = require("../services/email.service");
 const { getJwtSecret, getRefreshSecret } = require("../config/jwt");
 
 // ==========================================
@@ -259,7 +257,7 @@ const getMe = async (req, res, next) => {
 // ==========================================
 const sendVerificationEmail = async (req, res, next) => {
   try {
-    const { email, name } = req.body;
+    const { email } = req.body;
 
     if (!email || !email.includes("@")) {
       return res.status(400).json({
@@ -268,90 +266,22 @@ const sendVerificationEmail = async (req, res, next) => {
       });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-    const studentName = name?.trim() || "Student";
-
-    // 24-hour verification token
-    const token = crypto.randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
+    const cleanEmail = String(email).trim().toLowerCase();
     await ensureVerificationSchema();
 
-    // Check if user exists in DB - select * to avoid crash if column doesn't exist
-    const existing = await pool.query(
-      "SELECT * FROM users WHERE LOWER(email) = $1",
-      [cleanEmail]
-    );
-
-    if (existing.rows.length > 0) {
-      // If user is already verified
-      if (existing.rows[0].is_verified) {
-        return res.status(200).json({
-          success: true,
-          alreadyVerified: true,
-          message: "This email address is already verified! ✅",
-        });
-      }
-
-      try {
-        await pool.query(
-          "UPDATE users SET verification_token = $1, verification_token_expires = $2 WHERE id = $3",
-          [token, expires, existing.rows[0].id]
-        );
-      } catch (updateErr) {
-        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token VARCHAR(255);").catch(() => {});
-        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token_expires TIMESTAMP WITH TIME ZONE;").catch(() => {});
-        await pool.query(
-          "UPDATE users SET verification_token = $1, verification_token_expires = $2 WHERE id = $3",
-          [token, expires, existing.rows[0].id]
-        ).catch(() => {});
-      }
-    } else {
-      // Create pending student user so their verification token is stored
-      const tempPass = await bcrypt.hash("DA@" + Math.floor(100000 + Math.random() * 900000), 10);
-      try {
-        await pool.query(
-          `INSERT INTO users (name, full_name, email, password, role, is_verified, verification_token, verification_token_expires, status)
-           VALUES ($1, $1, $2, $3, 'student', false, $4, $5, 'Pending')`,
-          [studentName, cleanEmail, tempPass, token, expires]
-        );
-      } catch (insertErr) {
-        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT false;").catch(() => {});
-        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token VARCHAR(255);").catch(() => {});
-        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token_expires TIMESTAMP WITH TIME ZONE;").catch(() => {});
-        try {
-          await pool.query(
-            `INSERT INTO users (name, full_name, email, password, role, is_verified, verification_token, verification_token_expires, status)
-             VALUES ($1, $1, $2, $3, 'student', false, $4, $5, 'Pending')`,
-            [studentName, cleanEmail, tempPass, token, expires]
-          );
-        } catch (retryErr) {
-          await pool.query(
-            `INSERT INTO users (name, full_name, email, password, role, status)
-             VALUES ($1, $1, $2, $3, 'student', 'Pending')`,
-            [studentName, cleanEmail, tempPass]
-          ).catch(() => {});
-        }
-      }
+    try {
+      await pool.query(
+        "UPDATE users SET is_verified = true, verification_token = NULL, verification_token_expires = NULL WHERE LOWER(email) = $1",
+        [cleanEmail]
+      );
+    } catch (err) {
+      // Ignore DB variance from legacy verification columns.
     }
-
-    // Extract client origin and return URL from request body or headers
-    const clientOrigin = req.body?.clientUrl || req.headers?.origin || req.headers?.referer;
-    const returnUrl = req.body?.returnUrl;
-
-    // Dispatch email
-    const mailRes = await emailService.sendVerificationEmail({
-      to: cleanEmail,
-      name: studentName,
-      token,
-      clientOrigin,
-      returnUrl,
-    });
 
     res.status(200).json({
       success: true,
-      message: `Verification link sent to ${cleanEmail}. Please check your inbox and click the verify button.`,
-      previewUrl: mailRes.previewUrl,
+      alreadyVerified: true,
+      message: "Email verification is disabled for this app. Your email is accepted without a verification step.",
     });
   } catch (error) {
     console.error("Send verification email error:", error);
@@ -364,7 +294,9 @@ const sendVerificationEmail = async (req, res, next) => {
 // ==========================================
 const verifyEmail = async (req, res, next) => {
   try {
-    const token = req.query.token || req.body?.token;
+    const token = req.query?.token || req.body?.token;
+    const queryEmail = String(req.query?.email || req.body?.email || "").trim().toLowerCase();
+    const cleanedEmail = queryEmail || (token ? "" : "");
     const isBrowserGet = req.method === "GET";
     const hostHeader = req.headers?.host;
     const protoHeader = req.headers?.["x-forwarded-proto"] || "https";
@@ -390,100 +322,33 @@ const verifyEmail = async (req, res, next) => {
       return `${frontendUrl}/checkout?verified=true&email=${encodeURIComponent(targetEmail)}`;
     };
 
-    const getErrorRedirect = (status, email = "") => {
-      if (returnUrlParam) {
-        try {
-          const parsed = new URL(returnUrlParam);
-          parsed.searchParams.set("status", status);
-          if (email) parsed.searchParams.set("email", email);
-          return parsed.toString();
-        } catch {}
-      }
-      return `${frontendUrl}/checkout?status=${status}&email=${encodeURIComponent(email)}`;
-    };
-
-    if (!token) {
-      if (isBrowserGet) {
-        return res.redirect(getErrorRedirect("missing_token"));
-      }
-      return res.status(400).json({
-        success: false,
-        message: "Verification token is required",
-      });
-    }
-
-    await ensureVerificationSchema();
-
-    let queryRes;
-    try {
-      queryRes = await pool.query(
-        "SELECT * FROM users WHERE verification_token = $1",
-        [String(token).trim()]
-      );
-    } catch (tokenColErr) {
-      queryRes = { rows: [] };
-    }
-
-    // Fallback: If token not found in users (e.g. security scanners pre-fetched and cleared it),
-    // check by email parameter passed in the verification link!
-    const queryEmail = req.query?.email || req.body?.email;
-    if (queryRes.rows.length === 0 && queryEmail) {
+    if (cleanedEmail) {
       try {
-        queryRes = await pool.query(
-          "SELECT * FROM users WHERE LOWER(email) = $1 ORDER BY is_verified DESC, id DESC LIMIT 1",
-          [String(queryEmail).trim().toLowerCase()]
+        await pool.query(
+          "UPDATE users SET is_verified = true, verification_token = NULL, verification_token_expires = NULL WHERE LOWER(email) = $1",
+          [cleanedEmail]
         );
-      } catch (e) {
-        queryRes = { rows: [] };
+      } catch (_err) {
+        // Legacy verification columns may not exist on older databases; ignore gracefully.
       }
-    }
-
-    if (queryRes.rows.length === 0) {
       if (isBrowserGet) {
-        return res.redirect(getErrorRedirect("invalid", queryEmail || ""));
+        return res.redirect(getSuccessRedirect(cleanedEmail));
       }
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification link. Please request a new one.",
+      return res.status(200).json({
+        success: true,
+        message: "Email verification skipped. Your email is considered verified.",
+        email: cleanedEmail,
       });
-    }
-
-    const user = queryRes.rows[0];
-
-    // Check expiry only if user is not yet verified and token expires
-    const isAlreadyVerified = Boolean(user && (user.is_verified === true || user.is_verified === "true" || user.is_verified === 1 || user.is_verified === "t"));
-    if (!isAlreadyVerified && user.verification_token_expires && new Date() > new Date(user.verification_token_expires)) {
-      if (isBrowserGet) {
-        return res.redirect(getErrorRedirect("expired", user.email));
-      }
-      return res.status(400).json({
-        success: false,
-        message: "This verification link has expired. Please request a new one.",
-      });
-    }
-
-    // Mark verified for all records with this email or id
-    try {
-      await pool.query(
-        "UPDATE users SET is_verified = true, verification_token = NULL, verification_token_expires = NULL WHERE LOWER(email) = $1 OR id = $2",
-        [user.email.toLowerCase(), user.id]
-      );
-    } catch (updErr) {
-      await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT false;").catch(() => {});
-      await pool.query(
-        "UPDATE users SET is_verified = true WHERE LOWER(email) = $1 OR id = $2",
-        [user.email.toLowerCase(), user.id]
-      ).catch(() => {});
     }
 
     if (isBrowserGet) {
-      return res.redirect(getSuccessRedirect(user.email));
+      return res.redirect(`${frontendUrl}/checkout?verified=true`);
     }
 
     return res.status(200).json({
       success: true,
-      message: "Email verified successfully! 🎉",
-      email: user.email,
+      message: "Email verification is disabled for this app.",
+      email: cleanedEmail || null,
     });
   } catch (error) {
     console.error("Verify email error:", error);
@@ -506,15 +371,8 @@ const checkVerification = async (req, res, next) => {
       });
     }
 
-    await ensureVerificationSchema();
-
     const cleanEmail = String(email).trim().toLowerCase();
-    const result = await pool.query(
-      "SELECT * FROM users WHERE LOWER(email) = $1 ORDER BY is_verified DESC, id DESC LIMIT 1",
-      [cleanEmail]
-    );
-
-    if (result.rows.length === 0) {
+    if (!cleanEmail.includes("@")) {
       return res.status(200).json({
         success: true,
         exists: false,
@@ -522,14 +380,29 @@ const checkVerification = async (req, res, next) => {
       });
     }
 
-    const user = result.rows[0];
-    const isVerified = Boolean(
-      user && (user.is_verified === true || user.is_verified === "true" || user.is_verified === 1 || user.is_verified === "t")
-    );
+    await ensureVerificationSchema();
+
+    try {
+      const result = await pool.query(
+        "SELECT * FROM users WHERE LOWER(email) = $1 ORDER BY is_verified DESC, id DESC LIMIT 1",
+        [cleanEmail]
+      );
+
+      if (result.rows.length > 0) {
+        return res.status(200).json({
+          success: true,
+          exists: true,
+          verified: true,
+        });
+      }
+    } catch (err) {
+      // Ignore schema edge cases and treat valid email as verified for the UX.
+    }
+
     return res.status(200).json({
       success: true,
       exists: true,
-      verified: isVerified,
+      verified: true,
     });
   } catch (error) {
     console.error("Check verification error:", error);
