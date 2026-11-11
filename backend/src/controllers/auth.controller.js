@@ -138,91 +138,10 @@ const loginUser = async (req, res, next) => {
 // REGISTER (Self-registration for students)
 // ==========================================
 const registerUser = async (req, res, next) => {
-  const client = await pool.connect();
-  try {
-    const { name, email, password, phone, dob } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Name, email, and password are required",
-      });
-    }
-
-    const existing = await client.query(
-      "SELECT id FROM users WHERE LOWER(email) = LOWER($1)",
-      [email.trim()]
-    );
-
-    if (existing.rows.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "An account with this email already exists",
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await client.query("BEGIN");
-
-    let userRes;
-    try {
-      userRes = await client.query(
-        `INSERT INTO users (name, full_name, email, password, role, phone, dob, status)
-         VALUES ($1, $2, $3, $4, 'student', $5, $6, 'Active')
-         RETURNING id, name, email, role, dob`,
-        [name, name, email.trim().toLowerCase(), hashedPassword, phone || null, dob || null]
-      );
-    } catch (insertErr) {
-      if (insertErr.message && insertErr.message.includes("dob")) {
-        await client.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS dob VARCHAR(50)").catch(() => {});
-        userRes = await client.query(
-          `INSERT INTO users (name, full_name, email, password, role, phone, dob, status)
-           VALUES ($1, $2, $3, $4, 'student', $5, $6, 'Active')
-           RETURNING id, name, email, role, dob`,
-          [name, name, email.trim().toLowerCase(), hashedPassword, phone || null, dob || null]
-        );
-      } else {
-        throw insertErr;
-      }
-    }
-
-    const newUser = userRes.rows[0];
-    const studentCode = `STU-${Date.now().toString().slice(-4)}`;
-
-    await client.query(
-      `INSERT INTO students (user_id, student_id, name, email, password, phone, dob, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'Active')`,
-      [newUser.id, studentCode, name, email, hashedPassword, phone || null, dob || null]
-    );
-
-    await client.query("COMMIT");
-
-    const token = jwt.sign(
-      {
-        id: newUser.id,
-        role: newUser.role,
-        email: newUser.email,
-        name: newUser.name,
-      },
-      getJwtSecret(),
-      {
-        expiresIn: "7d",
-      }
-    );
-
-    res.status(201).json({
-      success: true,
-      message: "Account created successfully 🚀",
-      token,
-      user: newUser,
-    });
-  } catch (error) {
-    await client.query("ROLLBACK");
-    next(error);
-  } finally {
-    client.release();
-  }
+  return res.status(403).json({
+    success: false,
+    message: "Registration is disabled. Please login with your existing account.",
+  });
 };
 
 // ==========================================

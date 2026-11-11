@@ -1,5 +1,10 @@
 const blogService = require("../services/blog.service");
 const cacheService = require("../services/cache.service");
+const sanitizeArticle = (html) => String(html || "")
+  .replace(/<(script|style|iframe|object|embed|form|svg|math)[^>]*>[\s\S]*?<\/\1\s*>/gi, "")
+  .replace(/\s(on\w+|style)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+  .replace(/\s(href|src)\s*=\s*(["'])\s*(?:javascript|data):[\s\S]*?\2/gi, "")
+  .replace(/<(?!\/?(?:p|h[1-6]|ul|ol|li|a|strong|em|b|i|blockquote|table|thead|tbody|tr|th|td|br|hr|img|figure|figcaption|code|pre|div|span)\b)[^>]*>/gi, "");
 
 // ==========================================
 // 1. GET ALL PUBLISHED BLOGS (Public)
@@ -54,7 +59,7 @@ const getBlogBySlug = async (req, res, next) => {
 
     const blog = await blogService.getBlogBySlug(slug);
 
-    if (!blog) {
+    if (!blog || blog.is_published === false || blog.status === "draft" || blog.status === "in_review" || blog.status === "archived" || blog.status === "scheduled") {
       return res.status(404).json({
         success: false,
         message: `Blog with slug '${slug}' was not found.`,
@@ -136,8 +141,11 @@ const createBlog = async (req, res, next) => {
         message: "Blog content body is required.",
       });
     }
+    if (req.body.status && !["draft", "in_review", "scheduled", "published", "archived"].includes(req.body.status)) {
+      return res.status(400).json({ success: false, message: "Invalid editorial status." });
+    }
 
-    const blog = await blogService.createBlog(req.body);
+    const blog = await blogService.createBlog({ ...req.body, content: sanitizeArticle(content) });
 
     // Invalidate caches
     if (cacheService.redis && cacheService.isRedisReady) {
@@ -165,7 +173,10 @@ const createBlog = async (req, res, next) => {
 const updateBlog = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const updated = await blogService.updateBlog(id, req.body);
+    if (req.body.status && !["draft", "in_review", "scheduled", "published", "archived"].includes(req.body.status)) {
+      return res.status(400).json({ success: false, message: "Invalid editorial status." });
+    }
+    const updated = await blogService.updateBlog(id, { ...req.body, ...(req.body.content ? { content: sanitizeArticle(req.body.content) } : {}) });
 
     if (!updated) {
       return res.status(404).json({

@@ -54,7 +54,7 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/faculty" element={<FacultyPage />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Login defaultTab="register" />} />
+      <Route path="/register" element={<Navigate to="/login" replace />} />
       <Route path="/about" element={<About />} />
       <Route path="/courses" element={<CourseListing />} />
       <Route path="/ca/batches" element={<CourseListing />} />
@@ -76,6 +76,7 @@ function App() {
       <Route path="/verify-email" element={<Navigate to="/checkout" replace />} />
       <Route path="/blogs" element={<BlogListing />} />
       <Route path="/blog/:slug" element={<BlogDetail />} />
+      <Route path="/blog/:category/:slug" element={<BlogDetail />} />
 
       {/* ================= STUDENT / ENROLLED ROUTES ================= */}
       <Route path="/checkout" element={<Checkout />} />

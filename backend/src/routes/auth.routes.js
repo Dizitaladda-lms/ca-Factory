@@ -15,7 +15,12 @@ const { verifyToken } = require("../middleware/auth.middleware");
 
 // Public Auth Endpoints
 router.post("/login", loginUser);
-router.post("/register", registerUser);
+router.post("/register", (req, res) => {
+  return res.status(403).json({
+    success: false,
+    message: "Registration is disabled. Please login with your existing account.",
+  });
+});
 router.post("/refresh-token", refreshToken);
 router.post("/logout", logoutUser);
 

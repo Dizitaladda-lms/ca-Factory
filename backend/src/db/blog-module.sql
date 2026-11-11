@@ -1,0 +1,87 @@
+-- Additive blog-module migration for existing PostgreSQL installations.
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS status VARCHAR(24) NOT NULL DEFAULT 'published';
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS content_type VARCHAR(32) NOT NULL DEFAULT 'article';
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS language VARCHAR(8) NOT NULL DEFAULT 'en';
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS translation_key VARCHAR(120);
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS canonical_url TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS robots_index BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS robots_follow BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS focus_keyword VARCHAR(255);
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS secondary_keywords TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS og_title VARCHAR(255);
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS og_description TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS og_image TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS twitter_title VARCHAR(255);
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS twitter_description TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS twitter_image TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS featured_image_alt TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS author_photo TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS author_bio TEXT;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS reviewer_name VARCHAR(255);
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS reviewer_credentials VARCHAR(255);
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS course_id INTEGER REFERENCES courses(id) ON DELETE SET NULL;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS pinned BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE blogs ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+UPDATE blogs SET status = CASE WHEN is_published THEN 'published' ELSE 'draft' END
+  WHERE status IS NULL OR (status='published' AND is_published=false AND updated_at=created_at);
+UPDATE blogs SET published_at = created_at WHERE is_published AND published_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_blogs_status_published ON blogs(status, published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_blogs_translation_key ON blogs(translation_key);
+CREATE INDEX IF NOT EXISTS idx_blogs_course_id ON blogs(course_id);
+
+CREATE TABLE IF NOT EXISTS blog_authors (
+  id BIGSERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, photo TEXT, bio TEXT,
+  credentials TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS blog_categories (
+  id BIGSERIAL PRIMARY KEY, name VARCHAR(120) NOT NULL UNIQUE, slug VARCHAR(140) NOT NULL UNIQUE,
+  description TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS blog_tags (
+  id BIGSERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE, slug VARCHAR(120) NOT NULL UNIQUE
+);
+CREATE TABLE IF NOT EXISTS blog_post_tags (
+  blog_id INTEGER NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
+  tag_id BIGINT NOT NULL REFERENCES blog_tags(id) ON DELETE CASCADE,
+  PRIMARY KEY(blog_id, tag_id)
+);
+CREATE TABLE IF NOT EXISTS blog_revisions (
+  id BIGSERIAL PRIMARY KEY, blog_id INTEGER NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
+  revision JSONB NOT NULL, editor_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS blog_resources (
+  id BIGSERIAL PRIMARY KEY, blog_id INTEGER NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
+  title VARCHAR(255) NOT NULL, url TEXT NOT NULL, resource_type VARCHAR(40) NOT NULL DEFAULT 'pdf',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS blog_leads (
+  id BIGSERIAL PRIMARY KEY, blog_id INTEGER REFERENCES blogs(id) ON DELETE SET NULL,
+  name VARCHAR(160) NOT NULL, phone VARCHAR(40) NOT NULL, email VARCHAR(255) NOT NULL,
+  resource_id BIGINT REFERENCES blog_resources(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS blog_comments (
+  id BIGSERIAL PRIMARY KEY, blog_id INTEGER NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
+  name VARCHAR(160) NOT NULL, email VARCHAR(255) NOT NULL, body TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS blog_redirects (
+  id BIGSERIAL PRIMARY KEY, old_slug VARCHAR(500) NOT NULL UNIQUE,
+  new_slug VARCHAR(500) NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS blog_analytics (
+  id BIGSERIAL PRIMARY KEY, blog_id INTEGER NOT NULL REFERENCES blogs(id) ON DELETE CASCADE,
+  event VARCHAR(40) NOT NULL, value NUMERIC(12,2) NOT NULL DEFAULT 1,
+  visitor_key VARCHAR(128), created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_blog_comments_moderation ON blog_comments(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_blog_analytics_post_event ON blog_analytics(blog_id, event, created_at DESC);
+
+INSERT INTO blog_categories(name,slug) VALUES
+ ('CA Foundation','ca-foundation'),('CA Inter','ca-inter'),('CA Final','ca-final'),
+ ('CS Executive','cs-executive'),('CS Professional','cs-professional')
+ON CONFLICT(name) DO NOTHING;

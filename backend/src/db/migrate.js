@@ -31,7 +31,9 @@ async function runMigrations() {
 
     console.log("Executing schema.sql...");
     await pool.query(schemaSql);
-    console.log("All tables, constraints, and indexes created successfully! ✅");
+    const blogSql = fs.readFileSync(path.join(__dirname, "blog-module.sql"), "utf8");
+    await pool.query(blogSql);
+    console.log("Core schema and blog-module tables created successfully! ✅");
     process.exit(0);
   } catch (error) {
     console.error("Migration Failed! ❌", error);

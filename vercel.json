@@ -11,6 +11,16 @@
   },
   "rewrites": [
     {
+      "source": "/blog/:path*",
+      "destination": {
+        "type": "service",
+        "service": "backend"
+      }
+    },
+    { "source": "/sitemap.xml", "destination": { "type": "service", "service": "backend" } },
+    { "source": "/robots.txt", "destination": { "type": "service", "service": "backend" } },
+    { "source": "/rss.xml", "destination": { "type": "service", "service": "backend" } },
+    {
       "source": "/api(/.*)?",
       "destination": {
         "type": "service",

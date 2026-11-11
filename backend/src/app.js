@@ -21,6 +21,7 @@ const cookieParser = require("cookie-parser");
 
 // Database initialization
 require("./config/db");
+require("./services/blog-scheduler.service");
 
 // Middlewares
 const rateLimit = require("./middleware/rateLimit.middleware");
@@ -34,6 +35,7 @@ const aiRoutes = require("./routes/ai.routes");
 const assignmentRoutes = require("./routes/assignment.routes");
 const authRoutes = require("./routes/auth.routes");
 const blogRoutes = require("./routes/blog.routes");
+const blogSeoRoutes = require("./routes/blog-seo.routes");
 const certificateRoutes = require("./routes/certificate.routes");
 const courseRoutes = require("./routes/course.routes");
 const doubtRoutes = require("./routes/doubt.routes");
@@ -153,6 +155,9 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/blog", blogRoutes);
+// Crawlers receive post-specific HTML metadata and a no-JS article rendering.
+app.use(blogSeoRoutes);
 app.use("/api/certificates", certificateRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/doubts", doubtRoutes);
@@ -168,7 +173,13 @@ app.use("/api/teachers", teacherRoutes);
 app.use("/api/user", userRoutes);
 
 // Serve compiled frontend SPA dynamically
-app.use(express.static(frontendDist));
+app.use(express.static(frontendDist, {
+  maxAge: "1y",
+  immutable: true,
+  setHeaders(res, filePath) {
+    if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-cache");
+  },
+}));
 app.use((req, res, next) => {
   if (req.method === "GET" && !req.path.startsWith("/api")) {
     const indexPath = path.join(frontendDist, "index.html");

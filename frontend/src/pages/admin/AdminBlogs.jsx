@@ -23,13 +23,11 @@ import RichArticleEditor from "../../components/admin/RichArticleEditor";
 import api from "../../lib/api";
 
 const CATEGORIES = [
-  "AI & Prompt Engineering",
-  "Digital Marketing",
-  "Data Analytics & Science",
-  "Cyber Security",
-  "Career & Placement Guides",
-  "Full Stack Web Development",
-  "Competitive & Academic Prep",
+  "CA Foundation",
+  "CA Inter",
+  "CA Final",
+  "CS Executive",
+  "CS Professional",
 ];
 
 export default function AdminBlogs() {
@@ -44,7 +42,7 @@ export default function AdminBlogs() {
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
-    category: "AI & Prompt Engineering",
+    category: "CA Foundation",
     meta_title: "",
     meta_description: "",
     keywords: "",
@@ -58,9 +56,15 @@ export default function AdminBlogs() {
     tags: "",
     schema_markup: "",
     is_published: true,
+    status: "published", scheduled_at: "",
     faqs: [
       { question: "", answer: "" }
     ],
+    focus_keyword: "", secondary_keywords: [], canonical_url: "", robots_index: true, robots_follow: true,
+    og_title: "", og_description: "", og_image: "", twitter_title: "", twitter_description: "", twitter_image: "",
+    featured_image_alt: "", author_bio: "", reviewer_name: "", reviewer_credentials: "", content_type: "article", language: "en",
+    course_id: "",
+    translation_key: "",
   });
 
   const [saving, setSaving] = useState(false);
@@ -252,7 +256,7 @@ ${topic}
     setFormData({
       title: "",
       slug: "",
-      category: "AI & Prompt Engineering",
+    category: "CA Foundation",
       meta_title: "",
       meta_description: "",
       keywords: "",
@@ -266,9 +270,15 @@ ${topic}
       tags: "AI, Career, Roadmap",
       schema_markup: "",
       is_published: true,
+      status: "draft", scheduled_at: "",
       faqs: [
         { question: "What is the expected career growth in this field?", answer: "Professionals in this track consistently see strong compensation jumps of 40% to 100% within 12 to 18 months." }
       ],
+      focus_keyword: "", secondary_keywords: [], canonical_url: "", robots_index: true, robots_follow: true,
+      og_title: "", og_description: "", og_image: "", twitter_title: "", twitter_description: "", twitter_image: "",
+      featured_image_alt: "", author_bio: "", reviewer_name: "", reviewer_credentials: "", content_type: "article", language: "en",
+      course_id: "",
+      translation_key: "",
     });
     setIsFormOpen(true);
   };
@@ -278,7 +288,7 @@ ${topic}
     setFormData({
       title: blog.title || "",
       slug: blog.slug || "",
-      category: blog.category || "AI & Prompt Engineering",
+      category: blog.category || "CA Foundation",
       meta_title: blog.meta_title || "",
       meta_description: blog.meta_description || "",
       keywords: blog.keywords || "",
@@ -292,7 +302,16 @@ ${topic}
       schema_markup: typeof blog.schema_markup === "object" ? JSON.stringify(blog.schema_markup, null, 2) : (blog.schema_markup || ""),
       tags: Array.isArray(blog.tags) ? blog.tags.join(", ") : (blog.tags || ""),
       is_published: blog.is_published !== undefined ? blog.is_published : true,
+      status: blog.status || (blog.is_published ? "published" : "draft"), scheduled_at: blog.scheduled_at ? new Date(blog.scheduled_at).toISOString().slice(0, 16) : "",
       faqs: Array.isArray(blog.faqs) && blog.faqs.length > 0 ? blog.faqs : [{ question: "", answer: "" }],
+      focus_keyword: blog.focus_keyword || "", secondary_keywords: blog.secondary_keywords || [], canonical_url: blog.canonical_url || "",
+      robots_index: blog.robots_index !== false, robots_follow: blog.robots_follow !== false,
+      og_title: blog.og_title || "", og_description: blog.og_description || "", og_image: blog.og_image || "",
+      twitter_title: blog.twitter_title || "", twitter_description: blog.twitter_description || "", twitter_image: blog.twitter_image || "",
+      featured_image_alt: blog.featured_image_alt || "", author_bio: blog.author_bio || "", reviewer_name: blog.reviewer_name || "",
+      reviewer_credentials: blog.reviewer_credentials || "", content_type: blog.content_type || "article", language: blog.language || "en",
+      course_id: blog.course_id || "",
+      translation_key: blog.translation_key || "",
     });
     setIsFormOpen(true);
   };
@@ -341,6 +360,8 @@ ${topic}
       setSaving(true);
       const payload = {
         ...formData,
+        is_published: formData.status === "published",
+        scheduled_at: formData.scheduled_at ? new Date(formData.scheduled_at).toISOString() : null,
         tags: typeof formData.tags === "string" ? formData.tags.split(",").map(s => s.trim()).filter(Boolean) : formData.tags,
         faqs: formData.faqs.filter(f => f.question.trim() && f.answer.trim()),
       };
@@ -372,6 +393,24 @@ ${topic}
       b.category?.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
+
+  const seoText = (formData.content || "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+  const seoWords = seoText ? seoText.split(" ").length : 0;
+  const focus = (formData.focus_keyword || "").trim().toLowerCase();
+  const firstParagraph = (formData.content || "").match(/<p\b[^>]*>([\s\S]*?)<\/p>/i)?.[1]?.replace(/<[^>]+>/g, " ").toLowerCase() || "";
+  const seoChecks = [
+    ["Focus keyword in title", Boolean(focus && formData.title.toLowerCase().includes(focus))],
+    ["Focus keyword in URL slug", Boolean(focus && formData.slug.toLowerCase().includes(focus.replace(/\s+/g, "-")))],
+    ["Focus keyword in meta description", Boolean(focus && formData.meta_description.toLowerCase().includes(focus))],
+    ["Focus keyword in first paragraph", Boolean(focus && firstParagraph.includes(focus))],
+    ["Featured image alt text", Boolean(formData.featured_image_alt)],
+    ["At least 600 words", seoWords >= 600],
+    ["Internal link", /href=["']\/(?!\/)/i.test(formData.content)],
+    ["External reference", /href=["']https?:\/\//i.test(formData.content)],
+    ["Readable meta title (50–60 chars)", formData.meta_title.length >= 50 && formData.meta_title.length <= 60],
+    ["Meta description (150–160 chars)", formData.meta_description.length >= 150 && formData.meta_description.length <= 160],
+  ];
+  const seoScore = Math.round((seoChecks.filter(([, passed]) => passed).length / seoChecks.length) * 100);
 
   return (
     <AdminLayout title="Blog & Article Manager" subtitle="Create, edit and publish blog articles for the public site">
@@ -498,7 +537,7 @@ ${topic}
                           {b.title}
                         </div>
                         <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                          /blog/{b.slug}
+                          /blog/{String(b.category || "blog").toLowerCase().replace(/[^a-z0-9]+/g, "-")}/{b.slug}
                         </div>
                       </td>
                       <td className="py-4 px-4">
@@ -515,12 +554,12 @@ ${topic}
                       <td className="py-4 px-4">
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            b.is_published
+                            (b.status || (b.is_published ? "published" : "draft")) === "published"
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               : "bg-slate-100 text-slate-600 border border-slate-200"
                           }`}
                         >
-                          {b.is_published ? "Published" : "Draft"}
+                          {(b.status || (b.is_published ? "published" : "draft")).replace(/_/g, " ")}
                         </span>
                       </td>
                       <td className="py-4 px-4 text-slate-500 whitespace-nowrap">
@@ -528,7 +567,7 @@ ${topic}
                       </td>
                       <td className="py-4 px-6 text-right space-x-2 whitespace-nowrap">
                         <Link
-                          to={`/blog/${b.slug}`}
+                          to={`/blog/${String(b.category || "blog").toLowerCase().replace(/[^a-z0-9]+/g, "-")}/${b.slug}`}
                           target="_blank"
                           className="inline-flex p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition"
                           title="View Live Article"
@@ -711,6 +750,34 @@ ${topic}
                     </span>
                   </div>
 
+                  <section aria-labelledby="blog-seo-fields" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-4">
+                    <h3 id="blog-seo-fields" className="text-sm font-black text-slate-900">Search and social metadata</h3>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <label className="text-xs font-bold">Focus keyword<input value={formData.focus_keyword} onChange={(e) => setFormData({ ...formData, focus_keyword: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Secondary keywords<input value={Array.isArray(formData.secondary_keywords) ? formData.secondary_keywords.join(", ") : formData.secondary_keywords} onChange={(e) => setFormData({ ...formData, secondary_keywords: e.target.value.split(",").map((word) => word.trim()).filter(Boolean) })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold sm:col-span-2">Canonical URL<input type="url" value={formData.canonical_url} onChange={(e) => setFormData({ ...formData, canonical_url: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Open Graph title<input value={formData.og_title} onChange={(e) => setFormData({ ...formData, og_title: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Open Graph image URL<input value={formData.og_image} onChange={(e) => setFormData({ ...formData, og_image: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Twitter title<input value={formData.twitter_title} onChange={(e) => setFormData({ ...formData, twitter_title: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Twitter image URL<input value={formData.twitter_image} onChange={(e) => setFormData({ ...formData, twitter_image: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Featured image alt text<input value={formData.featured_image_alt} onChange={(e) => setFormData({ ...formData, featured_image_alt: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Reviewed by<input value={formData.reviewer_name} onChange={(e) => setFormData({ ...formData, reviewer_name: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Reviewer credentials<input value={formData.reviewer_credentials} onChange={(e) => setFormData({ ...formData, reviewer_credentials: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Content type<select value={formData.content_type} onChange={(e) => setFormData({ ...formData, content_type: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal"><option value="article">Article</option><option value="exam_update">Exam Update</option><option value="study_notes">Study Notes</option><option value="result_announcement">Result Announcement</option><option value="syllabus_change">Syllabus Change</option><option value="success_story">Success Story</option><option value="study_plan">Study Plan</option></select></label>
+                      <label className="text-xs font-bold">Language<select value={formData.language} onChange={(e) => setFormData({ ...formData, language: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal"><option value="en">English</option><option value="hi">Hindi</option></select></label>
+                      <label className="text-xs font-bold">Translation group key<input value={formData.translation_key} onChange={(e) => setFormData({ ...formData, translation_key: e.target.value })} placeholder="Use same key for English/Hindi pair" className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                      <label className="text-xs font-bold">Linked LMS course ID<input type="number" min="1" value={formData.course_id} onChange={(e) => setFormData({ ...formData, course_id: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                    </div>
+                    <div className="flex flex-wrap gap-5 text-xs font-semibold">
+                      <label className="flex items-center gap-2"><input type="checkbox" checked={formData.robots_index} onChange={(e) => setFormData({ ...formData, robots_index: e.target.checked })} />Allow indexing</label>
+                      <label className="flex items-center gap-2"><input type="checkbox" checked={formData.robots_follow} onChange={(e) => setFormData({ ...formData, robots_follow: e.target.checked })} />Allow link following</label>
+                    </div>
+                    <div className="rounded-xl bg-white p-3" aria-live="polite">
+                      <div className="flex justify-between text-xs font-bold"><span>SEO checklist</span><span>{seoScore}/100 · {seoWords} words</span></div>
+                      <ul className="mt-2 grid gap-1 sm:grid-cols-2 text-[11px] text-slate-600">{seoChecks.map(([label, passed]) => <li key={label}>{passed ? "✓" : "•"} {label}</li>)}</ul>
+                    </div>
+                  </section>
+
                   {/* Author Info */}
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
@@ -844,18 +911,15 @@ ${topic}
                     </span>
                   </div>
 
-                  {/* Publish Status Toggle */}
-                  <div className="flex items-center gap-3 pt-2">
-                    <input
-                      type="checkbox"
-                      id="is_published"
-                      checked={formData.is_published}
-                      onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-                      className="w-4 h-4 rounded text-[#0B1220] focus:ring-0"
-                    />
-                    <label htmlFor="is_published" className="text-xs font-bold text-slate-800 cursor-pointer">
-                      Publish Live immediately (Uncheck to save as Draft)
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <label className="text-xs font-bold text-slate-700">Editorial status
+                      <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 p-2.5">
+                        <option value="draft">Draft</option><option value="in_review">In review</option><option value="scheduled">Scheduled</option><option value="published">Published</option><option value="archived">Archived</option>
+                      </select>
                     </label>
+                    {formData.status === "scheduled" && <label className="text-xs font-bold text-slate-700">Publish at
+                      <input required type="datetime-local" value={formData.scheduled_at} onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-slate-50 p-2.5" />
+                    </label>}
                   </div>
                 </form>
               </div>

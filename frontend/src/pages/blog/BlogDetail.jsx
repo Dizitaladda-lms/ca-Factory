@@ -33,6 +33,10 @@ export default function BlogDetail() {
   const [activeHeadingId, setActiveHeadingId] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState(0); // first FAQ opened by default
+  const [lead, setLead] = useState({ name: "", phone: "", email: "" });
+  const [leadMessage, setLeadMessage] = useState("");
+  const [doubt, setDoubt] = useState({ name: "", email: "", body: "" });
+  const [doubtMessage, setDoubtMessage] = useState("");
 
   const contentRef = useRef(null);
 
@@ -84,6 +88,16 @@ export default function BlogDetail() {
       if (el) el.remove();
     };
   }, [blog]);
+
+  useEffect(() => {
+    if (!blog?.id) return undefined;
+    const startedAt = Date.now();
+    api.post("/api/blogs/analytics", { blog_id: blog.id, event: "view" }).catch(() => {});
+    return () => {
+      const seconds = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+      api.post("/api/blogs/analytics", { blog_id: blog.id, event: "time_on_page", value: seconds }).catch(() => {});
+    };
+  }, [blog?.id]);
 
   // Dynamic Heading ID injection and intersection observer for active TOC highlighting
   useEffect(() => {
@@ -138,8 +152,31 @@ export default function BlogDetail() {
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
+  const submitLead = async (event) => {
+    event.preventDefault();
+    try {
+      await api.post("/api/blogs/leads", { ...lead, blog_id: blog.id });
+      setLeadMessage("Thanks. We’ll contact you with the study resource.");
+      setLead({ name: "", phone: "", email: "" });
+    } catch (submitError) {
+      setLeadMessage(submitError.response?.data?.message || "Could not submit your request. Please try again.");
+    }
+  };
+
+  const submitDoubt = async (event) => {
+    event.preventDefault();
+    try {
+      const result = await api.post("/api/blogs/comments", { ...doubt, blog_id: blog.id });
+      setDoubtMessage(result.data?.message || "Your question was submitted for review.");
+      setDoubt({ name: "", email: "", body: "" });
+    } catch (submitError) {
+      setDoubtMessage(submitError.response?.data?.message || "Could not submit your question. Please try again.");
+    }
+  };
+
   const shareUrl = encodeURIComponent(window.location.href);
   const shareTitle = encodeURIComponent(blog?.title || "Dizital Adda Tech Roadmap");
+  const trackBlogEvent = (event) => api.post("/api/blogs/analytics", { blog_id: blog?.id, event }).catch(() => {});
 
   if (loading) {
     return (
@@ -213,9 +250,7 @@ export default function BlogDetail() {
           <div className="mt-6 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
             {/* Author */}
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-slate-900 text-amber-300 font-black text-base flex items-center justify-center ring-2 ring-amber-300/40">
-                {blog.author_name ? blog.author_name[0] : "D"}
-              </div>
+              {blog.author_photo ? <img src={blog.author_photo} alt={blog.author_name || "Article author"} width="48" height="48" className="w-12 h-12 rounded-full object-cover ring-2 ring-amber-300/40" /> : <div className="w-12 h-12 rounded-full bg-slate-900 text-amber-300 font-black text-base flex items-center justify-center ring-2 ring-amber-300/40">{blog.author_name ? blog.author_name[0] : "C"}</div>}
               <div>
                 <div className="text-sm font-bold text-slate-900">
                   {blog.author_name}
@@ -230,13 +265,14 @@ export default function BlogDetail() {
             <div className="flex items-center gap-4 text-xs font-semibold text-slate-500">
               <span className="flex items-center gap-1.5">
                 <FaCalendarAlt className="text-slate-400" />
-                {new Date(blog.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
+                {new Date(blog.published_at || blog.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
                 <FaClock />
                 {blog.read_time}
               </span>
+              {blog.updated_at && blog.updated_at !== blog.created_at && <span className="text-[11px]">Updated {new Date(blog.updated_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}</span>}
               <span>•</span>
               <span className="flex items-center gap-1.5">
                 <FaEye className="text-slate-400" />
@@ -259,6 +295,7 @@ export default function BlogDetail() {
             >
               <FaWhatsapp />
             </a>
+            <a href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram" className="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 hover:bg-sky-700 hover:text-white flex items-center justify-center transition">TG</a>
             <a
               href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
               target="_blank"
@@ -297,7 +334,11 @@ export default function BlogDetail() {
           <div className="aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900">
             <img
               src={blog.featured_image}
-              alt={blog.title}
+              alt={blog.featured_image_alt || blog.title}
+              width="1200"
+              height="514"
+              loading="eager"
+              fetchPriority="high"
               className="w-full h-full object-cover"
             />
           </div>
@@ -320,14 +361,40 @@ export default function BlogDetail() {
               />
             </article>
 
+            <section aria-labelledby="resource-title" className="mt-8 rounded-3xl border border-amber-200 bg-amber-50 p-6 sm:p-8">
+              <h2 id="resource-title" className="text-xl font-black text-slate-900">Get free CA &amp; CS study resources</h2>
+              <p className="mt-2 text-sm text-slate-600">Request notes and exam preparation updates from our academic team.</p>
+              <form onSubmit={submitLead} className="mt-4 grid gap-3 sm:grid-cols-3" aria-label="Request study resources">
+                <label className="text-xs font-bold">Name<input required autoComplete="name" value={lead.name} onChange={(e) => setLead({ ...lead, name: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                <label className="text-xs font-bold">Phone<input required type="tel" autoComplete="tel" value={lead.phone} onChange={(e) => setLead({ ...lead, phone: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                <label className="text-xs font-bold">Email<input required type="email" autoComplete="email" value={lead.email} onChange={(e) => setLead({ ...lead, email: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-2.5 font-normal" /></label>
+                <button className="sm:col-span-3 rounded-lg bg-slate-900 px-5 py-3 text-sm font-bold text-white hover:bg-amber-700">Request free resources</button>
+              </form>
+              {leadMessage && <p role="status" className="mt-3 text-sm font-semibold text-slate-700">{leadMessage}</p>}
+            </section>
+
+            <section aria-labelledby="doubt-title" className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 sm:p-8">
+              <h2 id="doubt-title" className="text-xl font-black text-slate-900">Ask a doubt</h2>
+              <p className="mt-1 text-sm text-slate-600">Questions are reviewed before they appear publicly.</p>
+              <form onSubmit={submitDoubt} className="mt-4 grid gap-3 sm:grid-cols-2">
+                <label className="text-xs font-bold">Name<input required value={doubt.name} onChange={(e) => setDoubt({ ...doubt, name: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 p-2.5 font-normal" /></label>
+                <label className="text-xs font-bold">Email<input required type="email" value={doubt.email} onChange={(e) => setDoubt({ ...doubt, email: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 p-2.5 font-normal" /></label>
+                <label className="text-xs font-bold sm:col-span-2">Your question<textarea required rows={3} value={doubt.body} onChange={(e) => setDoubt({ ...doubt, body: e.target.value })} className="mt-1 w-full rounded-lg border border-slate-300 p-2.5 font-normal" /></label>
+                <button className="sm:col-span-2 justify-self-start rounded-lg bg-slate-900 px-5 py-3 text-sm font-bold text-white">Submit question</button>
+              </form>
+              {doubtMessage && <p role="status" className="mt-3 text-sm font-semibold text-slate-700">{doubtMessage}</p>}
+            </section>
+            {(blog.previousPost || blog.nextPost) && <nav aria-label="Post navigation" className="mt-8 grid gap-3 sm:grid-cols-2">
+              {blog.previousPost ? <Link to={`/blog/${blog.previousPost.slug}`} className="rounded-2xl border border-slate-200 bg-white p-4 hover:border-amber-400"><span className="block text-xs text-slate-500">Previous post</span><strong>{blog.previousPost.title}</strong></Link> : <span />}
+              {blog.nextPost && <Link to={`/blog/${blog.nextPost.slug}`} className="rounded-2xl border border-slate-200 bg-white p-4 text-right hover:border-amber-400"><span className="block text-xs text-slate-500">Next post</span><strong>{blog.nextPost.title}</strong></Link>}
+            </nav>}
+
             {/* AUTHOR BIO CARD */}
             <div className="mt-10 bg-slate-900 rounded-3xl p-8 text-white border-2 border-[#D4A017] shadow-xl flex flex-col sm:flex-row items-center sm:items-start gap-6">
-              <div className="w-20 h-20 rounded-2xl bg-amber-400 text-slate-950 font-black text-3xl flex items-center justify-center shrink-0 ring-4 ring-white/10">
-                {blog.author_name ? blog.author_name[0] : "D"}
-              </div>
+              {blog.author_photo ? <img src={blog.author_photo} alt={blog.author_name || "Article author"} width="80" height="80" className="w-20 h-20 rounded-2xl object-cover shrink-0 ring-4 ring-white/10" /> : <div className="w-20 h-20 rounded-2xl bg-amber-400 text-slate-950 font-black text-3xl flex items-center justify-center shrink-0 ring-4 ring-white/10">{blog.author_name ? blog.author_name[0] : "C"}</div>}
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/30">
-                  Article Author & Industry Mentor
+                  Article Author{blog.reviewer_name ? ` · Reviewed by ${blog.reviewer_name}${blog.reviewer_credentials ? `, ${blog.reviewer_credentials}` : ""}` : " & Faculty Mentor"}
                 </span>
                 <h3 className="text-xl font-black text-white mt-2">
                   {blog.author_name}
@@ -336,7 +403,7 @@ export default function BlogDetail() {
                   {blog.author_role || "Dizital Adda Master Faculty"}
                 </p>
                 <p className="text-slate-300 text-xs sm:text-sm mt-3 leading-relaxed">
-                  Passionate about mentoring the next generation of technology leaders in India. Specializing in project-driven education, real-world campaign labs, and career transformation.
+                  {blog.author_bio || "Faculty member supporting CA and CS learners with practical, exam-focused guidance."}
                 </p>
               </div>
             </div>
@@ -443,6 +510,7 @@ export default function BlogDetail() {
                     </p>
                     <Link
                       to={blog.crossSellCourse.link}
+                      onClick={() => trackBlogEvent("cta_click")}
                       className="mt-4 w-full bg-[#D4A017] hover:bg-amber-400 text-slate-950 font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition duration-200 shadow-md"
                     >
                       <span>Explore Cohort</span>
@@ -535,6 +603,10 @@ export default function BlogDetail() {
       </div>
 
       {/* FOOTER */}
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-[#0B1220] p-3 shadow-2xl border-t border-amber-400/40 flex gap-2">
+        <Link to="/ca/batches" onClick={() => trackBlogEvent("cta_click")} className="flex-1 text-center rounded-lg bg-amber-400 text-slate-950 py-3 text-xs font-extrabold">Explore CA Courses</Link>
+        <Link to="/cs/batches" onClick={() => trackBlogEvent("cta_click")} className="flex-1 text-center rounded-lg border border-white/30 text-white py-3 text-xs font-extrabold">Explore CS Courses</Link>
+      </div>
       <BatchesFooter brandName="CS Factory" />
 
       {/* INJECTED BLOG STYLES FOR RICH PROSE & TABLES */}
