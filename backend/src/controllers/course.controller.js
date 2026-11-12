@@ -34,7 +34,7 @@ const serializeLecture = (lecture) => {
 };
 
 // ==========================================
-// 1. GET ALL COURSES (Public with Redis/Memory Caching)
+// 1. GET ALL COURSES (Public with in-memory caching)
 // ==========================================
 const getCourses = async (req, res, next) => {
   try {
@@ -68,7 +68,7 @@ const getCourses = async (req, res, next) => {
       courses: courses.map(serializeCourse),
     };
 
-    // Cache in Redis/Memory for 3 minutes (180s)
+    // Cache in memory for 3 minutes (180s)
     await cacheService.set(cacheKey, payload, 180);
 
     res.setHeader("X-Cache", "MISS");

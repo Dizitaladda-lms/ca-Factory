@@ -147,15 +147,8 @@ const createBlog = async (req, res, next) => {
 
     const blog = await blogService.createBlog({ ...req.body, content: sanitizeArticle(content) });
 
-    // Invalidate caches
-    if (cacheService.redis && cacheService.isRedisReady) {
-      try {
-        const keys = await cacheService.redis.keys("blogs:*");
-        if (keys.length > 0) await cacheService.redis.del(...keys);
-      } catch {}
-    } else {
-      cacheService.memoryStore.clear();
-    }
+    // Invalidate cached blog responses.
+    await cacheService.delPattern("blogs:*");
 
     return res.status(201).json({
       success: true,
@@ -185,15 +178,8 @@ const updateBlog = async (req, res, next) => {
       });
     }
 
-    // Invalidate caches
-    if (cacheService.redis && cacheService.isRedisReady) {
-      try {
-        const keys = await cacheService.redis.keys("blogs:*");
-        if (keys.length > 0) await cacheService.redis.del(...keys);
-      } catch {}
-    } else {
-      cacheService.memoryStore.clear();
-    }
+    // Invalidate cached blog responses.
+    await cacheService.delPattern("blogs:*");
 
     return res.status(200).json({
       success: true,
@@ -220,15 +206,8 @@ const deleteBlog = async (req, res, next) => {
       });
     }
 
-    // Invalidate caches
-    if (cacheService.redis && cacheService.isRedisReady) {
-      try {
-        const keys = await cacheService.redis.keys("blogs:*");
-        if (keys.length > 0) await cacheService.redis.del(...keys);
-      } catch {}
-    } else {
-      cacheService.memoryStore.clear();
-    }
+    // Invalidate cached blog responses.
+    await cacheService.delPattern("blogs:*");
 
     return res.status(200).json({
       success: true,

@@ -10,10 +10,7 @@ const publishDuePosts = async () => {
       published_at=COALESCE(published_at,CURRENT_TIMESTAMP), updated_at=CURRENT_TIMESTAMP
       WHERE status='scheduled' AND scheduled_at <= CURRENT_TIMESTAMP RETURNING id`);
     if (result.rowCount) {
-      if (cache.redis && cache.isRedisReady) {
-        const keys = await cache.redis.keys("blogs:*");
-        if (keys.length) await cache.redis.del(...keys);
-      } else cache.memoryStore.clear();
+      await cache.delPattern("blogs:*");
     }
   } catch (error) { console.warn("Blog scheduler notice:", error.message); }
 };
