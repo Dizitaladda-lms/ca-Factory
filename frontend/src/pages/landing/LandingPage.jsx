@@ -234,62 +234,12 @@ export default function LandingPage() {
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.55),transparent_48%),linear-gradient(135deg,#111827,#172554)] px-6 text-center text-white">
                         <span aria-hidden="true" className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-white/70 bg-white/10 text-2xl">▶</span>
                         <div>
-                          <h3 id="mentor-message-title" className="text-base font-extrabold">A message from your mentor</h3>
-                          <p className="mt-1 text-xs text-slate-200">Guidance and encouragement for every CA &amp; CS student</p>
                         </div>
                       </div>
                     )}
                   </div>
                 </section>
 
-                {/* Hero Showcase Highlight */}
-                <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-[11px] font-bold text-[#5A4BFF] uppercase tracking-wider">
-                      Flagship Program
-                    </span>
-                    <h3 className="text-lg font-bold text-[#1B2124] mt-1">
-                      CA Intermediate Udesh Regular Batch
-                    </h3>
-                    <p className="text-xs text-[#757575] mt-1">
-                      Group 1 + Group 2 Complete 6-Paper Coverage with live answer writing.
-                    </p>
-                    <div className="flex justify-end mt-3 pt-3 border-t border-slate-200/60">
-                      <Link
-                        to="/course/ca-inter-udesh-regular-sep-2027-group--1-2--combo"
-                        className="text-xs font-bold text-[#5A4BFF] hover:underline"
-                      >
-                        Enroll Now
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Quick Feature Grid */}
-                  <div className="grid grid-cols-2 gap-2.5 text-xs">
-                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF]">
-                      <p className="font-bold text-[#1B2124]">Hardcopy Books</p>
-                      <p className="text-[10px] text-[#757575] mt-0.5">Free Doorstep Delivery</p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-slate-50 border border-[#EFEFEF]">
-                      <p className="font-bold text-[#1B2124]">Evaluated Tests</p>
-                      <p className="text-[10px] text-[#757575] mt-0.5">Step-by-step marking</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Call Support CTA */}
-                <div className="bg-slate-900 text-white rounded-xl p-4 flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <p className="text-[11px] text-slate-400">Need Guidance from Senior Counsellor?</p>
-                    <p className="text-sm font-bold text-white">+91 98765 43210</p>
-                  </div>
-                  <a
-                    href="tel:9876543210"
-                    className="px-3.5 py-2 bg-[#5A4BFF] hover:bg-[#4939E8] rounded-lg transition text-xs font-bold text-white"
-                  >
-                    Call Now
-                  </a>
-                </div>
               </div>
             </div>
           </div>
@@ -304,93 +254,6 @@ export default function LandingPage() {
                 <p className="text-xs text-[#757575] font-medium mt-0.5">{item.label}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Mentor video / admissions card matching the requested project explain layout */}
-      <section className="py-8 md:py-10 bg-[#f5f6fb] border-b border-[#EFEFEF]">
-        <div className="edtech-container">
-          <div className="mx-auto max-w-5xl rounded-[30px] border border-[#E5E7EB] bg-[#f2f4f7] p-4 sm:p-6 shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
-            <div className="mb-5 flex items-center justify-between gap-3 border-b border-[#E2E8F0] pb-4">
-              <div className="flex items-center gap-3">
-                <span className="h-3.5 w-3.5 rounded-full bg-[#22c55e] shadow-[0_0_0_4px_rgba(34,197,94,0.12)]" />
-                <span className="text-base sm:text-lg font-black text-[#1B2124]">Admissions Open • 2026-27</span>
-              </div>
-            </div>
-
-            <div className="rounded-[24px] border border-[#E2E8F0] bg-white p-4 sm:p-5">
-              <div className="rounded-[22px] border border-[#dfe3ea] bg-gradient-to-br from-[#eef2ff] via-[#f5f7fb] to-[#eaf6ff] p-4 sm:p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center rounded-full border border-[#5A4BFF]/20 bg-[#5A4BFF]/10 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#5A4BFF]">
-                      Flagship Program
-                    </div>
-
-                    <h3 className="text-2xl sm:text-3xl md:text-[2.2rem] font-black tracking-tight text-[#1B2124] leading-tight">
-                      CA Intermediate Udesh Regular Batch
-                    </h3>
-
-                    <p className="text-sm sm:text-base text-[#475569] leading-relaxed">
-                      Group 1 + Group 2 complete 6-paper coverage with live answer writing, mentor guidance, and exam-ready strategy support.
-                    </p>
-
-                    <div className="flex justify-end pt-2">
-                      <Link
-                        to="/courses"
-                        className="inline-flex items-center justify-center rounded-xl bg-[#5A4BFF] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4939E8]"
-                      >
-                        Enroll Now
-                      </Link>
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <div className="group relative aspect-video overflow-hidden rounded-[20px] border border-[#dfe3ea] bg-slate-900 shadow-[0_18px_40px_rgba(37,99,235,0.18)]">
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.55),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.35),_transparent_28%)]" />
-                      <div className="absolute inset-0 opacity-80 bg-[linear-gradient(135deg,rgba(15,23,42,0.25),rgba(15,23,42,0.75))]" />
-
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <button
-                          type="button"
-                          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/70 bg-white/10 text-xl text-white shadow-lg backdrop-blur-sm transition group-hover:scale-105"
-                          aria-label="Play mentor video"
-                        >
-                          ▶
-                        </button>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-left">
-                <h4 className="text-xl font-black text-[#1B2124]">Hardcopy Books</h4>
-                <p className="mt-1 text-sm text-[#64748B]">Free doorstep delivery</p>
-              </div>
-
-              <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-left">
-                <h4 className="text-xl font-black text-[#1B2124]">Evaluated Tests</h4>
-                <p className="mt-1 text-sm text-[#64748B]">Step-by-step marking</p>
-              </div>
-            </div>
-
-            <div className="mt-5 flex flex-col gap-3 rounded-[22px] bg-[#0B1220] p-4 sm:p-5 text-white shadow-[0_18px_32px_rgba(15,23,42,0.18)] md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-3 text-left">
-                <span className="text-base font-black">Need Guidance from Senior Counsellor?</span>
-                <span className="text-lg font-black text-[#D4A017]">+91 98765 43210</span>
-              </div>
-
-              <a
-                href="tel:+919876543210"
-                className="inline-flex items-center justify-center rounded-xl bg-[#5A4BFF] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#4939E8]"
-              >
-                Call Now
-              </a>
-            </div>
           </div>
         </div>
       </section>
