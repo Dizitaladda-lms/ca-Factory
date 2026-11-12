@@ -195,6 +195,20 @@ export default function BatchesFooter({
           </div>
         </div>
 
+        <div className="py-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Secure payments</h5>
+            <p className="mt-1 text-xs text-slate-400">Accepted cards and payment methods via Razorpay</p>
+          </div>
+          <div className="flex flex-wrap gap-2" aria-label="Accepted payment methods: Visa, Mastercard, RuPay, UPI, net banking, and EMI">
+            {["VISA", "Mastercard", "RuPay", "UPI", "Net Banking", "EMI"].map((method) => (
+              <span key={method} className="rounded-md border border-slate-700 bg-white px-3 py-1.5 text-xs font-bold text-slate-800">
+                {method}
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* Bottom Row: Privacy Policy | Terms of Use | Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {currentYear} {brandName}. All rights reserved.</p>

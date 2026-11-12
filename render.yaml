@@ -6,7 +6,7 @@ services:
     # DATABASE_URL is supplied by Render's environment settings. Running the
     # idempotent migration here guarantees the lectures table exists before the
     # API starts accepting uploads.
-    buildCommand: npm install && npm --prefix ../frontend install && npm --prefix ../frontend run build && npm run db:migrate
+    buildCommand: npm install && npm --prefix ../frontend install && npm --prefix ../frontend run build && npm run db:migrate && npm run prisma:migrate
     startCommand: node src/server.js
     envVars:
       - key: NODE_ENV

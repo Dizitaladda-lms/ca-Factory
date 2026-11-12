@@ -110,6 +110,20 @@ export default function Footer() {
           </div>
         </div>
 
+        <div className="border-t border-slate-700 mt-10 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 className="text-sm font-bold text-white">Secure Payments</h3>
+            <p className="mt-1 text-xs text-gray-400">Cards and payment methods accepted via Razorpay</p>
+          </div>
+          <div className="flex flex-wrap gap-2" aria-label="Accepted payment methods: Visa, Mastercard, RuPay, UPI, net banking, and EMI">
+            {["VISA", "Mastercard", "RuPay", "UPI", "Net Banking", "EMI"].map((method) => (
+              <span key={method} className="rounded-md border border-slate-600 bg-white px-3 py-1.5 text-xs font-bold text-slate-800">
+                {method}
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* FOOTER BOTTOM */}
         <div className="border-t border-slate-700 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between text-gray-400 text-xs text-center sm:text-left gap-4">
           <div>

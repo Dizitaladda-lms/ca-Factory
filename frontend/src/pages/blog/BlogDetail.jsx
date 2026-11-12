@@ -612,7 +612,7 @@ export default function BlogDetail() {
       {/* INJECTED BLOG STYLES FOR RICH PROSE & TABLES */}
       <style>{`
         .blog-prose-content h2 {
-          font-family: 'Fredoka', 'Segoe UI', sans-serif;
+          font-family: 'Poppins', 'Segoe UI', sans-serif;
           font-size: 1.75rem;
           font-weight: 800;
           color: #0B1220;
