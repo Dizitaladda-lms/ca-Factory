@@ -1,75 +1,43 @@
-import React from "react";
-
-const popularCourses = [
-  {
-    id: 1,
-    title: "Full Stack Web Development",
-    image:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    price: "₹4999",
-    instructor: "Dizital Adda",
-  },
-  {
-    id: 2,
-    title: "Data Science Mastery",
-    image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-    price: "₹6999",
-    instructor: "Dizital Adda",
-  },
-  {
-    id: 3,
-    title: "Machine Learning Bootcamp",
-    image:
-      "https://images.unsplash.com/photo-1526379095098-d400fd0bf935",
-    price: "₹7999",
-    instructor: "Dizital Adda",
-  },
-  {
-    id: 4,
-    title: "React JS Complete Course",
-    image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee",
-    price: "₹3999",
-    instructor: "Dizital Adda",
-  },
-];
+import { useEffect, useState } from "react";
+import api from "../lib/api";
+import BatchCard from "./batches/BatchCard";
 
 export default function PopularCourses() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    api.get("/api/courses")
+      .then((response) => {
+        if (!active) return;
+        const rows = response.data?.courses || response.data || [];
+        setCourses(Array.isArray(rows) ? rows : []);
+      })
+      .catch(() => {
+        if (active) setError("Courses could not be loaded right now.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
+  }, []);
+
   return (
-    <section className="py-20 px-6 bg-gray-100">
-      <h1 className="text-5xl font-bold text-center mb-16">
-        Popular Courses
-      </h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-        {popularCourses.map((course) => (
-          <div
-            key={course.id}
-            className="bg-white rounded-3xl shadow-lg overflow-hidden hover:scale-105 transition duration-300"
-          >
-            <img
-              src={course.image}
-              alt={course.title}
-              className="h-56 w-full object-cover"
-            />
-
-            <div className="p-6">
-              <h2 className="text-2xl font-bold">
-                {course.title}
-              </h2>
-
-              <p className="text-gray-500 mt-2">
-                {course.instructor}
-              </p>
-
-              <button className="mt-6 w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-700 transition">
-                Enroll Now
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+    <section className="min-h-screen bg-gray-100 px-6 py-20">
+      <h1 className="mb-12 text-center text-4xl font-bold">Popular Courses</h1>
+      {loading ? (
+        <p className="text-center text-gray-500">Loading courses...</p>
+      ) : error ? (
+        <p role="alert" className="text-center text-red-600">{error}</p>
+      ) : courses.length ? (
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {courses.map((course) => <BatchCard key={course.id || course.course_id} course={course} />)}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500">No published courses are available yet.</p>
+      )}
     </section>
   );
 }

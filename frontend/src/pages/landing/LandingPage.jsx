@@ -20,10 +20,19 @@ const getMentorVideo = (url) => {
   return { type: "placeholder" };
 };
 
+// Add trainer video URLs here: { name: "Trainer name", url: "YouTube/Vimeo/MP4 URL" }
+const TRAINER_REVIEW_VIDEOS = [];
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const BRAND_NAME = "CS Factory";
   const mentorVideo = getMentorVideo(import.meta.env.VITE_MENTOR_MESSAGE_VIDEO_URL);
+  const trainerReviewVideos = TRAINER_REVIEW_VIDEOS
+    .map((video) => ({ name: video.name, ...getMentorVideo(video.url) }))
+    .filter((video) => video.type !== "placeholder");
+  const studentReviews = FACULTY_MEMBERS.flatMap((trainer) =>
+    (trainer.reviews || []).map((review) => ({ ...review, trainerName: trainer.name, subject: trainer.subject }))
+  ).slice(0, 8);
 
   // Tab state for Popular Courses
   const [courseCategory, setCourseCategory] = useState("all");
@@ -468,6 +477,70 @@ export default function LandingPage() {
                   </span>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trainer review videos */}
+      <section className="border-b border-[#EFEFEF] bg-[#0B1220] py-16 text-white">
+        <div className="edtech-container">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <span className="inline-flex rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300">
+              Learn from our trainers
+            </span>
+            <h2 className="mt-3 text-3xl font-black sm:text-4xl">Trainer Review Videos</h2>
+            <p className="mt-2 text-sm text-slate-300">Hear directly from the faculty guiding CA and CS students.</p>
+          </div>
+
+          {trainerReviewVideos.length ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {trainerReviewVideos.map((video, index) => (
+                <article key={`${video.name}-${index}`} className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                  <div className="aspect-video bg-slate-900">
+                    {video.type === "embed" ? (
+                      <iframe src={video.src} title={`${video.name} review video`} className="h-full w-full" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
+                    ) : (
+                      <video className="h-full w-full" controls playsInline preload="metadata" aria-label={`${video.name} review video`}>
+                        <source src={video.src} />
+                        Your browser does not support video playback.
+                      </video>
+                    )}
+                  </div>
+                  <h3 className="px-4 py-3 font-bold">{video.name}</h3>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="mx-auto max-w-2xl rounded-2xl border border-dashed border-white/20 bg-white/5 px-6 py-10 text-center text-sm text-slate-300">
+              Trainer review videos will appear here soon.
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Student reviews */}
+      <section className="border-b border-[#EFEFEF] bg-slate-50 py-16">
+        <div className="edtech-container">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <span className="inline-flex rounded-full bg-[#5A4BFF]/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#5A4BFF]">
+              Student experiences
+            </span>
+            <h2 className="mt-3 text-3xl font-black text-[#1B2124] sm:text-4xl">What Our Students Say</h2>
+            <p className="mt-2 text-sm text-[#64748B]">Reviews from CA and CS students learning with our faculty.</p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {studentReviews.map((review, index) => (
+              <article key={`${review.studentName}-${index}`} className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="text-amber-500" aria-label={`${review.rating} out of 5 stars`}>{"★".repeat(review.rating || 5)}</div>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600">“{review.comment}”</p>
+                <div className="mt-5 border-t border-slate-100 pt-4">
+                  <p className="font-bold text-[#1B2124]">{review.studentName}</p>
+                  <p className="mt-1 text-xs font-semibold text-[#5A4BFF]">{review.rankOrAttempt}</p>
+                  <p className="mt-1 text-xs text-slate-500">Faculty: {review.trainerName}</p>
+                </div>
+              </article>
             ))}
           </div>
         </div>

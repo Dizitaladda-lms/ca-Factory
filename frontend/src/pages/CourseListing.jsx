@@ -4,7 +4,6 @@ import api from "../lib/api";
 import {
   CA_LEVELS,
   CS_LEVELS,
-  CA_BATCHES_DATA,
   getCaBatchStats,
 } from "../data/caBatchesData";
 
@@ -59,8 +58,8 @@ export default function CourseListing() {
   });
 
   // Data Loading & API State
-  const [batches, setBatches] = useState(CA_BATCHES_DATA);
-  const [isLoading, setIsLoading] = useState(false);
+  const [batches, setBatches] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Synchronize Exam and Tab with URL path/query
   useEffect(() => {
@@ -96,44 +95,47 @@ export default function CourseListing() {
     }
   }, [location.pathname, urlLevel, searchParams]);
 
-  // Fetch batches from backend API with fallback
+  // Course catalog, details, and prices come from the database-backed API.
   const fetchBatches = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await api.get("/api/courses");
       const apiCourses = response.data?.courses || response.data || [];
-      if (Array.isArray(apiCourses) && apiCourses.length > 0) {
-        // Map API fields if available, otherwise blend with CA batches
-        const normalizedApi = apiCourses.map((c) => ({
-          ...c,
-          exam: (c.category || "").toLowerCase().includes("cs") ? "cs" : "ca",
-          level: (c.category || c.level || "foundation").toLowerCase().includes("final")
+      if (Array.isArray(apiCourses)) {
+        const normalizedApi = apiCourses.map((c) => {
+          const categoryText = `${c.category || ""} ${c.level || ""}`.toLowerCase();
+          const exam = categoryText.includes("cs") || categoryText.includes("company secretary") ? "cs" : "ca";
+          const level = categoryText.includes("cseet")
+            ? "cseet"
+            : categoryText.includes("executive")
+            ? "executive"
+            : categoryText.includes("professional")
+            ? "cs-final"
+            : categoryText.includes("final")
             ? "final"
-            : (c.category || c.level || "").toLowerCase().includes("inter")
+            : categoryText.includes("inter")
             ? "intermediate"
-            : "foundation",
-          levelLabel: c.levelLabel || c.category || "CA Batch",
-          title: c.title || c.name,
-          mode: c.mode || "Online",
-          deliveryMode: c.deliveryMode || (c.mode === "Offline" ? "Face to Face" : "Online Live"),
-          categoryType: c.categoryType || (c.title?.toLowerCase().includes("combo") ? "Combo" : "Individual"),
-          paper: c.paper || "All Papers",
-          language: c.language || "Hinglish",
-          price: c.price || 9999,
-          originalPrice: c.originalPrice || Math.round((c.price || 9999) * 2),
-        }));
+            : "foundation";
 
-        // Merge API batches with curated CA & CS batches to guarantee complete coverage
-        const existingIds = new Set(normalizedApi.map((c) => String(c.id)));
-        const combined = [
-          ...normalizedApi,
-          ...CA_BATCHES_DATA.filter((b) => !existingIds.has(String(b.id))),
-        ];
-        setBatches(combined);
+          return {
+            ...c,
+            exam,
+            level,
+            levelLabel: c.levelLabel || c.category || c.level || "Course",
+            title: c.title || c.name,
+            mode: c.mode,
+            deliveryMode: c.deliveryMode || (c.mode === "Offline" ? "Face to Face" : c.mode),
+            categoryType: c.categoryType || (c.title?.toLowerCase().includes("combo") ? "Combo" : undefined),
+            paper: c.paper,
+            price: c.price,
+            originalPrice: c.originalPrice ?? c.original_price ?? c.price,
+          };
+        });
+        setBatches(normalizedApi);
       }
-    } catch {
-      // Fallback silently to rich CA_BATCHES_DATA
-      setBatches(CA_BATCHES_DATA);
+    } catch (error) {
+      console.error("Failed to load courses from the database:", error);
+      setBatches([]);
     } finally {
       setIsLoading(false);
     }
