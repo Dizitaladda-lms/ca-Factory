@@ -214,7 +214,7 @@ export default function Login({ defaultTab = "login" }) {
                     type="text"
                     value={loginId}
                     onChange={(e) => setLoginId(e.target.value)}
-                    placeholder="e.g. student@gmail.com or 9876543210"
+                    placeholder="e.g. student@gmail.com or 9266500223"
                     className="w-full px-3.5 py-3 text-sm text-[#111827] border border-[#D1D5DB] rounded-lg focus:border-[#5A4BFF] focus:ring-1 focus:ring-[#5A4BFF] outline-none transition"
                     required
                     autoFocus
@@ -258,7 +258,7 @@ export default function Login({ defaultTab = "login" }) {
                   </label>
 
                   <a
-                    href="tel:9876543210"
+                    href="tel:9266500223"
                     className="font-semibold text-[#5A4BFF] hover:underline"
                   >
                     Forgot Password? Call Support
@@ -282,14 +282,14 @@ export default function Login({ defaultTab = "login" }) {
       {/* FLOATING HELP BUTTON */}
       <FloatingHelpButton
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
-        rawPhone="9876543210"
+        phone="+91 92665 00223"
+        rawPhone="9266500223"
       />
 
       {/* 3. FOOTER */}
       <BatchesFooter
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
+        phone="+91 92665 00223"
         email="support@cafactory.in"
       />
     </div>

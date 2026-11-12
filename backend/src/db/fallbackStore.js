@@ -340,7 +340,7 @@ const INITIAL_USERS = [
     email: "admin@dizitaladda.com",
     password: HASHED_ADMIN_PASS,
     role: "admin",
-    phone: "+919876543210",
+    phone: "+919266500223",
     specialization: "LMS Administration",
     status: "Active",
     is_verified: true,

@@ -243,7 +243,7 @@ export default function LandingPage() {
 
             {/* Right Column: Hero Visual Card */}
             <div className="lg:col-span-5">
-              <div className="bg-white rounded-2xl border border-[#EFEFEF] edtech-card-shadow p-6 sm:p-7 relative overflow-hidden space-y-6">
+              <div className="space-y-6">
                 {/* Top Badge Strip */}
                 <div className="flex items-center justify-between border-b border-[#EFEFEF] pb-4">
                   <div className="flex items-center gap-2">
@@ -681,10 +681,10 @@ export default function LandingPage() {
                 Browse All Batches
               </Link>
               <a
-                href="tel:9876543210"
+                href="tel:9266500223"
                 className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center"
               >
-                Call +91 98765 43210
+                Call +91 92665 00223
               </a>
             </div>
           </div>
@@ -694,14 +694,14 @@ export default function LandingPage() {
       {/* FLOATING HELP BUTTON */}
       <FloatingHelpButton
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
-        rawPhone="9876543210"
+        phone="+91 92665 00223"
+        rawPhone="9266500223"
       />
 
       {/* 8. FOOTER */}
       <BatchesFooter
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
+        phone="+91 92665 00223"
         email="support@cafactory.in"
       />
     </div>

@@ -958,10 +958,10 @@ export default function CourseDetails() {
                   Speak directly with our senior mentors to select the right batch according to your study pace.
                 </p>
                 <a
-                  href="tel:9876543210"
+                  href="tel:9266500223"
                   className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-[6px] text-xs font-bold text-white transition"
                 >
-                  Call +91 98765 43210
+                  Call +91 92665 00223
                 </a>
               </div>
             </div>
@@ -1048,14 +1048,14 @@ export default function CourseDetails() {
       {/* FLOATING HELP BUTTON */}
       <FloatingHelpButton
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
-        rawPhone="9876543210"
+        phone="+91 92665 00223"
+        rawPhone="9266500223"
       />
 
       {/* 7. FOOTER */}
       <BatchesFooter
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
+        phone="+91 92665 00223"
         email="support@cafactory.in"
       />
     </div>

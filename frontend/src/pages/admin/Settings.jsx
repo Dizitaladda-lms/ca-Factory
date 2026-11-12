@@ -30,7 +30,7 @@ export default function Settings() {
   const [profile, setProfile] = useState({
     name: "System Admin",
     email: "admin@dizitaladda.com",
-    phone: "+919876543210",
+    phone: "+919266500223",
     role: "admin",
   });
   const [savingProfile, setSavingProfile] = useState(false);
@@ -52,7 +52,7 @@ export default function Settings() {
       setProfile({
         name: storedUser.name || "System Admin",
         email: storedUser.email || "admin@dizitaladda.com",
-        phone: storedUser.phone || "+919876543210",
+        phone: storedUser.phone || "+919266500223",
         role: storedUser.role || "admin",
       });
     }
@@ -204,7 +204,7 @@ export default function Settings() {
                   <FaPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs" />
                   <input
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 92665 00223"
                     value={profile.phone || ""}
                     onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-3 p-2.5 text-sm text-slate-800 focus:bg-white focus:border-[#D4A017] focus:outline-none transition"

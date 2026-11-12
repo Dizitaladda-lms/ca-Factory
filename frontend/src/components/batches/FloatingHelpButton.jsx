@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 
 export default function FloatingHelpButton({
-  phone = "+91 98765 43210",
-  rawPhone = "9876543210",
+  phone = "+91 92665 00223",
+  rawPhone = "9266500223",
   brandName = "CA Factory",
 }) {
   const [isOpen, setIsOpen] = useState(false);

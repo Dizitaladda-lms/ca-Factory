@@ -11,7 +11,7 @@ import {
 
 export default function BatchesFooter({
   brandName = "CS Factory",
-  phone = "+91 98765 43210",
+  phone = "+91 92665 00223",
   email = "support@cafactory.in",
 }) {
   const currentYear = new Date().getFullYear();

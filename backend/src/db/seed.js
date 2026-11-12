@@ -46,7 +46,7 @@ async function seedDatabase() {
         "admin@dizitaladda.com",
         adminPassword,
         "admin",
-        "+919876543210",
+        "+919266500223",
         "LMS Administration",
       ]
     );

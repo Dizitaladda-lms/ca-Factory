@@ -236,7 +236,7 @@ function AddStudent() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="e.g. +91 9876543210"
+                  placeholder="e.g. +91 9266500223"
                   className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#7C2D12]"
                 />
               </div>

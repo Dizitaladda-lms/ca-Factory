@@ -223,7 +223,7 @@ export default function VerifyEmail() {
 
         {/* Footer info */}
         <div className="bg-slate-50 border-t border-slate-100 p-4 text-center text-xs text-slate-500">
-          Need help? Call Admissions at <a href="tel:+919876543210" className="font-bold text-slate-700">+91 98765 43210</a>
+          Need help? Call Admissions at <a href="tel:+919266500223" className="font-bold text-slate-700">+91 92665 00223</a>
         </div>
       </div>
     </div>

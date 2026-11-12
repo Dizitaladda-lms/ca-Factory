@@ -1491,7 +1491,7 @@ export default function Entrance() {
                     <input
                       type="tel"
                       required
-                      placeholder="e.g. +91 98765 43210"
+                      placeholder="e.g. +91 92665 00223"
                       value={counselorForm.phone}
                       onChange={(e) => setCounselorForm({ ...counselorForm, phone: e.target.value })}
                       className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400"

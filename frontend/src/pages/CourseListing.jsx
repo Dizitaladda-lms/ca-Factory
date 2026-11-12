@@ -567,14 +567,14 @@ export default function CourseListing() {
       {/* K) FLOATING HELP BUTTON (Bottom-right popup with callback request & phone) */}
       <FloatingHelpButton
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
-        rawPhone="9876543210"
+        phone="+91 92665 00223"
+        rawPhone="9266500223"
       />
 
       {/* L) FOOTER (Multi-column links, offline centres, social icons, copyright) */}
       <BatchesFooter
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
+        phone="+91 92665 00223"
         email="support@cafactory.in"
       />
     </div>

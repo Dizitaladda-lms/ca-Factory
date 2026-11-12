@@ -86,7 +86,7 @@ export default function Footer() {
             <h3 className="text-2xl font-bold text-[#D4A017]">Contact Information</h3>
             <div className="mt-6 space-y-4 text-gray-300 text-sm">
               <p>Greater Kailash II, New Delhi - 110048</p>
-              <p>+91 9876543210</p>
+              <p>+91 9266500223</p>
               <p>support@vikshitbharat2047.in</p>
               <p>www.vikshitbharat2047.in</p>
             </div>

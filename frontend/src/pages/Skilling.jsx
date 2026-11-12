@@ -3708,7 +3708,7 @@ function Skilling() {
                     <input
                       type="tel"
                       required
-                      placeholder="e.g. 9876543210"
+                      placeholder="e.g. 9266500223"
                       value={counselorForm.phone}
                       onChange={(e) =>
                         setCounselorForm({ ...counselorForm, phone: e.target.value })

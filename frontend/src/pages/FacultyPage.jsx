@@ -442,10 +442,10 @@ export default function FacultyPage() {
                 Explore All Batches
               </Link>
               <a
-                href="tel:9876543210"
+                href="tel:9266500223"
                 className="w-full sm:w-auto px-5 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold rounded-[6px] transition text-center"
               >
-                Call +91 98765 43210
+                Call +91 92665 00223
               </a>
             </div>
           </div>
@@ -455,14 +455,14 @@ export default function FacultyPage() {
       {/* FLOATING HELP BUTTON */}
       <FloatingHelpButton
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
-        rawPhone="9876543210"
+        phone="+91 92665 00223"
+        rawPhone="9266500223"
       />
 
       {/* 5. FOOTER */}
       <BatchesFooter
         brandName={BRAND_NAME}
-        phone="+91 98765 43210"
+        phone="+91 92665 00223"
         email="support@cafactory.in"
       />
     </div>

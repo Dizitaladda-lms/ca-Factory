@@ -780,7 +780,7 @@ const Checkout = () => {
                       type="tel"
                       name="phone"
                       required
-                      placeholder="e.g. 9876543210"
+                      placeholder="e.g. 9266500223"
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full border border-slate-300 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C2D12] transition pl-11"
