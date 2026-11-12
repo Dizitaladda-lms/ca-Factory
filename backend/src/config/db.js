@@ -69,37 +69,6 @@ if (connectionString) {
           `)
           .catch((err) => console.warn("Schema auto-patch notice:", err.message));
 
-        // Auto-check and synchronize full store if database is empty or missing courses (only outside serverless)
-        if (!process.env.VERCEL) {
-          setTimeout(async () => {
-            try {
-              const check = await realPool.query("SELECT COUNT(*) FROM courses");
-              const count = parseInt(check.rows[0].count, 10);
-              let targetCount = 17;
-              try {
-                const storePath = path.join(__dirname, "..", "..", "data", "lms_store.json");
-                if (fs.existsSync(storePath)) {
-                  const s = JSON.parse(fs.readFileSync(storePath, "utf8"));
-                  if (Array.isArray(s.courses)) targetCount = s.courses.length;
-                }
-              } catch (e) {}
-
-              if (count < targetCount) {
-                console.log(`📦 Database has ${count} courses (< ${targetCount}). Auto-synchronizing full LMS database...`);
-                const { syncDatabase } = require("../db/syncAllToDb");
-                await syncDatabase(realPool);
-              }
-            } catch (autoSyncErr) {
-              console.log("ℹ️ Tables uninitialized in PostgreSQL. Executing schema & initial sync...");
-              try {
-                const { syncDatabase } = require("../db/syncAllToDb");
-                await syncDatabase(realPool);
-              } catch (err2) {
-                console.warn("⚠️ Auto-sync notice:", err2.message);
-              }
-            }
-          }, 1500);
-        }
       })
       .catch((error) => {
         isPostgresAvailable = false;

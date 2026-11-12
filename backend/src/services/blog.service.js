@@ -1,10 +1,13 @@
 const pool = require("../config/db");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const { SEED_BLOGS } = require("../db/seedBlogs");
 
 const DATA_DIR = path.join(__dirname, "..", "..", "data");
-const STORE_FILE = path.join(DATA_DIR, "lms_store.json");
+const LEGACY_STORE_FILE = path.join(DATA_DIR, "lms_store.json");
+const TEMP_STORE_FILE = path.join(os.tmpdir(), "ca-factory-blogs.json");
+const STORE_FILE = process.env.VERCEL ? TEMP_STORE_FILE : LEGACY_STORE_FILE;
 
 /**
  * Helper to slugify strings into clean kebab-case URL slugs
@@ -169,7 +172,7 @@ class BlogService {
 
   initStore() {
     try {
-      if (!fs.existsSync(DATA_DIR)) {
+      if (!process.env.VERCEL && !fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
       }
 
@@ -295,7 +298,11 @@ class BlogService {
         fs.writeFileSync(STORE_FILE, JSON.stringify(store, null, 2), "utf8");
       }
     } catch (e) {
-      console.warn("⚠️ Could not persist blogs to disk:", e.message);
+      try {
+        fs.writeFileSync(TEMP_STORE_FILE, JSON.stringify({ blogs: this.memoryBlogs }, null, 2), "utf8");
+      } catch (fallbackError) {
+        console.warn("Blog cache persistence notice:", fallbackError.message);
+      }
     }
   }
 

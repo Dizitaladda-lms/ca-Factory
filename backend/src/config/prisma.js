@@ -1,9 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 
-const prisma = global.__prismaClient || new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  global.__prismaClient = prisma;
-}
+// Reuse the same Prisma client across warm serverless invocations.
+const prismaGlobal = globalThis;
+const prisma = prismaGlobal.__prismaClient || new PrismaClient();
+prismaGlobal.__prismaClient = prisma;
 
 module.exports = prisma;

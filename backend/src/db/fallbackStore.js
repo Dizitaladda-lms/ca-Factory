@@ -1,336 +1,16 @@
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const bcrypt = require("bcryptjs");
 
 const DATA_DIR = path.join(__dirname, "..", "..", "data");
-const STORE_FILE = path.join(DATA_DIR, "lms_store.json");
+const LEGACY_STORE_FILE = path.join(DATA_DIR, "lms_store.json");
+const LOCAL_FALLBACK_STORE_FILE = path.join(DATA_DIR, "lms_store.fallback.json");
+const TEMP_STORE_FILE = path.join(os.tmpdir(), "ca-factory-lms_store.json");
 
 // Pre-hashed default passwords for instant startup
 const HASHED_ADMIN_PASS = bcrypt.hashSync("Admin@12345", 10);
 const HASHED_TEACHER_PASS = bcrypt.hashSync("Teacher@12345", 10);
-
-const INITIAL_COURSES = [
-  {
-    "id": 1,
-    "course_id": "dm-advanced",
-    "title": "Advanced Digital Marketing Course",
-    "description": "6-month Advanced Digital Marketing Course — 10 live brand campaigns, 54+ AI tools, Google & Meta certifications, and agency internship.",
-    "price": 18999,
-    "original_price": 35999,
-    "duration": "6 Months",
-    "level": "Advanced",
-    "category": "Digital Marketing",
-    "teacher": "Dr. Gulshan Kumar",
-    "teacher_id": 2,
-    "thumbnail": "https://dizitaladda.com/images/digital-marketing-institute.webp",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 1420,
-    "created_at": "2026-09-10T10:39:50.935Z"
-  },
-  {
-    "id": 2,
-    "course_id": "dm-expert",
-    "title": "Expert in Digital Marketing",
-    "description": "12-month master program with 70 comprehensive modules, 60+ AI tools, 10 live brand projects, paid agency internship, and 100% placement guarantee.",
-    "price": 34999,
-    "original_price": 69999,
-    "duration": "12 Months",
-    "level": "Expert",
-    "category": "Digital Marketing",
-    "teacher": "Dr. Gulshan Kumar",
-    "teacher_id": 2,
-    "thumbnail": "https://dizitaladda.com/images/digital-marketing-institute.webp",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 890,
-    "created_at": "2026-09-10T10:39:50.937Z"
-  },
-  {
-    "id": 3,
-    "course_id": "dm-professionals",
-    "title": "Digital Marketing Course for Professionals",
-    "description": "A 4-month, 80+ hour hybrid digital marketing course for working professionals, career switchers, and business owners. Covers 40 modules including SEO, Google Ads, Meta Ads, Content Writing, WhatsApp & Email Marketing, Social Media, WordPress, Canva, Video Editing, GA4, Performance Marketing, Remarketing, and 50+ AI tools. Includes 10 live brand projects, paid internship, 10+ certifications, and 100% placement assistance.",
-    "price": 14999,
-    "original_price": 45000,
-    "duration": "4 Months",
-    "level": "Professional",
-    "category": "Digital Marketing",
-    "teacher": "Dr. Gulshan Kumar",
-    "teacher_id": 2,
-    "thumbnail": "https://dizitaladda.com/images/digital-marketing-institute.webp",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 1043,
-    "created_at": "2026-09-10T10:39:50.937Z",
-    "rating": 4.9
-  },
-  {
-    "id": 4,
-    "course_id": "dm-beginners",
-    "title": "Digital Marketing for Beginners Course in Delhi",
-    "description": "Updated test description",
-    "price": 25000,
-    "original_price": 30000,
-    "duration": "3 Months",
-    "level": "Beginner",
-    "category": "Digital Marketing",
-    "teacher": "Dr. Gulshan Kumar",
-    "teacher_id": 2,
-    "thumbnail": "https://dizitaladda.com/images/digital-marketing-institute.webp",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 2100,
-    "created_at": "2026-09-10T10:39:50.937Z",
-    "rating": 4.9,
-    "updated_at": "2026-09-13T06:56:50.442Z"
-  },
-  {
-    "id": 5,
-    "course_id": "data-analytics",
-    "title": "Diploma in Data Analytics & AI | Job-Ready Program (NIDADS)",
-    "description": "Complete 12-month National Diploma from NIDADS & Dizital Adda. Master Advanced Excel, SQL, Power BI, Tableau, Python EDA, and real portfolio capstones like Dark Store Demand Twin and Midnight Basket Drop.",
-    "price": 34999,
-    "original_price": 69999,
-    "duration": "12 Months",
-    "level": "Job-Ready Diploma",
-    "category": "Data Analytics",
-    "teacher": "Dr. Gulshan Kumar & Mr. Deepanshu Soni",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 520,
-    "created_at": "2026-09-10T10:39:50.937Z"
-  },
-  {
-    "id": 6,
-    "course_id": "cyber-advanced",
-    "title": "Expert Training in Cyber Security & Ethical Hacking | DizitalAdda",
-    "description": "Master 12-month Expert Cyber Security & Ethical Hacking with Dizital Adda. From Python automation, networking, and VAPT to digital forensics, reverse engineering, and Splunk SOC operations with Dr. Gulshan Kumar.",
-    "price": 95000,
-    "original_price": 135000,
-    "duration": "12 Months",
-    "level": "Expert / Professional",
-    "category": "Cyber Security",
-    "teacher": "Dr. Gulshan Kumar & Senior Security Architects",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 480,
-    "created_at": "2026-09-10T10:39:50.937Z"
-  },
-  {
-    "id": 7,
-    "course_id": "ai-expert",
-    "title": "Diploma in Generative AI & Prompt Engineering",
-    "description": "12-Month / 288-hour comprehensive diploma program covering AI Foundations, Python & Data Science, Machine Learning, Deep Learning, NLP, Transformers, Generative AI, LangChain, Vector Databases, RAG, Low-Code AI Agents, Major Capstone Projects, and Career Placement.",
-    "price": 48000,
-    "original_price": 135000,
-    "duration": "12 Months",
-    "level": "Expert",
-    "category": "Artificial Intelligence",
-    "teacher": "Dr. Gulshan Kumar",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 780,
-    "created_at": "2026-09-10T10:39:50.937Z",
-    "updated_at": "2026-09-13T15:19:20.992Z"
-  },
-  {
-    "id": 8,
-    "course_id": "data-science",
-    "title": "Diploma in Data Science & AI | Master Track (NIDADS Flagship)",
-    "description": "Flagship 12-month National Diploma from NIDADS & Dizital Adda. Master Python, Mathematical Statistics, Scikit-Learn ML, PyTorch Deep Learning, Distributed Apache Spark, LLMOps, and Production MLOps deployment.",
-    "price": 39999,
-    "original_price": 79999,
-    "duration": "12 Months",
-    "level": "Flagship Master Diploma",
-    "category": "Data Science",
-    "teacher": "Dr. Gulshan Kumar & Miss Shagun Shrivastav",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 460,
-    "created_at": "2026-09-11T07:46:53.069Z"
-  },
-  {
-    "id": 9,
-    "course_id": "cyber-foundation",
-    "title": "Foundation in Cyber Security and Ethical Hacking",
-    "description": "4-month foundation course in cybersecurity, Python automation, Linux system hardening, and ethical hacking methodology with Dr. Gulshan Kumar.",
-    "price": 30000,
-    "original_price": 40000,
-    "duration": "4 Months",
-    "level": "Beginner",
-    "category": "Cyber Security",
-    "teacher": "Dr. Gulshan Kumar & Senior Security Architects",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 230,
-    "created_at": "2026-09-13T06:30:25.720Z"
-  },
-  {
-    "id": 10,
-    "course_id": "cyber-intermediate",
-    "title": "Advanced Certification in Cyber Security and Ethical Hacking",
-    "description": "6-month intensive training in enterprise VAPT, web application pentesting, OWASP Top 10, digital forensics, and CEH certification prep.",
-    "price": 45000,
-    "original_price": 60000,
-    "duration": "6 Months",
-    "level": "Advanced",
-    "category": "Cyber Security",
-    "teacher": "Dr. Gulshan Kumar & Senior Security Architects",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 310,
-    "created_at": "2026-09-13T06:30:25.722Z"
-  },
-  {
-    "id": 11,
-    "course_id": "cyber-forensics",
-    "title": "Certification in Digital Forensic and Cyber Investigation",
-    "description": "4-month specialization in cybercrime investigation, bit-stream disk imaging (FTK Imager), volatile memory forensics (Volatility), and court evidence dossiers.",
-    "price": 35000,
-    "original_price": 50000,
-    "duration": "4 Months",
-    "level": "Intermediate",
-    "category": "Cyber Security",
-    "teacher": "Dr. Gulshan Kumar & Senior Security Architects",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 180,
-    "created_at": "2026-09-13T06:30:25.722Z"
-  },
-  {
-    "id": 12,
-    "course_id": "cyber-bugbounty",
-    "title": "Expert Training in Bug Bounty",
-    "description": "4-month intensive training in bug bounty hunting, OWASP Top 10 exploits (IDOR, SSRF, SQLi), API security, and HackerOne / Bugcrowd report writing.",
-    "price": 35000,
-    "original_price": 50000,
-    "duration": "4 Months",
-    "level": "Advanced",
-    "category": "Cyber Security",
-    "teacher": "Dr. Gulshan Kumar & Senior Security Architects",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 195,
-    "created_at": "2026-09-13T06:30:25.722Z"
-  },
-  {
-    "id": 13,
-    "course_id": "ai-6m-agents",
-    "title": "Advanced Certification in Gen AI & Prompt Engineering",
-    "description": "6-Month intensive advanced certification covering Large Language Models (LLMs), Prompt Engineering frameworks (CoT, ReAct), LangChain, Multi-Agent systems, and AI workflows.",
-    "price": 34999,
-    "original_price": 60000,
-    "duration": "6 Months",
-    "level": "Advanced",
-    "category": "Artificial Intelligence",
-    "teacher": "Dr. Gulshan Kumar",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 650,
-    "rating": 4.9,
-    "created_at": "2026-09-13T15:52:10.179Z",
-    "updated_at": "2026-09-13T15:52:10.181Z"
-  },
-  {
-    "id": 14,
-    "course_id": "ai-3m-prompt",
-    "title": "Generative AI & Prompt Engineering for Professionals",
-    "description": "3-Month comprehensive program covering LLM Architectures, Advanced Prompt Frameworks (CoT, ReAct), Multimodal GenAI (Midjourney, Runway), AI Workplace Automation, and Capstone Assistants.",
-    "price": 19999,
-    "original_price": 39999,
-    "duration": "3 Months",
-    "level": "Beginner / Professional",
-    "category": "Artificial Intelligence",
-    "teacher": "Dr. Gulshan Kumar",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 737,
-    "rating": 4.9,
-    "created_at": "2026-09-14T05:00:25.669Z",
-    "updated_at": "2026-09-14T05:00:25.670Z"
-  },
-  {
-    "id": 15,
-    "course_id": "ds-6m-ml",
-    "title": "Advanced Certification in Data Science & AI Program",
-    "description": "6 Months Intensive NIDADS Program covering Python scientific stack, Mathematical Statistics, Scikit-Learn ML, PyTorch Deep Learning, and MLOps deployment.",
-    "price": 24999,
-    "original_price": 49999,
-    "duration": "6 Months",
-    "level": "Advanced",
-    "category": "Data Science",
-    "teacher": "Dr. Gulshan Kumar & Miss Shagun Shrivastav",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 526,
-    "rating": 4.9,
-    "created_at": "2026-09-14T05:00:25.675Z",
-    "updated_at": "2026-09-14T05:00:25.675Z"
-  },
-  {
-    "id": 16,
-    "course_id": "da-6m-pro",
-    "title": "Advanced Certification in Data Analytics & AI",
-    "description": "6 Months Intensive NIDADS Program covering Advanced SQL, Power BI DAX & Modeling, Python EDA, Business Statistics, and Tableau dashboards.",
-    "price": 18999,
-    "original_price": 38999,
-    "duration": "6 Months",
-    "level": "Advanced",
-    "category": "Data Analytics",
-    "teacher": "Dr. Gulshan Kumar & Mr. Deepanshu Soni",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 457,
-    "rating": 4.9,
-    "created_at": "2026-09-14T05:00:25.675Z",
-    "updated_at": "2026-09-14T05:00:25.675Z"
-  },
-  {
-    "id": 17,
-    "course_id": "da-3m-bi",
-    "title": "Certification in Data Analytics & AI",
-    "description": "3 Months Foundational NIDADS Program covering Advanced Excel modeling, SQL relational querying, and dynamic Power BI executive dashboards.",
-    "price": 9999,
-    "original_price": 24999,
-    "duration": "3 Months",
-    "level": "Beginner",
-    "category": "Data Analytics",
-    "teacher": "Dr. Gulshan Kumar & Mr. Deepanshu Soni",
-    "teacher_id": 2,
-    "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop",
-    "is_published": true,
-    "total_lectures": 0,
-    "total_students": 737,
-    "rating": 4.9,
-    "created_at": "2026-09-14T05:00:25.675Z",
-    "updated_at": "2026-09-14T05:00:25.675Z"
-  }
-];
 
 const INITIAL_USERS = [
   {
@@ -568,7 +248,7 @@ class FallbackStore {
   constructor() {
     this.data = {
       users: [...INITIAL_USERS],
-      courses: [...INITIAL_COURSES],
+      courses: [],
       sections: [...INITIAL_SECTIONS],
       lectures: [...INITIAL_LECTURES],
       students: [],
@@ -734,15 +414,11 @@ class FallbackStore {
 
   loadFromDisk() {
     try {
-      if (fs.existsSync(STORE_FILE)) {
-        const raw = fs.readFileSync(STORE_FILE, "utf8");
+      const storePath = [TEMP_STORE_FILE, LOCAL_FALLBACK_STORE_FILE, LEGACY_STORE_FILE].find((candidate) => fs.existsSync(candidate));
+      if (storePath) {
+        const raw = fs.readFileSync(storePath, "utf8");
         const parsed = JSON.parse(raw);
         if (parsed.users && parsed.users.length > 0) this.data.users = parsed.users;
-        if (parsed.courses && parsed.courses.length >= INITIAL_COURSES.length) {
-          this.data.courses = parsed.courses;
-        } else {
-          this.data.courses = INITIAL_COURSES;
-        }
         if (parsed.students) this.data.students = parsed.students;
         if (parsed.orders) this.data.orders = parsed.orders;
         if (parsed.payments) this.data.payments = parsed.payments;
@@ -766,12 +442,20 @@ class FallbackStore {
 
   saveToDisk() {
     try {
-      if (!fs.existsSync(DATA_DIR)) {
-        fs.mkdirSync(DATA_DIR, { recursive: true });
-      }
-      fs.writeFileSync(STORE_FILE, JSON.stringify(this.data, null, 2), "utf8");
+      const storePath = process.env.VERCEL ? TEMP_STORE_FILE : LOCAL_FALLBACK_STORE_FILE;
+      const directory = path.dirname(storePath);
+      if (!fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: true });
+      const fallbackData = { ...this.data };
+      delete fallbackData.courses;
+      fs.writeFileSync(storePath, JSON.stringify(fallbackData, null, 2), "utf8");
     } catch (e) {
-      console.warn("FallbackStore: Could not write to disk cache:", e.message);
+      try {
+        const fallbackData = { ...this.data };
+        delete fallbackData.courses;
+        fs.writeFileSync(TEMP_STORE_FILE, JSON.stringify(fallbackData, null, 2), "utf8");
+      } catch (fallbackError) {
+        console.warn("FallbackStore: Could not persist temporary cache:", fallbackError.message);
+      }
     }
   }
 

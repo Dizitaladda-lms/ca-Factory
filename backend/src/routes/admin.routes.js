@@ -27,31 +27,12 @@ router.get("/dashboard", (req, res) => {
 // ==========================
 // 1.1 SYNC FULL DATABASE (ADMIN ACTION)
 // ==========================
-router.post("/sync-database", async (req, res, next) => {
-  try {
-    if (!pool.hasConfiguredDatabase || !pool.hasConfiguredDatabase()) {
-      return res.status(503).json({
-        success: false,
-        message:
-          "Database sync is unavailable because DATABASE_URL is not configured on this API deployment.",
-      });
-    }
-
-    const { syncDatabase } = require("../db/syncAllToDb");
-    const activePool = pool.getRealPool ? pool.getRealPool() : null;
-    const stats = await syncDatabase(activePool);
-    res.status(200).json({
-      success: true,
-      message: "Database successfully synced with all 12 courses, 88 modules & 252 lectures! 🚀",
-      stats,
-    });
-  } catch (error) {
-    console.error("Admin DB Sync error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Database sync failed: " + error.message,
-    });
-  }
+router.post("/sync-database", (req, res) => {
+  res.status(410).json({
+    success: false,
+    message: "Legacy JSON database sync is disabled. Courses are managed in the database.",
+    stats: null,
+  });
 });
 
 // ==========================
@@ -74,24 +55,6 @@ router.post("/clear-all-lectures", async (req, res, next) => {
     // 4. Reset sequence
     try {
       await pool.query("SELECT setval(pg_get_serial_sequence('lectures', 'id'), 1, false);");
-    } catch (_) {}
-
-    // 5. Update local JSON file if exists
-    try {
-      const fs = require("fs");
-      const path = require("path");
-      const storePath = path.join(__dirname, "..", "..", "data", "lms_store.json");
-      if (fs.existsSync(storePath)) {
-        const store = JSON.parse(fs.readFileSync(storePath, "utf8"));
-        store.lectures = [];
-        store.video_progress = [];
-        if (Array.isArray(store.courses)) {
-          store.courses.forEach((c) => {
-            c.total_lectures = 0;
-          });
-        }
-        fs.writeFileSync(storePath, JSON.stringify(store, null, 2), "utf8");
-      }
     } catch (_) {}
 
     res.status(200).json({

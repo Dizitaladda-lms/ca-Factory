@@ -52,8 +52,25 @@ const userRoutes = require("./routes/user.routes");
 
 const app = express();
 
+// Validate every app.use() argument at startup and normalize CommonJS/ESM
+// default exports so deployment failures identify the exact handler.
+const useHandler = (name, ...args) => {
+  const handlerStart = typeof args[0] === "string" ? 1 : 0;
+  for (let index = handlerStart; index < args.length; index += 1) {
+    const candidate = args[index];
+    const handler = typeof candidate === "function" ? candidate : candidate?.default;
+    if (typeof handler !== "function") {
+      const received = candidate === null ? "null" : typeof candidate;
+      console.error(`[startup] Invalid Express handler "${name}" at position ${index - handlerStart + 1}: expected function, received ${received}.`);
+      throw new TypeError(`Invalid Express handler "${name}".`);
+    }
+    args[index] = handler;
+  }
+  return app.use(...args);
+};
+
 // Production Security Headers
-app.use(
+useHandler("helmet middleware",
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
     contentSecurityPolicy: {
@@ -87,7 +104,7 @@ const envAllowed = process.env.CORS_ORIGIN
 
 const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envAllowed]));
 
-app.use(
+useHandler("CORS middleware",
   cors({
     origin: (origin, callback) => {
       // Allow non-browser requests (mobile apps, server-to-server)
@@ -105,9 +122,9 @@ app.use(
 );
 
 // Body Parsers
-app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || "5mb" }));
-app.use(express.urlencoded({ extended: true, limit: "5mb" }));
-app.use(cookieParser());
+useHandler("JSON body parser", express.json({ limit: process.env.JSON_BODY_LIMIT || "5mb" }));
+useHandler("URL-encoded body parser", express.urlencoded({ extended: true, limit: "5mb" }));
+useHandler("cookie parser", cookieParser());
 
 // Rate Limiting
 const globalLimiter = rateLimit({
@@ -122,8 +139,8 @@ const authLimiter = rateLimit({
   message: "Too many login/register attempts. Please try again after 15 minutes.",
 });
 
-app.use("/api", globalLimiter);
-app.use("/api/auth/login", authLimiter);
+useHandler("global API rate limiter", "/api", globalLimiter);
+useHandler("authentication rate limiter", "/api/auth/login", authLimiter);
 
 // Frontend SPA dist path
 const frontendDist = path.join(__dirname, "..", "..", "frontend", "dist");
@@ -155,40 +172,40 @@ app.get("/api/health", (req, res) => {
 });
 
 // Mounted Routes
-app.use("/api/activity", activityRoutes);
-app.use("/api/admin/analytics", adminDashboardRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/ai", aiRoutes);
-app.use("/api/assignments", assignmentRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/blogs", blogRoutes);
-app.use("/api/blog", blogRoutes);
+useHandler("activity routes", "/api/activity", activityRoutes);
+useHandler("admin analytics routes", "/api/admin/analytics", adminDashboardRoutes);
+useHandler("admin routes", "/api/admin", adminRoutes);
+useHandler("AI routes", "/api/ai", aiRoutes);
+useHandler("assignment routes", "/api/assignments", assignmentRoutes);
+useHandler("authentication routes", "/api/auth", authRoutes);
+useHandler("blog routes", "/api/blogs", blogRoutes);
+useHandler("legacy blog routes", "/api/blog", blogRoutes);
 // Crawlers receive post-specific HTML metadata and a no-JS article rendering.
-app.use(blogSeoRoutes);
-app.use("/api/certificates", certificateRoutes);
-app.use("/api/courses", courseRoutes);
-app.use("/api/homepage", homepageRoutes);
-app.use("/api/doubts", doubtRoutes);
-app.use("/api/enrollments", enrollmentRoutes);
-app.use("/api/lectures", lectureRoutes);
-app.use("/api/payment", paymentRoutes);
-app.use("/api/payments", paymentRoutes);
-app.use("/api/progress", progressRoutes);
-app.use("/api/quizzes", quizRoutes);
-app.use("/api/sections", sectionRoutes);
-app.use("/api/students", studentRoutes);
-app.use("/api/teachers", teacherRoutes);
-app.use("/api/user", userRoutes);
+useHandler("blog SEO routes", blogSeoRoutes);
+useHandler("certificate routes", "/api/certificates", certificateRoutes);
+useHandler("course routes", "/api/courses", courseRoutes);
+useHandler("homepage routes", "/api/homepage", homepageRoutes);
+useHandler("doubt routes", "/api/doubts", doubtRoutes);
+useHandler("enrollment routes", "/api/enrollments", enrollmentRoutes);
+useHandler("lecture routes", "/api/lectures", lectureRoutes);
+useHandler("payment routes", "/api/payment", paymentRoutes);
+useHandler("legacy payment routes", "/api/payments", paymentRoutes);
+useHandler("progress routes", "/api/progress", progressRoutes);
+useHandler("quiz routes", "/api/quizzes", quizRoutes);
+useHandler("section routes", "/api/sections", sectionRoutes);
+useHandler("student routes", "/api/students", studentRoutes);
+useHandler("teacher routes", "/api/teachers", teacherRoutes);
+useHandler("user routes", "/api/user", userRoutes);
 
 // Serve compiled frontend SPA dynamically
-app.use(express.static(frontendDist, {
+useHandler("static frontend middleware", express.static(frontendDist, {
   maxAge: "1y",
   immutable: true,
   setHeaders(res, filePath) {
     if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-cache");
   },
 }));
-app.use((req, res, next) => {
+useHandler("frontend SPA fallback", (req, res, next) => {
   if (req.method === "GET" && !req.path.startsWith("/api")) {
     const indexPath = path.join(frontendDist, "index.html");
     if (fs.existsSync(indexPath)) {
@@ -199,7 +216,7 @@ app.use((req, res, next) => {
 });
 
 // 404 Route Handler for unmatched API routes
-app.use((req, res) => {
+useHandler("API 404 handler", (req, res) => {
   res.status(404).json({
     success: false,
     message: `Route not found: ${req.method} ${req.originalUrl}`,
@@ -207,6 +224,6 @@ app.use((req, res) => {
 });
 
 // Centralized Error Handler
-app.use(errorHandler);
+useHandler("central error handler", errorHandler);
 
 module.exports = app;
