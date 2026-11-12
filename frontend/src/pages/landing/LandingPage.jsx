@@ -10,6 +10,8 @@ import BatchesFooter from "../../components/batches/BatchesFooter";
 import FloatingHelpButton from "../../components/batches/FloatingHelpButton";
 import { FACULTY_MEMBERS } from "../../data/caBatchesData";
 
+const OTHER_BRANDS = ["Delhi School CA", "Delhi School Lawyer", "The Lawyer Factory"];
+
 const getMentorVideo = (url) => {
   const value = String(url || "").trim();
   if (!value) return { type: "placeholder" };
@@ -502,6 +504,30 @@ export default function LandingPage() {
                   </span>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Other brands */}
+      <section id="our-brands" className="border-b border-[#EFEFEF] bg-white py-16">
+        <div className="edtech-container">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <span className="inline-flex rounded-full bg-[#5A4BFF]/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#5A4BFF]">
+              Our network
+            </span>
+            <h2 className="mt-3 text-3xl font-black text-[#1B2124] sm:text-4xl">Our Other Brands</h2>
+            <p className="mt-2 text-sm text-[#64748B]">Explore the other learning brands in our family.</p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {OTHER_BRANDS.map((brand) => (
+              <article key={brand} className="flex min-h-56 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center transition hover:border-[#5A4BFF]/40 hover:bg-white hover:shadow-md">
+                <div className="flex h-28 w-full max-w-[220px] items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-white text-xs font-semibold text-slate-400">
+                  Logo will be added
+                </div>
+                <h3 className="mt-4 text-lg font-extrabold text-[#1B2124]">{brand}</h3>
+              </article>
             ))}
           </div>
         </div>
