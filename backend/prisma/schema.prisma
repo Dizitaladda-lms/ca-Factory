@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Course {
+  id             Int          @id @default(autoincrement())
+  courseId       String       @unique @map("course_id") @db.VarChar(100)
+  title          String       @db.VarChar(255)
+  description    String?
+  price          Decimal      @default(0) @db.Decimal(10, 2)
+  originalPrice  Decimal?     @default(0) @map("original_price") @db.Decimal(10, 2)
+  duration       String?      @db.VarChar(100)
+  level          String?      @default("Beginner") @db.VarChar(100)
+  category       String?      @default("General") @db.VarChar(100)
+  teacher        String?      @db.VarChar(255)
+  teacherId      Int?         @map("teacher_id")
+  thumbnail      String?
+  isPublished    Boolean      @default(true) @map("is_published")
+  totalLectures  Int?         @default(0) @map("total_lectures")
+  totalStudents  Int?         @default(0) @map("total_students")
+  rating         Decimal?     @default(4.9) @db.Decimal(3, 2)
+  metadata       Json?        @db.JsonB
+  createdAt      DateTime?    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime?    @default(now()) @map("updated_at") @db.Timestamptz(6)
+  sections       Section[]
+  lectures       Lecture[]
+  enrollments    Enrollment[]
+
+  @@index([category])
+  @@index([teacherId])
+  @@map("courses")
+}
+
+model Section {
+  id        Int       @id @default(autoincrement())
+  courseId  Int       @map("course_id")
+  title     String    @db.VarChar(255)
+  orderNum  Int?      @default(1) @map("order_num")
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lectures  Lecture[]
+
+  @@index([courseId])
+  @@map("sections")
+}
+
+model Lecture {
+  id             Int       @id @default(autoincrement())
+  courseId       Int       @map("course_id")
+  sectionId      Int?      @map("section_id")
+  title          String    @db.VarChar(255)
+  description    String?
+  videoUrl       String?   @map("video_url")
+  pdfUrl         String?   @map("pdf_url")
+  duration       String?   @db.VarChar(50)
+  orderNum       Int?      @default(1) @map("order_num")
+  isFreePreview  Boolean?  @default(false) @map("is_free_preview")
+  createdAt      DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  course         Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  section        Section?  @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+
+  @@index([courseId])
+  @@index([sectionId])
+  @@map("lectures")
+}
+
+model Enrollment {
+  id             Int       @id @default(autoincrement())
+  userId         Int       @map("user_id")
+  studentId      Int?      @map("student_id")
+  courseId       Int       @map("course_id")
+  status         String?   @default("Active") @db.VarChar(50)
+  enrollmentDate DateTime? @default(now()) @map("enrollment_date") @db.Timestamptz(6)
+  paymentStatus  String?   @default("completed") @map("payment_status") @db.VarChar(50)
+  progress       Decimal?  @default(0) @db.Decimal(5, 2)
+  courseCode     String?   @map("course_code") @db.VarChar(100)
+  enrolledAt     DateTime? @default(now()) @map("enrolled_at") @db.Timestamptz(6)
+  course         Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([studentId])
+  @@map("enrollments")
+}
+
+model TrainerReviewVideo {
+  id          Int      @id @default(autoincrement())
+  trainerName String   @map("trainer_name") @db.VarChar(160)
+  title       String?  @db.VarChar(200)
+  videoUrl    String   @map("video_url") @db.Text
+  isPublished Boolean  @default(true) @map("is_published")
+  displayOrder Int     @default(0) @map("display_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([isPublished, displayOrder])
+  @@map("trainer_review_videos")
+}
+
+model HomepageMedia {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique @db.VarChar(80)
+  title       String?  @db.VarChar(200)
+  videoUrl    String   @map("video_url") @db.Text
+  isPublished Boolean  @default(true) @map("is_published")
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("homepage_media")
+}
+
+model StudentReview {
+  id           Int      @id @default(autoincrement())
+  studentName  String   @map("student_name") @db.VarChar(160)
+  rankOrAttempt String? @map("rank_or_attempt") @db.VarChar(200)
+  rating       Int      @default(5)
+  avatar       String?  @db.Text
+  videoUrl     String?  @map("video_url") @db.Text
+  comment      String?  @db.Text
+  trainerName  String?  @map("trainer_name") @db.VarChar(160)
+  subject      String?  @db.VarChar(200)
+  isPublished  Boolean  @default(true) @map("is_published")
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([isPublished, displayOrder])
+  @@map("student_reviews")
+}

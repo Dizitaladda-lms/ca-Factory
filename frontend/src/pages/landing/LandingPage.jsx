@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import api from "../../lib/api";
 
 // Shared Components & Data
 import BatchesHeader from "../../components/batches/BatchesHeader";
 import BatchCard from "../../components/batches/BatchCard";
 import BatchesFooter from "../../components/batches/BatchesFooter";
 import FloatingHelpButton from "../../components/batches/FloatingHelpButton";
-import { CA_BATCHES_DATA, FACULTY_MEMBERS } from "../../data/caBatchesData";
+import { FACULTY_MEMBERS } from "../../data/caBatchesData";
 
 const getMentorVideo = (url) => {
   const value = String(url || "").trim();
@@ -20,19 +21,55 @@ const getMentorVideo = (url) => {
   return { type: "placeholder" };
 };
 
-// Add trainer video URLs here: { name: "Trainer name", url: "YouTube/Vimeo/MP4 URL" }
-const TRAINER_REVIEW_VIDEOS = [];
+const renderStudentReviewVideo = (review) => {
+  const video = getMentorVideo(review.videoUrl);
+  if (video.type === "embed") {
+    return <iframe src={video.src} title={`${review.studentName} student review video`} className="h-full w-full" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />;
+  }
+  if (video.type === "file") {
+    return <video className="h-full w-full" controls playsInline preload="metadata" aria-label={`${review.studentName} student review video`}><source src={video.src} />Your browser does not support video playback.</video>;
+  }
+  return <div className="flex h-full items-center justify-center bg-slate-900 px-4 text-center text-xs font-semibold text-slate-300">Student review video will appear here once added.</div>;
+};
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const BRAND_NAME = "CS Factory";
-  const mentorVideo = getMentorVideo(import.meta.env.VITE_MENTOR_MESSAGE_VIDEO_URL);
-  const trainerReviewVideos = TRAINER_REVIEW_VIDEOS
-    .map((video) => ({ name: video.name, ...getMentorVideo(video.url) }))
-    .filter((video) => video.type !== "placeholder");
-  const studentReviews = FACULTY_MEMBERS.flatMap((trainer) =>
-    (trainer.reviews || []).map((review) => ({ ...review, trainerName: trainer.name, subject: trainer.subject }))
-  ).slice(0, 8);
+  const [mentorVideo, setMentorVideo] = useState({ type: "placeholder" });
+  const [trainerReviewVideos, setTrainerReviewVideos] = useState([]);
+  const [studentReviews, setStudentReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [homepageCourses, setHomepageCourses] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    api.get("/api/homepage/reviews")
+      .then(({ data }) => {
+        if (!active) return;
+        const videos = Array.isArray(data?.videos) ? data.videos : [];
+        const reviews = Array.isArray(data?.reviews) ? data.reviews : [];
+        setMentorVideo(getMentorVideo(data?.welcomeVideo?.videoUrl));
+        setTrainerReviewVideos(videos.map((video) => ({ ...video, ...getMentorVideo(video.videoUrl) })).filter((video) => video.type !== "placeholder"));
+        setStudentReviews(reviews);
+      })
+      .catch((error) => console.error("Could not load homepage reviews:", error))
+      .finally(() => { if (active) setReviewsLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    api.get("/api/courses")
+      .then(({ data }) => {
+        if (!active) return;
+        const courses = Array.isArray(data?.courses) ? data.courses : [];
+        setHomepageCourses(courses);
+      })
+      .catch((error) => console.error("Could not load homepage courses:", error))
+      .finally(() => { if (active) setCoursesLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   // Tab state for Popular Courses
   const [courseCategory, setCourseCategory] = useState("all");
@@ -40,31 +77,15 @@ export default function LandingPage() {
   // FAQ Accordion State
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
-  // Filter Popular Courses
-  const popularCourses = CA_BATCHES_DATA.filter((course) => {
-    if (courseCategory === "all") {
-      // Pick top flagship courses across levels
-      return [
-        "ca-foundation-sampurna-3-0-jan-2027",
-        "ca-inter-udesh-regular-sep-2027-group--1-2--combo",
-        "ca-inter-udesh-regular-sep-2027-group-1",
-        "ca-final-regular-batch-2-0-group-1-combo",
-        "ca-final-regular-batch-2-0-financial-reporting",
-        "cs-executive-group-combo",
-      ].includes(course.id);
-    }
-    if (courseCategory === "foundation") {
-      return course.level === "foundation";
-    }
-    if (courseCategory === "intermediate") {
-      return course.level === "intermediate";
-    }
-    if (courseCategory === "final") {
-      return course.level === "final";
-    }
-    if (courseCategory === "cs") {
-      return course.exam === "cs";
-    }
+  // Homepage course cards use published rows returned by the database API.
+  const popularCourses = homepageCourses.filter((course) => {
+    const category = `${course.category || ""} ${course.level || ""}`.toLowerCase();
+    const isCs = category.includes("cs") || category.includes("company secretary");
+    if (courseCategory === "cs") return isCs;
+    if (isCs) return false;
+    if (courseCategory === "foundation") return category.includes("foundation");
+    if (courseCategory === "intermediate") return category.includes("inter");
+    if (courseCategory === "final") return category.includes("final") || category.includes("professional");
     return true;
   }).slice(0, 6);
 
@@ -310,11 +331,15 @@ export default function LandingPage() {
           </div>
 
           {/* Courses Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {popularCourses.map((course) => (
-              <BatchCard key={course.id} course={course} />
-            ))}
-          </div>
+          {coursesLoading ? (
+            <p className="py-10 text-center text-sm text-slate-500">Loading courses...</p>
+          ) : popularCourses.length ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {popularCourses.map((course) => <BatchCard key={course.id || course.course_id} course={course} />)}
+            </div>
+          ) : (
+            <p className="py-10 text-center text-sm text-slate-500">No published courses are available in this category yet.</p>
+          )}
 
           {/* Bottom Action: View All Batches */}
           <div className="mt-10 text-center">
@@ -507,13 +532,13 @@ export default function LandingPage() {
                       </video>
                     )}
                   </div>
-                  <h3 className="px-4 py-3 font-bold">{video.name}</h3>
+                  <h3 className="px-4 py-3 font-bold">{video.title || video.trainerName}</h3>
                 </article>
               ))}
             </div>
           ) : (
             <div className="mx-auto max-w-2xl rounded-2xl border border-dashed border-white/20 bg-white/5 px-6 py-10 text-center text-sm text-slate-300">
-              Trainer review videos will appear here soon.
+                {reviewsLoading ? "Loading trainer videos..." : "Trainer review videos will appear here soon."}
             </div>
           )}
         </div>
@@ -534,15 +559,18 @@ export default function LandingPage() {
             {studentReviews.map((review, index) => (
               <article key={`${review.studentName}-${index}`} className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="text-amber-500" aria-label={`${review.rating} out of 5 stars`}>{"★".repeat(review.rating || 5)}</div>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600">“{review.comment}”</p>
+                <div className="mt-3 aspect-video overflow-hidden rounded-xl bg-slate-900">
+                  {renderStudentReviewVideo(review)}
+                </div>
                 <div className="mt-5 border-t border-slate-100 pt-4">
                   <p className="font-bold text-[#1B2124]">{review.studentName}</p>
-                  <p className="mt-1 text-xs font-semibold text-[#5A4BFF]">{review.rankOrAttempt}</p>
-                  <p className="mt-1 text-xs text-slate-500">Faculty: {review.trainerName}</p>
+                  {review.rankOrAttempt && <p className="mt-1 text-xs font-semibold text-[#5A4BFF]">{review.rankOrAttempt}</p>}
+                  {review.trainerName && <p className="mt-1 text-xs text-slate-500">Faculty: {review.trainerName}</p>}
                 </div>
               </article>
             ))}
           </div>
+          {!studentReviews.length && <p className="mt-6 text-center text-sm text-slate-500">{reviewsLoading ? "Loading student reviews..." : "Student reviews will appear here soon."}</p>}
         </div>
       </section>
 

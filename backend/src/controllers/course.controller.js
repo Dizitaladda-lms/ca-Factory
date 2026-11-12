@@ -1,5 +1,37 @@
-const pool = require("../config/db");
+const prisma = require("../config/prisma");
 const cacheService = require("../services/cache.service");
+
+const serializeCourse = (course) => {
+  const {
+    courseId, originalPrice, teacherId, isPublished, totalLectures, totalStudents,
+    createdAt, updatedAt, metadata, _count, ...rest
+  } = course;
+  return {
+    ...(metadata && typeof metadata === "object" ? metadata : {}),
+    ...rest,
+    course_id: courseId,
+    original_price: originalPrice,
+    teacher_id: teacherId,
+    is_published: isPublished,
+    total_lectures: _count ? _count.lectures : Number(totalLectures || 0),
+    total_students: _count ? _count.enrollments : Number(totalStudents || 0),
+    created_at: createdAt,
+    updated_at: updatedAt,
+  };
+};
+
+const serializeLecture = (lecture) => {
+  const { sectionId, videoUrl, pdfUrl, orderNum, isFreePreview, createdAt, ...rest } = lecture;
+  return {
+    ...rest,
+    section_id: sectionId,
+    video_url: videoUrl,
+    pdf_url: pdfUrl,
+    order_num: orderNum,
+    is_free_preview: isFreePreview,
+    created_at: createdAt,
+  };
+};
 
 // ==========================================
 // 1. GET ALL COURSES (Public with Redis/Memory Caching)
@@ -16,33 +48,24 @@ const getCourses = async (req, res, next) => {
       return res.status(200).json(cached);
     }
 
-    let query = `
-      SELECT
-        c.*,
-        (SELECT COUNT(*) FROM lectures WHERE lectures.course_id = c.id) as total_lectures,
-        (SELECT COUNT(*) FROM enrollments WHERE enrollments.course_id = c.id) as total_students
-      FROM courses c
-      WHERE c.is_published = true
-    `;
-    const params = [];
-
-    if (category && category !== "All") {
-      params.push(category);
-      query += ` AND c.category = $${params.length}`;
+    const where = { isPublished: true };
+    if (category && category !== "All") where.category = category;
+    if (search?.trim()) {
+      where.OR = [
+        { title: { contains: search.trim(), mode: "insensitive" } },
+        { description: { contains: search.trim(), mode: "insensitive" } },
+      ];
     }
 
-    if (search) {
-      params.push(`%${search.trim()}%`);
-      query += ` AND (c.title ILIKE $${params.length} OR c.description ILIKE $${params.length})`;
-    }
-
-    query += ` ORDER BY c.id DESC`;
-
-    const result = await pool.query(query, params);
+    const courses = await prisma.course.findMany({
+      where,
+      orderBy: { id: "desc" },
+      include: { _count: { select: { lectures: true, enrollments: true } } },
+    });
 
     const payload = {
       success: true,
-      courses: result.rows,
+      courses: courses.map(serializeCourse),
     };
 
     // Cache in Redis/Memory for 3 minutes (180s)
@@ -72,47 +95,48 @@ const getSingleCourse = async (req, res, next) => {
       return res.status(200).json(cached);
     }
 
-    const courseResult = await pool.query(
-      `SELECT * FROM courses WHERE id::text = $1 OR course_id = $1`,
-      [id]
-    );
+    const numericId = Number(id);
+    const course = await prisma.course.findFirst({
+      where: {
+        OR: [
+          ...(Number.isInteger(numericId) ? [{ id: numericId }] : []),
+          { courseId: id },
+        ],
+      },
+      include: {
+        sections: {
+          orderBy: [{ orderNum: "asc" }, { id: "asc" }],
+          include: { lectures: { orderBy: [{ orderNum: "asc" }, { id: "asc" }] } },
+        },
+        lectures: { orderBy: [{ orderNum: "asc" }, { id: "asc" }] },
+      },
+    });
 
-    if (courseResult.rows.length === 0) {
+    if (!course) {
       return res.status(404).json({
         success: false,
         message: "Course not found",
       });
     }
 
-    const course = courseResult.rows[0];
-
-    // Fetch sections using numeric course.id
-    const sectionsResult = await pool.query(
-      `SELECT * FROM sections WHERE course_id = $1 ORDER BY order_num ASC, id ASC`,
-      [course.id]
-    );
-
-    // Fetch lectures using numeric course.id
-    const lecturesResult = await pool.query(
-      `SELECT id, section_id, course_id, title, description, video_url, pdf_url, duration, order_num, is_free_preview
-       FROM lectures
-       WHERE course_id = $1
-       ORDER BY order_num ASC, id ASC`,
-      [course.id]
-    );
-
-    // Structure sections with lectures
-    const sectionsWithLectures = sectionsResult.rows.map((sec) => ({
-      ...sec,
-      lectures: lecturesResult.rows.filter((lec) => lec.section_id === sec.id),
-    }));
+    const sectionsWithLectures = course.sections.map((section) => {
+      const { courseId, orderNum, createdAt, lectures, ...rest } = section;
+      return {
+        ...rest,
+        course_id: courseId,
+        order_num: orderNum,
+        created_at: createdAt,
+        lectures: lectures.map(serializeLecture),
+      };
+    });
+    const serializedLectures = course.lectures.map(serializeLecture);
 
     const payload = {
       success: true,
       course: {
-        ...course,
+        ...serializeCourse(course),
         sections: sectionsWithLectures,
-        lectures: lecturesResult.rows,
+        lectures: serializedLectures,
       },
     };
 
@@ -134,6 +158,8 @@ const getSingleCourse = async (req, res, next) => {
 const addCourse = async (req, res, next) => {
   try {
     const {
+      course_id,
+      courseId,
       title,
       description,
       duration,
@@ -155,24 +181,23 @@ const addCourse = async (req, res, next) => {
     const teacherName = teacher || req.user?.name || "Dizital Adda Instructor";
     const teacherId = req.user?.role === "teacher" ? req.user.id : null;
 
-    const result = await pool.query(
-      `INSERT INTO courses
-       (title, description, duration, level, category, price, original_price, teacher, teacher_id, thumbnail, is_published)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
-       RETURNING *`,
-      [
-        title,
-        description || "",
-        duration || "4 Weeks",
-        level || "Beginner",
-        category || "General",
-        Number(price),
-        Number(originalPrice || price),
-        teacherName,
-        teacherId,
-        thumbnail || "",
-      ]
-    );
+    const slug = String(title).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 70);
+    const created = await prisma.course.create({
+      data: {
+        courseId: String(course_id || courseId || `${slug}-${Date.now()}`).slice(0, 100),
+        title: String(title).trim(),
+        description: description || "",
+        duration: duration || "4 Weeks",
+        level: level || "Beginner",
+        category: category || "General",
+        price: Number(price),
+        originalPrice: Number(originalPrice ?? price),
+        teacher: teacherName,
+        teacherId: teacherId ? Number(teacherId) : null,
+        thumbnail: thumbnail || "",
+        isPublished: true,
+      },
+    });
 
     // Invalidate course caches on new course creation
     await cacheService.delPattern("courses:*");
@@ -181,7 +206,7 @@ const addCourse = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: "Course Added Successfully 🚀",
-      course: result.rows[0],
+      course: serializeCourse(created),
     });
   } catch (error) {
     next(error);
@@ -196,16 +221,14 @@ const getTeacherCourses = async (req, res, next) => {
     const teacherId = req.user.id;
     const teacherName = req.user.name;
 
-    const result = await pool.query(
-      `SELECT * FROM courses
-       WHERE teacher_id = $1 OR teacher ILIKE $2
-       ORDER BY id DESC`,
-      [teacherId, `%${teacherName}%`]
-    );
+    const result = await prisma.course.findMany({
+      where: { OR: [{ teacherId: Number(teacherId) }, { teacher: { contains: teacherName, mode: "insensitive" } }] },
+      orderBy: { id: "desc" },
+    });
 
     res.json({
       success: true,
-      courses: result.rows,
+      courses: result.map(serializeCourse),
     });
   } catch (error) {
     next(error);
@@ -217,4 +240,5 @@ module.exports = {
   getSingleCourse,
   addCourse,
   getTeacherCourses,
+  serializeCourse,
 };

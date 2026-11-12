@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS homepage_media (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(80) NOT NULL UNIQUE,
+    title VARCHAR(200),
+    video_url TEXT NOT NULL,
+    is_published BOOLEAN NOT NULL DEFAULT true,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

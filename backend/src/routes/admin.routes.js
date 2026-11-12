@@ -5,6 +5,9 @@ const bcrypt = require("bcryptjs");
 const { verifyToken } = require("../middleware/auth.middleware");
 const { checkRole } = require("../middleware/role.middleware");
 const pool = require("../config/db");
+const prisma = require("../config/prisma");
+const cacheService = require("../services/cache.service");
+const { serializeCourse } = require("../controllers/course.controller");
 
 // Protect ALL admin routes with token verification and admin role check
 router.use(verifyToken);
@@ -176,13 +179,11 @@ router.post("/add-teacher", async (req, res, next) => {
 // ==========================
 router.get("/courses", async (req, res, next) => {
   try {
-    const courses = await pool.query(
-      `SELECT * FROM courses ORDER BY id DESC`
-    );
+    const courses = await prisma.course.findMany({ orderBy: { id: "desc" } });
 
     res.status(200).json({
       success: true,
-      courses: courses.rows,
+      courses: courses.map(serializeCourse),
     });
   } catch (error) {
     next(error);
@@ -205,6 +206,7 @@ router.post("/add-course", async (req, res, next) => {
       teacher,
       teacher_id,
       thumbnail,
+      course_id,
     } = req.body;
 
     if (!title || price === undefined) {
@@ -214,29 +216,30 @@ router.post("/add-course", async (req, res, next) => {
       });
     }
 
-    const result = await pool.query(
-      `INSERT INTO courses
-       (title, description, price, original_price, duration, level, category, teacher, teacher_id, thumbnail, is_published)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
-       RETURNING *`,
-      [
-        title,
-        description || "",
-        Number(price),
-        Number(originalPrice || price),
-        duration || "",
-        level || "Beginner",
-        category || "General",
-        teacher || "",
-        teacher_id || null,
-        thumbnail || "",
-      ]
-    );
+    const slug = String(title).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 70);
+    const course = await prisma.course.create({
+      data: {
+        courseId: String(course_id || `${slug}-${Date.now()}`).slice(0, 100),
+        title: String(title).trim(),
+        description: description || "",
+        price: Number(price),
+        originalPrice: Number(originalPrice ?? price),
+        duration: duration || "",
+        level: level || "Beginner",
+        category: category || "General",
+        teacher: teacher || "",
+        teacherId: teacher_id ? Number(teacher_id) : null,
+        thumbnail: thumbnail || "",
+        isPublished: true,
+      },
+    });
+    await cacheService.delPattern("courses:*");
+    await cacheService.delPattern("course:*");
 
     res.status(201).json({
       success: true,
       message: "Course added successfully 🚀",
-      course: result.rows[0],
+      course: serializeCourse(course),
     });
   } catch (error) {
     next(error);
@@ -250,90 +253,63 @@ router.put("/edit-course/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const {
-      title,
-      description,
-      price,
-      originalPrice,
-      original_price,
-      duration,
-      level,
-      category,
-      teacher,
-      thumbnail,
-      is_published,
-      course_id,
+      title, description, price, originalPrice, original_price, duration,
+      level, category, teacher, thumbnail, is_published, course_id,
     } = req.body;
+    const numericId = Number(id);
+    const existing = await prisma.course.findFirst({
+      where: { OR: [...(Number.isInteger(numericId) ? [{ id: numericId }] : []), { courseId: id }] },
+      select: { id: true },
+    });
+
+    if (!existing) return res.status(404).json({ success: false, message: "Course not found" });
 
     const finalOriginalPrice = originalPrice !== undefined ? originalPrice : original_price;
-
-    const result = await pool.query(
-      `UPDATE courses
-       SET
-         title = COALESCE($1, title),
-         description = COALESCE($2, description),
-         price = COALESCE($3, price),
-         original_price = COALESCE($4, original_price),
-         duration = COALESCE($5, duration),
-         level = COALESCE($6, level),
-         category = COALESCE($7, category),
-         teacher = COALESCE($8, teacher),
-         thumbnail = COALESCE($9, thumbnail),
-         is_published = COALESCE($10, is_published),
-         course_id = COALESCE($11, course_id),
-         updated_at = CURRENT_TIMESTAMP
-       WHERE id::text = $12 OR course_id = $12
-       RETURNING *`,
-      [
-        title !== undefined && title !== null ? String(title).trim() : null,
-        description !== undefined && description !== null ? String(description).trim() : null,
-        price !== undefined && price !== null && price !== "" ? Number(price) : null,
-        finalOriginalPrice !== undefined && finalOriginalPrice !== null && finalOriginalPrice !== "" ? Number(finalOriginalPrice) : null,
-        duration !== undefined && duration !== null ? String(duration).trim() : null,
-        level !== undefined && level !== null ? String(level).trim() : null,
-        category !== undefined && category !== null ? String(category).trim() : null,
-        teacher !== undefined && teacher !== null ? String(teacher).trim() : null,
-        thumbnail !== undefined && thumbnail !== null ? String(thumbnail).trim() : null,
-        is_published !== undefined && is_published !== null ? Boolean(is_published) : null,
-        course_id !== undefined && course_id !== null ? String(course_id).trim() : null,
-        String(id),
-      ]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Course updated successfully 🚀",
-      course: result.rows[0],
+    const course = await prisma.course.update({
+      where: { id: existing.id },
+      data: {
+        ...(title != null && { title: String(title).trim() }),
+        ...(description != null && { description: String(description).trim() }),
+        ...(price != null && price !== "" && { price: Number(price) }),
+        ...(finalOriginalPrice != null && finalOriginalPrice !== "" && { originalPrice: Number(finalOriginalPrice) }),
+        ...(duration != null && { duration: String(duration).trim() }),
+        ...(level != null && { level: String(level).trim() }),
+        ...(category != null && { category: String(category).trim() }),
+        ...(teacher != null && { teacher: String(teacher).trim() }),
+        ...(thumbnail != null && { thumbnail: String(thumbnail).trim() }),
+        ...(is_published != null && { isPublished: is_published === true || is_published === "true" }),
+        ...(course_id != null && { courseId: String(course_id).trim() }),
+      },
     });
+    await cacheService.delPattern("courses:*");
+    await cacheService.delPattern("course:*");
+
+    res.status(200).json({ success: true, message: "Course updated successfully", course: serializeCourse(course) });
   } catch (error) {
     next(error);
   }
 });
-
-// ==========================
 // 7. DELETE COURSE
 // ==========================
 router.delete("/delete-course/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
+    const numericId = Number(id);
+    const existing = await prisma.course.findFirst({
+      where: { OR: [...(Number.isInteger(numericId) ? [{ id: numericId }] : []), { courseId: id }] },
+      select: { id: true },
+    });
 
-    const result = await pool.query(
-      "DELETE FROM courses WHERE id = $1 RETURNING id",
-      [id]
-    );
-
-    if (result.rows.length === 0) {
+    if (!existing) {
       return res.status(404).json({
         success: false,
         message: "Course not found",
       });
     }
+
+    await prisma.course.delete({ where: { id: existing.id } });
+    await cacheService.delPattern("courses:*");
+    await cacheService.delPattern("course:*");
 
     res.status(200).json({
       success: true,
